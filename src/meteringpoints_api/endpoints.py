@@ -49,12 +49,6 @@ class GetMeteringPointList(Endpoint):
     Looks up many Measurements, optionally filtered and ordered.
     """
 
-    # @dataclass
-    # class MinimalMeteringPoint:
-    #     gsrn: str
-    #     sector: Optional[str]
-    #     type: Optional[MeteringPointType]
-
     @dataclass
     class Request:
         offset: int

@@ -3,9 +3,8 @@ from typing import List, Optional
 from dataclasses import dataclass, field
 
 from energytt_platform.serialize import Serializable
-from energytt_platform.models.common import DateTimeRange, ResultOrdering
+from energytt_platform.models.common import ResultOrdering
 from energytt_platform.models.meteringpoints import MeteringPoint, MeteringPointType
-# from energytt_platform.models.measurements import MeasurementType
 
 
 @dataclass
