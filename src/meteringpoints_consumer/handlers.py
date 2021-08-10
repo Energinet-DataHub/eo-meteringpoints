@@ -1,6 +1,5 @@
 from energytt_platform.bus import MessageDispatcher, messages as m
 from energytt_platform.models.meteringpoints import MeteringPoint
-from energytt_platform.tools import map_properties, combine_properties
 
 from meteringpoints_shared.db import db
 from meteringpoints_shared.queries import (
@@ -12,7 +11,10 @@ from meteringpoints_shared.queries import (
 
 
 @db.atomic
-def on_meteringpoint_added(msg: m.MeteringPointAdded, session: db.Session):
+def on_meteringpoint_added(
+        msg: m.MeteringPointAdded,
+        session: db.Session,
+):
     """
     TODO
     """
@@ -27,7 +29,10 @@ def on_meteringpoint_added(msg: m.MeteringPointAdded, session: db.Session):
 
 
 @db.atomic
-def on_meteringpoint_updated(msg: m.MeteringPointUpdated, session: db.Session):
+def on_meteringpoint_updated(
+        msg: m.MeteringPointUpdated,
+        session: db.Session,
+):
     """
     TODO
     """
@@ -48,7 +53,10 @@ def on_meteringpoint_updated(msg: m.MeteringPointUpdated, session: db.Session):
 
 
 @db.atomic
-def on_meteringpoint_removed(msg: m.MeteringPointRemoved, session: db.Session):
+def on_meteringpoint_removed(
+        msg: m.MeteringPointRemoved,
+        session: db.Session,
+):
     """
     Delete all Measurements from this MeteringPoint.
     """
@@ -61,39 +69,14 @@ def on_meteringpoint_removed(msg: m.MeteringPointRemoved, session: db.Session):
         .delete()
 
 
-# @db.atomic
-# def on_meteringpoint_meta_data_update(msg: m.MeteringPointMetaDataUpdate, session: db.Session):
-#     """
-#     TODO
-#     """
-#     meteringpoint = MeteringPointQuery(session) \
-#         .has_gsrn(msg.gsrn) \
-#         .one_or_none()
-#
-#     if not meteringpoint:
-#         meteringpoint = MeteringPoint()
-#
-#     if msg.technology:
-#         pass
-#
-#     if msg.address:
-#         address = AddressQuery(session) \
-#             .has_gsrn(msg.gsrn) \
-#             .one_or_none()
-#
-#         if address:
-#             # Update existing address
-#             pass
-#         else:
-#             # Insert new address
-#             pass
-
-
 # -- Delegates ---------------------------------------------------------------
 
 
 @db.atomic
-def on_meteringpoint_delegate_granted(msg: m.MeteringPointDelegateGranted, session: db.Session):
+def on_meteringpoint_delegate_granted(
+        msg: m.MeteringPointDelegateGranted,
+        session: db.Session,
+):
     """
     TODO
     """
@@ -107,7 +90,10 @@ def on_meteringpoint_delegate_granted(msg: m.MeteringPointDelegateGranted, sessi
 
 
 @db.atomic
-def on_meteringpoint_delegate_revoked(msg: m.MeteringPointDelegateRevoked, session: db.Session):
+def on_meteringpoint_delegate_revoked(
+        msg: m.MeteringPointDelegateRevoked,
+        session: db.Session,
+):
     """
     TODO
     """
@@ -121,7 +107,10 @@ def on_meteringpoint_delegate_revoked(msg: m.MeteringPointDelegateRevoked, sessi
 
 
 @db.atomic
-def on_technology_update(msg: m.TechnologyUpdate, session: db.Session):
+def on_technology_update(
+        msg: m.TechnologyUpdate,
+        session: db.Session,
+):
     """
     TODO
     """
@@ -139,7 +128,10 @@ def on_technology_update(msg: m.TechnologyUpdate, session: db.Session):
 
 
 @db.atomic
-def on_technology_removed(msg: m.TechnologyRemoved, session: db.Session):
+def on_technology_removed(
+        msg: m.TechnologyRemoved,,
+        session: db.Session,
+):
     """
     TODO
     """

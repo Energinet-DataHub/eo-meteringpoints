@@ -34,3 +34,9 @@ MeteringPointOrdering = ResultOrdering[MeteringPointOrderingKeys]
 class MeteringPointDelegate:
     gsrn: str
     subject: str
+
+
+class DbMeteringPoint(
+    MeteringPoint,
+):
+

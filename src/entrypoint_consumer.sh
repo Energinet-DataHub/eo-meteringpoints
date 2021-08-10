@@ -1,2 +1,2 @@
 #!/bin/bash
-python -m measurements_consumer
+python -m meteringpoints_consumer
