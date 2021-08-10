@@ -1,15 +1,15 @@
 from typing import List, Optional
 from dataclasses import dataclass, field
 
-from energytt_platform.api import Endpoint
-from energytt_platform.models.meteringpoints import MeteringPoint
+from energytt_platform.api import Endpoint, Context
+from energytt_platform.models.meteringpoints import MeteringPoint, MeteringPointType
 
-from measurements_shared.db import db
-from measurements_shared.queries import MeasurementQuery
-from measurements_shared.models import MeasurementFilters, MeasurementOrdering
+from meteringpoints_shared.db import db
+from meteringpoints_shared.queries import MeteringPointQuery
+from meteringpoints_shared.models import MeteringPointFilters, MeteringPointOrdering
 
 
-class GetMeteringPoint(Endpoint):
+class GetMeteringPointDetails(Endpoint):
     """
     Returns details about a single MeteringPoint.
     """
@@ -20,29 +20,27 @@ class GetMeteringPoint(Endpoint):
 
     @dataclass
     class Response:
-        total: int
+        success: bool
         meteringpoint: Optional[MeteringPoint]
 
-    @db.atomic
-    def handle_request(self, request: Request, session: db.Session) -> Response:
+    @db.session
+    def handle_request(
+            self,
+            request: Request,
+            context: Context,
+            session: db.Session,
+    ) -> Response:
         """
         Handle HTTP request.
         """
-        query = MeasurementQuery(session)
-
-        if request.filters:
-            query = query.apply_filters(request.filters)
-
-        measurements = query \
-            .offset(request.offset) \
-            .limit(request.limit)
-
-        if request.ordering:
-            measurements = measurements.apply_ordering(request.ordering)
+        meteringpoint = MeteringPointQuery(session) \
+            .is_accessible_by(context.token.subject) \
+            .has_gsrn(request.gsrn) \
+            .one_or_none()
 
         return self.Response(
-            total=query.count(),
-            measurements=measurements.all(),
+            success=meteringpoint is not None,
+            meteringpoint=meteringpoint,
         )
 
 
@@ -51,36 +49,48 @@ class GetMeteringPointList(Endpoint):
     Looks up many Measurements, optionally filtered and ordered.
     """
 
+    # @dataclass
+    # class MinimalMeteringPoint:
+    #     gsrn: str
+    #     sector: Optional[str]
+    #     type: Optional[MeteringPointType]
+
     @dataclass
     class Request:
         offset: int
         limit: int
-        filters: Optional[MeasurementFilters] = field(default=None)
-        ordering: Optional[MeasurementOrdering] = field(default=None)
+        filters: Optional[MeteringPointFilters] = field(default=None)
+        ordering: Optional[MeteringPointOrdering] = field(default=None)
 
     @dataclass
     class Response:
         total: int
-        measurements: List[Measurement]
+        measurements: List[MeteringPoint]
 
     @db.atomic
-    def handle_request(self, request: Request, session: db.Session) -> Response:
+    def handle_request(
+            self,
+            request: Request,
+            context: Context,
+            session: db.Session,
+    ) -> Response:
         """
         Handle HTTP request.
         """
-        query = MeasurementQuery(session)
+        query = MeteringPointQuery(session) \
+            .is_accessible_by(context.token.subject)
 
         if request.filters:
             query = query.apply_filters(request.filters)
 
-        measurements = query \
+        meteringpoints = query \
             .offset(request.offset) \
             .limit(request.limit)
 
         if request.ordering:
-            measurements = measurements.apply_ordering(request.ordering)
+            meteringpoints = meteringpoints.apply_ordering(request.ordering)
 
         return self.Response(
             total=query.count(),
-            measurements=measurements.all(),
+            meteringpoints=meteringpoints.all(),
         )

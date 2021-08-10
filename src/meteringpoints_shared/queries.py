@@ -1,74 +1,33 @@
-from typing import List
-from datetime import datetime
 from sqlalchemy import orm
 
 from energytt_platform.sql import SqlQuery
 from energytt_platform.models.common import Address
 from energytt_platform.models.technologies import Technology
 from energytt_platform.models.meteringpoints import \
-    MeteringPoint, MeteringPointType
-
-from .models import MeasurementFilters, MeasurementOrdering
-
-
-class AddressQuery(SqlQuery):
-    """
-    Query MeteringPoints.
-    """
-
-    def __init__(self, session: orm.Session, q: orm.Query = None):
-        """
-        :param session:
-        :param q:
-        """
-        if q is None:
-            q = session.query(Address)
-        super(AddressQuery, self).__init__(session, q)
-
-    def has_technology_code(self, technology_code: str) -> 'AddressQuery':
-        return self.filter(Technology.technology_code == technology_code)
-
-    def has_gsrn(self, fuel_code: str) -> 'AddressQuery':
-        return self.filter(Technology.fuel_code == fuel_code)
-
-
-class TechnologyQuery(SqlQuery):
-    """
-    Query MeteringPoints.
-    """
-
-    def __init__(self, session: orm.Session, q: orm.Query = None):
-        """
-        :param session:
-        :param q:
-        """
-        if q is None:
-            q = session.query(Technology)
-        super(TechnologyQuery, self).__init__(session, q)
-
-    def has_technology_code(self, technology_code: str) -> 'TechnologyQuery':
-        return self.filter(Technology.technology_code == technology_code)
-
-    def has_fuel_code(self, fuel_code: str) -> 'TechnologyQuery':
-        return self.filter(Technology.fuel_code == fuel_code)
+    MeteringPoint, MeteringPointDelegate
 
 
 class MeteringPointQuery(SqlQuery):
     """
     Query MeteringPoints.
     """
+    # def __init__(self, session: orm.Session, q: orm.Query = None):
+    #     """
+    #     :param session:
+    #     :param q:
+    #     """
+    #     if q is None:
+    #         q = session.query(MeteringPoint)
+    #     super(MeteringPointQuery, self).__init__(session, q)
 
-    def __init__(self, session: orm.Session, q: orm.Query = None):
-        """
-        :param session:
-        :param q:
-        """
-        if q is None:
-            q = session.query(MeteringPoint)
-        super(MeteringPointQuery, self).__init__(session, q)
+    def _get_base_query(self) -> orm.Query:
+        return self.session.query(MeteringPoint)
 
     def has_gsrn(self, gsrn: str) -> 'MeteringPointQuery':
-        return self.filter_by(gsrn=gsrn)
+        return self.filter(MeteringPoint.gsrn == gsrn)
+
+    def is_accessible_by(self, subject: str) -> 'MeteringPointQuery':
+        return self
 
     # def apply_filters(self, filters: MeasurementFilters) -> 'MeasurementQuery':
     #     """
@@ -110,3 +69,72 @@ class MeteringPointQuery(SqlQuery):
     #
     # def begins_within(self, begin_range: DateTimeRange) -> 'MeasurementQuery':
     #     return self
+
+
+class MeteringPointDelegateQuery(SqlQuery):
+    """
+    Query MeteringPoints.
+    """
+    # def __init__(self, session: orm.Session, q: orm.Query = None):
+    #     """
+    #     :param session:
+    #     :param q:
+    #     """
+    #     if q is None:
+    #         q = session.query(MeteringPointDelegate)
+    #     super(MeteringPointDelegateQuery, self).__init__(session, q)
+
+    def _get_base_query(self) -> orm.Query:
+        return self.session.query(MeteringPointDelegate)
+
+    def has_gsrn(self, gsrn: str) -> 'MeteringPointDelegateQuery':
+        return self.filter(MeteringPointDelegate.gsrn == gsrn)
+
+    def has_subject(self, subject: str) -> 'MeteringPointDelegateQuery':
+        return self.filter(MeteringPointDelegate.subject == subject)
+
+
+class AddressQuery(SqlQuery):
+    """
+    Query MeteringPoints.
+    """
+    # def __init__(self, session: orm.Session, q: orm.Query = None):
+    #     """
+    #     :param session:
+    #     :param q:
+    #     """
+    #     if q is None:
+    #         q = session.query(Address)
+    #     super(AddressQuery, self).__init__(session, q)
+
+    def _get_base_query(self) -> orm.Query:
+        return self.session.query(Address)
+
+    def has_technology_code(self, technology_code: str) -> 'AddressQuery':
+        return self.filter(Technology.technology_code == technology_code)
+
+    def has_gsrn(self, fuel_code: str) -> 'AddressQuery':
+        return self.filter(Technology.fuel_code == fuel_code)
+
+
+class TechnologyQuery(SqlQuery):
+    """
+    Query MeteringPoints.
+    """
+    # def __init__(self, session: orm.Session, q: orm.Query = None):
+    #     """
+    #     :param session:
+    #     :param q:
+    #     """
+    #     if q is None:
+    #         q = session.query(Technology)
+    #     super(TechnologyQuery, self).__init__(session, q)
+
+    def _get_base_query(self) -> orm.Query:
+        return self.session.query(Technology)
+
+    def has_technology_code(self, technology_code: str) -> 'TechnologyQuery':
+        return self.filter(Technology.technology_code == technology_code)
+
+    def has_fuel_code(self, fuel_code: str) -> 'TechnologyQuery':
+        return self.filter(Technology.fuel_code == fuel_code)

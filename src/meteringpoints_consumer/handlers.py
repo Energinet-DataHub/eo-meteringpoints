@@ -1,9 +1,14 @@
 from energytt_platform.bus import MessageDispatcher, messages as m
 from energytt_platform.models.meteringpoints import MeteringPoint
+from energytt_platform.tools import map_properties, combine_properties
 
 from meteringpoints_shared.db import db
-from meteringpoints_shared.queries import \
-    MeteringPointQuery, TechnologyQuery, AddressQuery
+from meteringpoints_shared.queries import (
+    MeteringPointQuery,
+    MeteringPointDelegateQuery,
+    AddressQuery,
+    TechnologyQuery,
+)
 
 
 @db.atomic
@@ -16,17 +21,8 @@ def on_meteringpoint_added(msg: m.MeteringPointAdded, session: db.Session):
         .one_or_none()
 
     if meteringpoint:
-        # Update existing MeteringPoint
-        if msg.meteringpoint.sector:
-            meteringpoint.sector = msg.meteringpoint.sector
-        if msg.meteringpoint.type:
-            meteringpoint.type = msg.meteringpoint.type
-        if msg.meteringpoint.technology_code:
-            meteringpoint.technology_code = msg.meteringpoint.technology_code
-        if msg.meteringpoint.fuel_code:
-            meteringpoint.fuel_code = msg.meteringpoint.fuel_code
+        meteringpoint.update(msg.meteringpoint)
     else:
-        # Insert new MeteringPoint
         session.add(msg.meteringpoint)
 
 
@@ -36,22 +32,19 @@ def on_meteringpoint_updated(msg: m.MeteringPointUpdated, session: db.Session):
     TODO
     """
     meteringpoint = MeteringPointQuery(session) \
-        .has_gsrn(msg.meteringpoint.gsrn) \
+        .has_gsrn(msg.gsrn) \
         .one_or_none()
 
-    if meteringpoint:
-        # Update existing MeteringPoint
-        if msg.meteringpoint.sector:
-            meteringpoint.sector = msg.meteringpoint.sector
-        if msg.meteringpoint.type:
-            meteringpoint.type = msg.meteringpoint.type
-        if msg.meteringpoint.technology_code:
-            meteringpoint.technology_code = msg.meteringpoint.technology_code
-        if msg.meteringpoint.fuel_code:
-            meteringpoint.fuel_code = msg.meteringpoint.fuel_code
-    else:
-        # Insert new MeteringPoint
-        session.add(msg.meteringpoint)
+    if not meteringpoint:
+        meteringpoint = MeteringPoint(gsrn=msg.gsrn)
+        session.add(meteringpoint)
+
+    if msg.basics:
+        meteringpoint.update(msg.basics)
+    if msg.technology:
+        meteringpoint.update(msg.technology)
+    if msg.address:
+        meteringpoint.update(msg.address)
 
 
 @db.atomic
@@ -63,33 +56,68 @@ def on_meteringpoint_removed(msg: m.MeteringPointRemoved, session: db.Session):
         .has_gsrn(msg.gsrn) \
         .delete()
 
+    MeteringPointDelegateQuery(session) \
+        .has_gsrn(msg.gsrn) \
+        .delete()
+
+
+# @db.atomic
+# def on_meteringpoint_meta_data_update(msg: m.MeteringPointMetaDataUpdate, session: db.Session):
+#     """
+#     TODO
+#     """
+#     meteringpoint = MeteringPointQuery(session) \
+#         .has_gsrn(msg.gsrn) \
+#         .one_or_none()
+#
+#     if not meteringpoint:
+#         meteringpoint = MeteringPoint()
+#
+#     if msg.technology:
+#         pass
+#
+#     if msg.address:
+#         address = AddressQuery(session) \
+#             .has_gsrn(msg.gsrn) \
+#             .one_or_none()
+#
+#         if address:
+#             # Update existing address
+#             pass
+#         else:
+#             # Insert new address
+#             pass
+
+
+# -- Delegates ---------------------------------------------------------------
+
 
 @db.atomic
-def on_meteringpoint_meta_data_update(msg: m.MeteringPointMetaDataUpdate, session: db.Session):
+def on_meteringpoint_delegate_granted(msg: m.MeteringPointDelegateGranted, session: db.Session):
     """
     TODO
     """
-    meteringpoint = MeteringPointQuery(session) \
-        .has_gsrn(msg.gsrn) \
-        .one_or_none()
+    exists = MeteringPointDelegateQuery(session) \
+        .has_gsrn(msg.delegate.gsrn) \
+        .has_subject(msg.delegate.subject) \
+        .exists()
 
-    if not meteringpoint:
-        meteringpoint = MeteringPoint()
+    if not exists:
+        session.add(msg.delegate)
 
-    if msg.technology:
-        pass
 
-    if msg.address:
-        address = AddressQuery(session) \
-            .has_gsrn(msg.gsrn) \
-            .one_or_none()
+@db.atomic
+def on_meteringpoint_delegate_revoked(msg: m.MeteringPointDelegateRevoked, session: db.Session):
+    """
+    TODO
+    """
+    MeteringPointDelegateQuery(session) \
+        .has_gsrn(msg.delegate.gsrn) \
+        .has_subject(msg.delegate.subject) \
+        .delete()
 
-        if address:
-            # Update existing address
-            pass
-        else:
-            # Insert new address
-            pass
+
+# -- Technologies ------------------------------------------------------------
 
 
 @db.atomic
@@ -98,22 +126,37 @@ def on_technology_update(msg: m.TechnologyUpdate, session: db.Session):
     TODO
     """
     technology = TechnologyQuery(session) \
-        .has_technology_code(msg.technology.technology_code) \
+        .has_technology_code(msg.technology.tech_code) \
         .has_fuel_code(msg.technology.fuel_code) \
         .one_or_none()
 
     if technology:
-        # Update label for existing Technology
-        technology.label = msg.technology.label
+        # Update type for existing Technology
+        technology.type = msg.technology.type
     else:
         # Insert new Technology
         session.add(msg.technology)
 
 
+@db.atomic
+def on_technology_removed(msg: m.TechnologyRemoved, session: db.Session):
+    """
+    TODO
+    """
+    TechnologyQuery(session) \
+        .has_technology_code(msg.tech_code) \
+        .has_fuel_code(msg.fuel_code) \
+        .delete()
+
+
+# -- Dispatcher --------------------------------------------------------------
+
+
 dispatcher = MessageDispatcher({
-    m.MeteringPointAdded: on_meteringpoint_added,
-    m.MeteringPointUpdated: on_meteringpoint_added,
+    m.MeteringPointUpdated: on_meteringpoint_updated,
     m.MeteringPointRemoved: on_meteringpoint_removed,
-    m.MeteringPointMetaDataUpdate: on_meteringpoint_meta_data_update,
+    m.MeteringPointDelegateGranted: on_meteringpoint_delegate_granted,
+    m.MeteringPointDelegateRevoked: on_meteringpoint_delegate_revoked,
     m.TechnologyUpdate: on_technology_update,
+    m.TechnologyRemoved: on_technology_removed,
 })

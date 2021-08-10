@@ -8,30 +8,29 @@ from energytt_platform.models.meteringpoints import MeteringPoint, MeteringPoint
 # from energytt_platform.models.measurements import MeasurementType
 
 
-# @dataclass
-# class MeasurementFilters(Serializable):
-#     """
-#     Filters for querying Measurements.
-#     """
-#     gsrn: Optional[List[str]] = field(default=None)
-#     sector: Optional[List[str]] = field(default=None)
-#     type: Optional[MeasurementType] = field(default=None)
-#     begin: Optional[DateTimeRange] = field(default=None)
-#
-#
-# class MeasurementOrderingKeys(Enum):
-#     """
-#     Keys to order Measurements by when querying.
-#     """
-#     gsrn = 'gsrn'
-#     type = 'type'
-#     begin = 'begin'
-#     amount = 'amount'
-#
-#
-# MeasurementOrdering = ResultOrdering[MeasurementOrderingKeys]
+@dataclass
+class MeteringPointFilters(Serializable):
+    """
+    Filters for querying MeteringPoints.
+    """
+    gsrn: Optional[List[str]] = field(default=None)
+    type: Optional[MeteringPointType] = field(default=None)
+    sector: Optional[List[str]] = field(default=None)
+
+
+class MeteringPointOrderingKeys(Enum):
+    """
+    Keys to order MeteringPoints by when querying.
+    """
+    gsrn = 'gsrn'
+    type = 'type'
+    sector = 'sector'
+
+
+MeteringPointOrdering = ResultOrdering[MeteringPointOrderingKeys]
 
 
 @dataclass
-class DbMeteringPoint(MeteringPoint):
-    subject: Optional[str] = field(default=None)
+class MeteringPointDelegate:
+    gsrn: str
+    subject: str
