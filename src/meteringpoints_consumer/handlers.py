@@ -10,22 +10,22 @@ from meteringpoints_shared.queries import (
 )
 
 
-@db.atomic
-def on_meteringpoint_added(
-        msg: m.MeteringPointAdded,
-        session: db.Session,
-):
-    """
-    TODO
-    """
-    meteringpoint = MeteringPointQuery(session) \
-        .has_gsrn(msg.meteringpoint.gsrn) \
-        .one_or_none()
-
-    if meteringpoint:
-        meteringpoint.update(msg.meteringpoint)
-    else:
-        session.add(msg.meteringpoint)
+# @db.atomic
+# def on_meteringpoint_added(
+#         msg: m.MeteringPointAdded,
+#         session: db.Session,
+# ):
+#     """
+#     TODO
+#     """
+#     meteringpoint = MeteringPointQuery(session) \
+#         .has_gsrn(msg.meteringpoint.gsrn) \
+#         .one_or_none()
+#
+#     if meteringpoint:
+#         meteringpoint.update(msg.meteringpoint)
+#     else:
+#         session.add(msg.meteringpoint)
 
 
 @db.atomic
@@ -40,7 +40,7 @@ def on_meteringpoint_updated(
         .has_gsrn(msg.gsrn) \
         .one_or_none()
 
-    if not meteringpoint:
+    if meteringpoint is None:
         meteringpoint = MeteringPoint(gsrn=msg.gsrn)
         session.add(meteringpoint)
 
@@ -115,28 +115,28 @@ def on_technology_update(
     TODO
     """
     technology = TechnologyQuery(session) \
-        .has_technology_code(msg.technology.tech_code) \
+        .has_tech_code(msg.technology.tech_code) \
         .has_fuel_code(msg.technology.fuel_code) \
         .one_or_none()
 
-    if technology:
-        # Update type for existing Technology
-        technology.type = msg.technology.type
-    else:
+    if technology is None:
         # Insert new Technology
         session.add(msg.technology)
+    else:
+        # Update existing Technology
+        technology.update(msg.technology)
 
 
 @db.atomic
 def on_technology_removed(
-        msg: m.TechnologyRemoved,,
+        msg: m.TechnologyRemoved,
         session: db.Session,
 ):
     """
     TODO
     """
     TechnologyQuery(session) \
-        .has_technology_code(msg.tech_code) \
+        .has_tech_code(msg.tech_code) \
         .has_fuel_code(msg.fuel_code) \
         .delete()
 
