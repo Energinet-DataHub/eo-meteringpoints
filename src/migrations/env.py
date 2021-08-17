@@ -5,7 +5,8 @@ from alembic import context
 
 sys.path.append(os.path.join(os.path.abspath(os.path.split(os.path.abspath(__file__))[0]), '..'))
 
-from measurements_shared.db import db
+from meteringpoints_shared.db import db
+from meteringpoints_shared.models import *
 
 
 # this is the Alembic Config object, which provides

@@ -2,11 +2,12 @@ from typing import List, Optional
 from dataclasses import dataclass, field
 
 from energytt_platform.api import Endpoint, Context
-from energytt_platform.models.meteringpoints import MeteringPoint, MeteringPointType
+from energytt_platform.models.meteringpoints import MeteringPoint
 
 from meteringpoints_shared.db import db
 from meteringpoints_shared.queries import MeteringPointQuery
-from meteringpoints_shared.models import MeteringPointFilters, MeteringPointOrdering
+
+from .models import MeteringPointFilters, MeteringPointOrdering
 
 
 class GetMeteringPointDetails(Endpoint):
@@ -23,7 +24,7 @@ class GetMeteringPointDetails(Endpoint):
         success: bool
         meteringpoint: Optional[MeteringPoint]
 
-    @db.session
+    @db.session()
     def handle_request(
             self,
             request: Request,
@@ -33,8 +34,11 @@ class GetMeteringPointDetails(Endpoint):
         """
         Handle HTTP request.
         """
+        # meteringpoint = MeteringPointQuery(session) \
+        #     .is_accessible_by(context.token.subject) \
+        #     .has_gsrn(request.gsrn) \
+        #     .one_or_none()
         meteringpoint = MeteringPointQuery(session) \
-            .is_accessible_by(context.token.subject) \
             .has_gsrn(request.gsrn) \
             .one_or_none()
 
@@ -59,9 +63,9 @@ class GetMeteringPointList(Endpoint):
     @dataclass
     class Response:
         total: int
-        measurements: List[MeteringPoint]
+        meteringpoints: List[MeteringPoint]
 
-    @db.atomic
+    @db.atomic()
     def handle_request(
             self,
             request: Request,
@@ -71,8 +75,9 @@ class GetMeteringPointList(Endpoint):
         """
         Handle HTTP request.
         """
-        query = MeteringPointQuery(session) \
-            .is_accessible_by(context.token.subject)
+        # query = MeteringPointQuery(session) \
+        #     .is_accessible_by(context.token.subject)
+        query = MeteringPointQuery(session)
 
         if request.filters:
             query = query.apply_filters(request.filters)
@@ -83,6 +88,8 @@ class GetMeteringPointList(Endpoint):
 
         if request.ordering:
             meteringpoints = meteringpoints.apply_ordering(request.ordering)
+
+        x = meteringpoints.all()
 
         return self.Response(
             total=query.count(),
