@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, TypeVar
 
 from energytt_platform.models.common import Address
 from energytt_platform.models.tech import Technology, TechnologyCodes
@@ -17,6 +17,19 @@ from meteringpoints_shared.queries import (
     DelegateQuery,
     TechnologyQuery,
 )
+
+
+TAddress = Union[
+    Address,
+    DbMeteringPointAddress,
+]
+
+TTechnology = Union[
+    Technology,
+    TechnologyCodes,
+    DbTechnology,
+    DbMeteringPointTechnology,
+]
 
 
 class DatabaseController(object):
@@ -74,7 +87,7 @@ class DatabaseController(object):
             self,
             session: db.Session,
             gsrn: str,
-            address: Union[Address, DbMeteringPointAddress],
+            address: TAddress,
     ):
         """
         Creates or updates address for a DbMeteringPoint.
@@ -116,7 +129,7 @@ class DatabaseController(object):
             self,
             session: db.Session,
             gsrn: str,
-            technology: Union[Technology, TechnologyCodes, DbTechnology],
+            technology: TTechnology,
     ):
         """
         Creates or updates technology codes for a DbMeteringPoint.
