@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Union
 
 from energytt_platform.models.common import Address
 from energytt_platform.models.tech import Technology, TechnologyCodes
@@ -30,7 +30,7 @@ class DatabaseController(object):
             self,
             session: db.Session,
             gsrn: str,
-    ) -> Optional[DbMeteringPoint]:
+    ) -> DbMeteringPoint:
         """
         Gets DbMeteringPoint from database, or creates a new if not found.
         """
@@ -151,7 +151,7 @@ class DatabaseController(object):
             session: db.Session,
             tech_code: str,
             fuel_code: str,
-    ) -> Optional[DbTechnology]:
+    ) -> DbTechnology:
         """
         TODO
         """
