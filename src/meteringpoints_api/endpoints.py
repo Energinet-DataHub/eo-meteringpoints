@@ -19,7 +19,7 @@ class GetGsrnList(Endpoint):
     class Response:
         gsrn: List[str]
 
-    @db.atomic()
+    @db.session()
     def handle_request(
             self,
             context: Context,
@@ -56,7 +56,7 @@ class GetMeteringPointList(Endpoint):
         total: int
         meteringpoints: List[MeteringPoint]
 
-    @db.atomic()
+    @db.session()
     def handle_request(
             self,
             request: Request,
@@ -73,16 +73,16 @@ class GetMeteringPointList(Endpoint):
         if request.filters:
             query = query.apply_filters(request.filters)
 
-        meteringpoints = query \
+        results = query \
             .offset(request.offset) \
             .limit(request.limit)
 
         if request.ordering:
-            meteringpoints = meteringpoints.apply_ordering(request.ordering)
+            results = results.apply_ordering(request.ordering)
 
         return self.Response(
             total=query.count(),
-            meteringpoints=meteringpoints.all(),
+            meteringpoints=results.all(),
         )
 
 
