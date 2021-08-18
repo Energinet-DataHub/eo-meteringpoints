@@ -6,7 +6,37 @@ from energytt_platform.models.meteringpoints import MeteringPoint
 
 from meteringpoints_shared.db import db
 from meteringpoints_shared.queries import MeteringPointQuery
-from meteringpoints_shared.models import MeteringPointFilters, MeteringPointOrdering
+from meteringpoints_shared.models import \
+    MeteringPointFilters, MeteringPointOrdering
+
+
+class GetGsrnList(Endpoint):
+    """
+    Returns a list of available GSRN numbers.
+    """
+
+    @dataclass
+    class Response:
+        gsrn: List[str]
+
+    @db.atomic()
+    def handle_request(
+            self,
+            context: Context,
+            session: db.Session,
+    ) -> Response:
+        """
+        Handle HTTP request.
+        """
+        # query = MeteringPointQuery(session) \
+        #     .is_accessible_by(context.token.subject) \
+        #     .get_distinct_gsrn()
+        gsrn = MeteringPointQuery(session) \
+            .get_distinct_gsrn()
+
+        return self.Response(
+            gsrn=gsrn,
+        )
 
 
 class GetMeteringPointList(Endpoint):

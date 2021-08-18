@@ -1,6 +1,10 @@
 from energytt_platform.api import Application
 
-from .endpoints import GetMeteringPointDetails, GetMeteringPointList
+from .endpoints import (
+    GetGsrnList,
+    GetMeteringPointDetails,
+    GetMeteringPointList,
+)
 
 
 def create_app() -> Application:
@@ -11,6 +15,7 @@ def create_app() -> Application:
         name='MeteringPoints API',
         health_check_path='/health',
         endpoints=(
+            ('GET',  '/gsrn', GetGsrnList()),
             ('POST', '/list', GetMeteringPointList()),
             ('GET', '/details', GetMeteringPointDetails()),
         )
