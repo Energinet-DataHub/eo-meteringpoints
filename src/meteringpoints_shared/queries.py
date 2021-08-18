@@ -3,6 +3,8 @@ from sqlalchemy import orm
 from energytt_platform.sql import SqlQuery
 
 from .models import (
+    MeteringPointFilters,
+    MeteringPointOrdering,
     DbMeteringPoint,
     DbMeteringPointTechnology,
     DbMeteringPointAddress,
@@ -19,6 +21,12 @@ class MeteringPointQuery(SqlQuery):
     """
     def _get_base_query(self) -> orm.Query:
         return self.session.query(DbMeteringPoint)
+
+    def apply_filters(self, filters: MeteringPointFilters) -> 'MeteringPointQuery':
+        return self
+
+    def apply_ordering(self, ordering: MeteringPointOrdering) -> 'MeteringPointQuery':
+        return self
 
     def has_gsrn(self, gsrn: str) -> 'MeteringPointQuery':
         return self.filter(DbMeteringPoint.gsrn == gsrn)

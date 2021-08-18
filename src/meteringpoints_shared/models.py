@@ -1,10 +1,41 @@
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship
 
+from enum import Enum
+from typing import List, Optional
+from dataclasses import dataclass, field
+
+from energytt_platform.serialize import Serializable
 from energytt_platform.models.tech import TechnologyType
+from energytt_platform.models.common import ResultOrdering
 from energytt_platform.models.meteringpoints import MeteringPointType
 
 from .db import db
+
+
+# -- Common models -----------------------------------------------------------
+
+
+@dataclass
+class MeteringPointFilters(Serializable):
+    """
+    Filters for querying MeteringPoints.
+    """
+    gsrn: Optional[List[str]] = field(default=None)
+    type: Optional[MeteringPointType] = field(default=None)
+    sector: Optional[List[str]] = field(default=None)
+
+
+class MeteringPointOrderingKeys(Enum):
+    """
+    Keys to order MeteringPoints by when querying.
+    """
+    gsrn = 'gsrn'
+    type = 'type'
+    sector = 'sector'
+
+
+MeteringPointOrdering = ResultOrdering[MeteringPointOrderingKeys]
 
 
 # -- MeteringPoints ----------------------------------------------------------
@@ -52,7 +83,7 @@ class DbMeteringPoint(db.ModelBase):
 
 class DbMeteringPointAddress(db.ModelBase):
     """
-    SQL representation of a (physical) address of a MeteringPoint.
+    SQL representation of a (physical) address for a MeteringPoint.
     """
     __tablename__ = 'meteringpoint_address'
     __table_args__ = (
@@ -75,7 +106,7 @@ class DbMeteringPointAddress(db.ModelBase):
 
 class DbMeteringPointTechnology(db.ModelBase):
     """
-    SQL representation of a technology of a MeteringPoint.
+    SQL representation of technology codes for a MeteringPoint.
     """
     __tablename__ = 'meteringpoint_technology'
     __table_args__ = (
@@ -103,4 +134,6 @@ class DbTechnology(db.ModelBase):
 
     fuel_code = sa.Column(sa.String())
     tech_code = sa.Column(sa.String())
+
+    # TODO Use String instead of Enum (forward compatibility)
     type = sa.Column(sa.Enum(TechnologyType))

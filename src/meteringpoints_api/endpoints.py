@@ -6,8 +6,7 @@ from energytt_platform.models.meteringpoints import MeteringPoint
 
 from meteringpoints_shared.db import db
 from meteringpoints_shared.queries import MeteringPointQuery
-
-from .models import MeteringPointFilters, MeteringPointOrdering
+from meteringpoints_shared.models import MeteringPointFilters, MeteringPointOrdering
 
 
 class GetMeteringPointDetails(Endpoint):
@@ -88,8 +87,6 @@ class GetMeteringPointList(Endpoint):
 
         if request.ordering:
             meteringpoints = meteringpoints.apply_ordering(request.ordering)
-
-        x = meteringpoints.all()
 
         return self.Response(
             total=query.count(),
