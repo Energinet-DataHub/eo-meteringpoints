@@ -9,44 +9,6 @@ from meteringpoints_shared.queries import MeteringPointQuery
 from meteringpoints_shared.models import MeteringPointFilters, MeteringPointOrdering
 
 
-class GetMeteringPointDetails(Endpoint):
-    """
-    Returns details about a single MeteringPoint.
-    """
-
-    @dataclass
-    class Request:
-        gsrn: str
-
-    @dataclass
-    class Response:
-        success: bool
-        meteringpoint: Optional[MeteringPoint]
-
-    @db.session()
-    def handle_request(
-            self,
-            request: Request,
-            context: Context,
-            session: db.Session,
-    ) -> Response:
-        """
-        Handle HTTP request.
-        """
-        # meteringpoint = MeteringPointQuery(session) \
-        #     .is_accessible_by(context.token.subject) \
-        #     .has_gsrn(request.gsrn) \
-        #     .one_or_none()
-        meteringpoint = MeteringPointQuery(session) \
-            .has_gsrn(request.gsrn) \
-            .one_or_none()
-
-        return self.Response(
-            success=meteringpoint is not None,
-            meteringpoint=meteringpoint,
-        )
-
-
 class GetMeteringPointList(Endpoint):
     """
     Looks up many Measurements, optionally filtered and ordered.
@@ -91,4 +53,42 @@ class GetMeteringPointList(Endpoint):
         return self.Response(
             total=query.count(),
             meteringpoints=meteringpoints.all(),
+        )
+
+
+class GetMeteringPointDetails(Endpoint):
+    """
+    Returns details about a single MeteringPoint.
+    """
+
+    @dataclass
+    class Request:
+        gsrn: str
+
+    @dataclass
+    class Response:
+        success: bool
+        meteringpoint: Optional[MeteringPoint]
+
+    @db.session()
+    def handle_request(
+            self,
+            request: Request,
+            context: Context,
+            session: db.Session,
+    ) -> Response:
+        """
+        Handle HTTP request.
+        """
+        # meteringpoint = MeteringPointQuery(session) \
+        #     .is_accessible_by(context.token.subject) \
+        #     .has_gsrn(request.gsrn) \
+        #     .one_or_none()
+        meteringpoint = MeteringPointQuery(session) \
+            .has_gsrn(request.gsrn) \
+            .one_or_none()
+
+        return self.Response(
+            success=meteringpoint is not None,
+            meteringpoint=meteringpoint,
         )

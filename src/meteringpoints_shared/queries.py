@@ -1,6 +1,8 @@
+from typing import List
 from sqlalchemy import orm
 
 from energytt_platform.sql import SqlQuery
+from energytt_platform.models.meteringpoints import MeteringPointType
 
 from .models import (
     MeteringPointFilters,
@@ -23,15 +25,60 @@ class MeteringPointQuery(SqlQuery):
         return self.session.query(DbMeteringPoint)
 
     def apply_filters(self, filters: MeteringPointFilters) -> 'MeteringPointQuery':
-        return self
+        """
+        Applies provided filters.
+        """
+        q = self
+
+        if filters.gsrn is not None:
+            q = q.has_any_gsrn(filters.gsrn)
+        if filters.type is not None:
+            q = q.is_type(filters.type)
+        if filters.sector is not None:
+            q = q.in_any_sector(filters.sector)
+
+        return q
 
     def apply_ordering(self, ordering: MeteringPointOrdering) -> 'MeteringPointQuery':
+        """
+        Applies provided ordering.
+        """
         return self
 
     def has_gsrn(self, gsrn: str) -> 'MeteringPointQuery':
+        """
+        Filters query; only include MeteringPoint with the provided GSRN.
+        """
         return self.filter(DbMeteringPoint.gsrn == gsrn)
 
+    def has_any_gsrn(self, gsrn: List[str]) -> 'MeteringPointQuery':
+        """
+        Filters query; only include MeteringPoints with any of the provided GSRN.
+        """
+        return self.filter(DbMeteringPoint.gsrn.in_(gsrn))
+
+    def is_type(self, type: MeteringPointType) -> 'MeteringPointQuery':
+        """
+        Filters query; only include MeteringPoints with the provided type.
+        """
+        return self.filter(DbMeteringPoint.type == type)
+
+    def in_sector(self, sector: str) -> 'MeteringPointQuery':
+        """
+        Filters query; only include MeteringPoints within the provided sector.
+        """
+        return self.filter(DbMeteringPoint.sector == sector)
+
+    def in_any_sector(self, sector: List[str]) -> 'MeteringPointQuery':
+        """
+        Filters query; only include MeteringPoints within any of the provided sectors.
+        """
+        return self.filter(DbMeteringPoint.sector.in_(sector))
+
     def is_accessible_by(self, subject: str) -> 'MeteringPointQuery':
+        """
+        TODO
+        """
         return self
 
 

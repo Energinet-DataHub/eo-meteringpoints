@@ -9,8 +9,8 @@ from .controller import controller
 
 
 @db.atomic()
-def on_meteringpoint_added(
-        msg: m.MeteringPointAdded,
+def on_meteringpoint_update(
+        msg: m.MeteringPointUpdate,
         session: db.Session,
 ):
     """
@@ -48,8 +48,8 @@ def on_meteringpoint_removed(
 
 
 @db.atomic()
-def on_meteringpoint_address_updated(
-        msg: m.MeteringPointAddressUpdated,
+def on_meteringpoint_address_update(
+        msg: m.MeteringPointAddressUpdate,
         session: db.Session,
 ):
     """
@@ -72,8 +72,8 @@ def on_meteringpoint_address_updated(
 
 
 @db.atomic()
-def on_meteringpoint_technology_updated(
-        msg: m.MeteringPointTechnologyUpdated,
+def on_meteringpoint_technology_update(
+        msg: m.MeteringPointTechnologyUpdate,
         session: db.Session,
 ):
     """
@@ -131,10 +131,10 @@ def on_technology_removed(
 
 
 dispatcher = MessageDispatcher({
-    m.MeteringPointAdded: on_meteringpoint_added,
+    m.MeteringPointUpdate: on_meteringpoint_update,
     m.MeteringPointRemoved: on_meteringpoint_removed,
-    m.MeteringPointAddressUpdated: on_meteringpoint_address_updated,
-    m.MeteringPointTechnologyUpdated: on_meteringpoint_technology_updated,
+    m.MeteringPointAddressUpdate: on_meteringpoint_address_update,
+    m.MeteringPointTechnologyUpdate: on_meteringpoint_technology_update,
     # m.MeteringPointDelegateGranted: on_meteringpoint_delegate_granted,
     # m.MeteringPointDelegateRevoked: on_meteringpoint_delegate_revoked,
     m.TechnologyUpdate: on_technology_update,

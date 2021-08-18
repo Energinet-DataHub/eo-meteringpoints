@@ -1,7 +1,12 @@
+import uuid
+from datetime import datetime, timedelta
+
 from energytt_platform.bus import messages as m, topics as t
 from energytt_platform.models.common import Address
 from energytt_platform.models.tech import \
     Technology, TechnologyCodes, TechnologyType
+from energytt_platform.models.measurements import \
+    Measurement, MeasurementType
 from energytt_platform.models.meteringpoints import \
     MeteringPoint, MeteringPointType
 
@@ -49,8 +54,22 @@ broker.publish(
 
 
 broker.publish(
+    topic=t.MEASUREMENTS,
+    msg=m.MeasurementUpdate(
+        measurement=Measurement(
+            id='1',
+            gsrn='1',
+            amount=100,
+            begin=datetime.now(),
+            end=datetime.now() + timedelta(hours=1),
+        ),
+    ),
+)
+
+
+broker.publish(
     topic=t.METERINGPOINTS,
-    msg=m.MeteringPointAdded(
+    msg=m.MeteringPointUpdate(
         meteringpoint=MeteringPoint(
             gsrn='1',
             type=MeteringPointType.production,
@@ -61,7 +80,7 @@ broker.publish(
 
 broker.publish(
     topic=t.METERINGPOINTS,
-    msg=m.MeteringPointTechnologyUpdated(
+    msg=m.MeteringPointTechnologyUpdate(
         gsrn='1',
         codes=TechnologyCodes(
             tech_code='T010101',
@@ -72,7 +91,7 @@ broker.publish(
 
 broker.publish(
     topic=t.METERINGPOINTS,
-    msg=m.MeteringPointAddressUpdated(
+    msg=m.MeteringPointAddressUpdate(
         gsrn='1',
         address=Address(
             street_code='street_code',
@@ -90,12 +109,26 @@ broker.publish(
 )
 
 
+broker.publish(
+    topic=t.MEASUREMENTS,
+    msg=m.MeasurementUpdate(
+        measurement=Measurement(
+            id='2',
+            gsrn='1',
+            amount=200,
+            begin=datetime.now(),
+            end=datetime.now() + timedelta(hours=1),
+        ),
+    ),
+)
+
+
 # -- MeteringPoint 2 (REVERSE ORDER OF EVENTS) -------------------------------
 
 
 broker.publish(
     topic=t.METERINGPOINTS,
-    msg=m.MeteringPointTechnologyUpdated(
+    msg=m.MeteringPointTechnologyUpdate(
         gsrn='2',
         codes=TechnologyCodes(
             tech_code='T020202',
@@ -107,7 +140,7 @@ broker.publish(
 
 broker.publish(
     topic=t.METERINGPOINTS,
-    msg=m.MeteringPointAdded(
+    msg=m.MeteringPointUpdate(
         meteringpoint=MeteringPoint(
             gsrn='2',
             type=MeteringPointType.consumption,
@@ -115,3 +148,20 @@ broker.publish(
         ),
     ),
 )
+
+
+begin = datetime(2021, 8, 18, 0, 0, 0)
+
+for i in range(365 * 24):
+    broker.publish(
+        topic=t.MEASUREMENTS,
+        msg=m.MeasurementUpdate(
+            measurement=Measurement(
+                id=str(3 + i),
+                gsrn='2',
+                amount=i * 10,
+                begin=begin + timedelta(hours=i),
+                end=begin + timedelta(hours=i) + timedelta(hours=1),
+            ),
+        ),
+    )

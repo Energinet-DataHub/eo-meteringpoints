@@ -11,7 +11,7 @@ def create_app() -> Application:
         name='MeteringPoints API',
         health_check_path='/health',
         endpoints=(
+            ('POST', '/list', GetMeteringPointList()),
             ('GET', '/details', GetMeteringPointDetails()),
-            ('POST', '/search', GetMeteringPointList()),
         )
     )

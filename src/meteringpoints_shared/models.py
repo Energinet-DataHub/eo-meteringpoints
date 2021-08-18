@@ -38,7 +38,7 @@ class MeteringPointOrderingKeys(Enum):
 MeteringPointOrdering = ResultOrdering[MeteringPointOrderingKeys]
 
 
-# -- MeteringPoints ----------------------------------------------------------
+# -- Database models ---------------------------------------------------------
 
 
 class DbMeteringPoint(db.ModelBase):
@@ -117,9 +117,6 @@ class DbMeteringPointTechnology(db.ModelBase):
     gsrn = sa.Column(sa.String(), index=True, nullable=False)
     tech_code = sa.Column(sa.String())
     fuel_code = sa.Column(sa.String())
-
-
-# -- Technologies ------------------------------------------------------------
 
 
 class DbTechnology(db.ModelBase):
