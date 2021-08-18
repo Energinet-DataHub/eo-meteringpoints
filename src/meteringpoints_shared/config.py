@@ -9,5 +9,5 @@ EVENT_BUS_SERVERS = [
 ]
 
 # SQL
-SQL_URI = os.getenv('DATABASE_URL', 'postgresql://postgres:1234@localhost:5432/meteringpoints')
+SQL_URI = os.getenv('SQL_URI', 'postgresql://postgres:1234@localhost:5432/meteringpoints')
 SQL_POOL_SIZE = int(os.getenv('SQL_POOL_SIZE', 1))
