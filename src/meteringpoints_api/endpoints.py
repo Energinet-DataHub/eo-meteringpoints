@@ -10,35 +10,6 @@ from meteringpoints_shared.models import \
     MeteringPointFilters, MeteringPointOrdering
 
 
-class GetGsrnList(Endpoint):
-    """
-    Returns a list of available GSRN numbers.
-    """
-
-    @dataclass
-    class Response:
-        gsrn: List[str]
-
-    @db.session()
-    def handle_request(
-            self,
-            context: Context,
-            session: db.Session,
-    ) -> Response:
-        """
-        Handle HTTP request.
-        """
-        # query = MeteringPointQuery(session) \
-        #     .is_accessible_by(context.token.subject) \
-        #     .get_distinct_gsrn()
-        gsrn = MeteringPointQuery(session) \
-            .get_distinct_gsrn()
-
-        return self.Response(
-            gsrn=gsrn,
-        )
-
-
 class GetMeteringPointList(Endpoint):
     """
     Looks up many Measurements, optionally filtered and ordered.
@@ -53,6 +24,7 @@ class GetMeteringPointList(Endpoint):
 
     @dataclass
     class Response:
+        success: bool
         total: int
         meteringpoints: List[MeteringPoint]
 
@@ -81,6 +53,7 @@ class GetMeteringPointList(Endpoint):
             results = results.apply_ordering(request.ordering)
 
         return self.Response(
+            success=True,
             total=query.count(),
             meteringpoints=results.all(),
         )
