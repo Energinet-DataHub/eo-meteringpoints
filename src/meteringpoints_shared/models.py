@@ -119,6 +119,20 @@ class DbMeteringPointTechnology(db.ModelBase):
     fuel_code = sa.Column(sa.String())
 
 
+class DbMeteringPointDelegate(db.ModelBase):
+    """
+    TODO
+    """
+    __tablename__ = 'meteringpoint_delegate'
+    __table_args__ = (
+        sa.PrimaryKeyConstraint('gsrn'),
+        sa.UniqueConstraint('gsrn', 'subject'),
+    )
+
+    gsrn = sa.Column(sa.String(), index=True, nullable=False)
+    subject = sa.Column(sa.String())
+
+
 class DbTechnology(db.ModelBase):
     """
     SQL representation of a Technology.

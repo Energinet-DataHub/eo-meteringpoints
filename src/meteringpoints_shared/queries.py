@@ -1,5 +1,5 @@
 from typing import List
-from sqlalchemy import orm
+from sqlalchemy import orm, and_
 
 from energytt_platform.sql import SqlQuery
 from energytt_platform.models.meteringpoints import MeteringPointType
@@ -10,6 +10,7 @@ from .models import (
     DbMeteringPoint,
     DbMeteringPointTechnology,
     DbMeteringPointAddress,
+    DbMeteringPointDelegate,
     DbTechnology,
 )
 
@@ -79,7 +80,13 @@ class MeteringPointQuery(SqlQuery):
         """
         TODO
         """
-        return self
+        return self.__class__(
+            session=self.session,
+            q=self.q.join(DbMeteringPointDelegate, and_(
+                DbMeteringPointDelegate.gsrn == DbMeteringPoint.gsrn,
+                DbMeteringPointDelegate.subject == subject,
+            ))
+        )
 
     def get_distinct_gsrn(self) -> List[str]:
         """
@@ -116,27 +123,13 @@ class DelegateQuery(SqlQuery):
     Query MeteringPointDelegate.
     """
     def _get_base_query(self) -> orm.Query:
-        return self.session.query(DbMMeteringPointDelegate)
+        return self.session.query(DbMeteringPointDelegate)
 
     def has_gsrn(self, gsrn: str) -> 'DelegateQuery':
-        return self.filter(DbMMeteringPointDelegate.gsrn == gsrn)
+        return self.filter(DbMeteringPointDelegate.gsrn == gsrn)
 
     def has_subject(self, subject: str) -> 'DelegateQuery':
-        return self.filter(DbMMeteringPointDelegate.subject == subject)
-
-
-# class AddressQuery(SqlQuery):
-#     """
-#     Query MeteringPoints.
-#     """
-#     def _get_base_query(self) -> orm.Query:
-#         return self.session.query(Address)
-#
-#     def has_technology_code(self, technology_code: str) -> 'AddressQuery':
-#         return self.filter(Technology.technology_code == technology_code)
-#
-#     def has_gsrn(self, fuel_code: str) -> 'AddressQuery':
-#         return self.filter(Technology.fuel_code == fuel_code)
+        return self.filter(DbMeteringPointDelegate.subject == subject)
 
 
 # -- Technologies ------------------------------------------------------------

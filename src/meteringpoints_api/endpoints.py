@@ -38,19 +38,23 @@ class GetMeteringPointList(Endpoint):
         """
         Handle HTTP request.
         """
-        # query = MeteringPointQuery(session) \
-        #     .is_accessible_by(context.token.subject)
-        query = MeteringPointQuery(session)
+        query = MeteringPointQuery(session) \
+            .is_accessible_by(context.token.subject)
 
         if request.filters:
             query = query.apply_filters(request.filters)
 
-        results = query \
+        if request.ordering:
+            results = query.apply_ordering(request.ordering)
+        else:
+            results = query
+
+        results = results \
             .offset(request.offset) \
             .limit(request.limit)
 
-        if request.ordering:
-            results = results.apply_ordering(request.ordering)
+        # if request.ordering:
+        #     results = results.apply_ordering(request.ordering)
 
         return self.Response(
             success=True,
@@ -83,13 +87,13 @@ class GetMeteringPointDetails(Endpoint):
         """
         Handle HTTP request.
         """
-        # meteringpoint = MeteringPointQuery(session) \
-        #     .is_accessible_by(context.token.subject) \
-        #     .has_gsrn(request.gsrn) \
-        #     .one_or_none()
         meteringpoint = MeteringPointQuery(session) \
+            .is_accessible_by(context.token.subject) \
             .has_gsrn(request.gsrn) \
             .one_or_none()
+        # meteringpoint = MeteringPointQuery(session) \
+        #     .has_gsrn(request.gsrn) \
+        #     .one_or_none()
 
         return self.Response(
             success=meteringpoint is not None,

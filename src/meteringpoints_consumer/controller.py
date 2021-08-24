@@ -8,6 +8,7 @@ from meteringpoints_shared.models import (
     DbMeteringPoint,
     DbMeteringPointAddress,
     DbMeteringPointTechnology,
+    DbMeteringPointDelegate,
     DbTechnology,
 )
 from meteringpoints_shared.queries import (
@@ -125,6 +126,41 @@ class DatabaseController(object):
 
     # -- MeteringPoint Technologies ------------------------------------------
 
+    def grant_meteringpoint_delegate(
+            self,
+            session: db.Session,
+            gsrn: str,
+            subject: str,
+    ):
+        """
+        Creates or updates technology codes for a DbMeteringPoint.
+        """
+        exists = DelegateQuery(session) \
+            .has_gsrn(gsrn) \
+            .has_subject(subject) \
+            .exists()
+
+        if not exists:
+            session.add(DbMeteringPointDelegate(
+                gsrn=gsrn,
+                subject=subject,
+            ))
+
+    def revoke_meteringpoint_delegate(
+            self,
+            session: db.Session,
+            gsrn: str,
+            subject: str,
+    ):
+        """
+        TODO
+        """
+        MeteringPointTechnologyQuery(session) \
+            .has_gsrn(gsrn) \
+            .delete()
+
+    # -- MeteringPoint Technologies ------------------------------------------
+
     def set_meteringpoint_technology(
             self,
             session: db.Session,
@@ -132,7 +168,7 @@ class DatabaseController(object):
             technology: TTechnology,
     ):
         """
-        Creates or updates technology codes for a DbMeteringPoint.
+        TODO
         """
         meteringpoint_technology = MeteringPointTechnologyQuery(session) \
             .has_gsrn(gsrn) \
