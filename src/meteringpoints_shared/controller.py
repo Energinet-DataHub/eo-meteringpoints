@@ -1,4 +1,4 @@
-from typing import Union, TypeVar
+from typing import Union
 
 from energytt_platform.models.common import Address
 from energytt_platform.models.tech import Technology, TechnologyCodes

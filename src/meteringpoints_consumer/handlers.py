@@ -1,8 +1,7 @@
 from energytt_platform.bus import MessageDispatcher, messages as m
 
 from meteringpoints_shared.db import db
-
-from .controller import controller
+from meteringpoints_shared.controller import controller
 
 
 # -- MeteringPoints ----------------------------------------------------------
@@ -102,6 +101,11 @@ def on_meteringpoint_delegate_granted(
 ):
     """
     TODO
+
+    TODO How to handle MeteringPoints being moved between users?
+    TODO   Ie. a person moves address, so the [old] MeteringPoint is assigned
+    TODO   to someone else, but the former owner would want access to its
+    TODO   historical data?
     """
     controller.grant_meteringpoint_delegate(
         session=session,
@@ -117,6 +121,11 @@ def on_meteringpoint_delegate_revoked(
 ):
     """
     TODO
+
+    TODO How to handle MeteringPoints being moved between users?
+    TODO   Ie. a person moves address, so the [old] MeteringPoint is assigned
+    TODO   to someone else, but the former owner would want access to its
+    TODO   historical data?
     """
     controller.revoke_meteringpoint_delegate(
         session=session,

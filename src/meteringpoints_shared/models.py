@@ -57,6 +57,15 @@ class DbMeteringPoint(db.ModelBase):
 
     # -- Relationships -------------------------------------------------------
 
+    address = relationship(
+        'DbMeteringPointAddress',
+        primaryjoin='foreign(DbMeteringPoint.gsrn) == DbMeteringPointAddress.gsrn',
+        uselist=False,
+        viewonly=True,
+        lazy='joined',
+    )
+
+    # TODO Rewrite this:
     technology = relationship(
         'DbTechnology',
         primaryjoin='foreign(DbMeteringPoint.gsrn) == DbMeteringPointTechnology.gsrn',
@@ -67,14 +76,6 @@ class DbMeteringPoint(db.ModelBase):
             'foreign(DbMeteringPointTechnology.fuel_code) == DbTechnology.fuel_code'
             ')'
         ),
-        uselist=False,
-        viewonly=True,
-        lazy='joined',
-    )
-
-    address = relationship(
-        'DbMeteringPointAddress',
-        primaryjoin='foreign(DbMeteringPoint.gsrn) == DbMeteringPointAddress.gsrn',
         uselist=False,
         viewonly=True,
         lazy='joined',
