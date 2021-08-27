@@ -1,5 +1,7 @@
 from energytt_platform.api import Application, ScopedGuard
 
+from meteringpoints_shared.config import TOKEN_SECRET
+
 from .endpoints import GetMeteringPointDetails, GetMeteringPointList
 
 
@@ -9,9 +11,10 @@ def create_app() -> Application:
     """
     return Application.create(
         name='MeteringPoints API',
+        secret=TOKEN_SECRET,
         health_check_path='/health',
         endpoints=(
             ('POST', '/list', GetMeteringPointList(), [ScopedGuard('openid')]),
             ('GET',  '/details', GetMeteringPointDetails()),
-        )
+        ),
     )

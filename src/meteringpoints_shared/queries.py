@@ -85,7 +85,7 @@ class MeteringPointQuery(SqlQuery):
             q=self.q.join(DbMeteringPointDelegate, and_(
                 DbMeteringPointDelegate.gsrn == DbMeteringPoint.gsrn,
                 DbMeteringPointDelegate.subject == subject,
-            ))
+            )),
         )
 
     def get_distinct_gsrn(self) -> List[str]:

@@ -7,7 +7,7 @@ from .bus import broker
 from .handlers import dispatcher
 
 
-broker.subscribe(
+broker.listen(
     topics=[t.METERINGPOINTS, t.TECHNOLOGIES],
     handler=dispatcher,
 )

@@ -38,8 +38,10 @@ class GetMeteringPointList(Endpoint):
         """
         Handle HTTP request.
         """
+        subject = context.get_subject(required=True)
+
         query = MeteringPointQuery(session) \
-            .is_accessible_by(context.token.subject)
+            .is_accessible_by(subject)
 
         if request.filters:
             query = query.apply_filters(request.filters)
