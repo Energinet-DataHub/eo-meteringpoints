@@ -3,7 +3,8 @@ Runs a Message Bus consumer.
 """
 from energytt_platform.bus import topics as t
 
-from .bus import broker
+from meteringpoints_shared.bus import broker
+
 from .handlers import dispatcher
 
 

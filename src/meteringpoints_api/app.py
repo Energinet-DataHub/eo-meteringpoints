@@ -2,7 +2,13 @@ from energytt_platform.api import Application, ScopedGuard
 
 from meteringpoints_shared.config import TOKEN_SECRET
 
-from .endpoints import GetMeteringPointDetails, GetMeteringPointList
+from .endpoints import (
+    GetMeteringPointList,
+    GetMeteringPointDetails,
+    # OnboardMeteringPointsFromWebAccessCode,
+    OnboardMeteringPointsFromCPR,
+    OnboardMeteringPointsFromCVR,
+)
 
 
 def create_app() -> Application:
@@ -16,5 +22,8 @@ def create_app() -> Application:
         endpoints=(
             ('POST', '/list', GetMeteringPointList(), [ScopedGuard('openid')]),
             ('GET',  '/details', GetMeteringPointDetails()),
+            # ('POST', '/onboard/web-access-code', OnboardMeteringPointsFromWebAccessCode()),
+            ('POST', '/onboard/cpr', OnboardMeteringPointsFromCPR()),
+            ('POST', '/onboard/cvr', OnboardMeteringPointsFromCVR()),
         ),
     )
