@@ -124,7 +124,7 @@ class DatabaseController(object):
             .has_gsrn(gsrn) \
             .delete()
 
-    # -- MeteringPoint Technologies ------------------------------------------
+    # -- MeteringPoint Delegates ---------------------------------------------
 
     def grant_meteringpoint_delegate(
             self,

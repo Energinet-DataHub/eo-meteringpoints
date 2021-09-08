@@ -7,7 +7,7 @@ verify_ssl = true
 mypy = "*"
 
 [packages]
-peterplys = "==0.1.10"
+peterplys = "*"
 
 [scripts]
 update-platform = "pip install --upgrade ./../ett-platform-utils"
