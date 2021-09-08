@@ -1,5 +1,5 @@
 from typing import List
-from sqlalchemy import orm, and_
+from sqlalchemy import orm, asc, desc, and_
 
 from energytt_platform.sql import SqlQuery
 from energytt_platform.models.meteringpoints import MeteringPointType
@@ -7,6 +7,7 @@ from energytt_platform.models.meteringpoints import MeteringPointType
 from .models import (
     MeteringPointFilters,
     MeteringPointOrdering,
+    MeteringPointOrderingKeys,
     DbMeteringPoint,
     DbMeteringPointTechnology,
     DbMeteringPointAddress,
@@ -44,7 +45,18 @@ class MeteringPointQuery(SqlQuery):
         """
         Applies provided ordering.
         """
-        return self
+        fields = {
+            MeteringPointOrderingKeys.gsrn: DbMeteringPoint.gsrn,
+            MeteringPointOrderingKeys.type: DbMeteringPoint.type,
+            MeteringPointOrderingKeys.sector: DbMeteringPoint.sector,
+        }
+
+        if ordering.asc:
+            return self.q.order_by(asc(fields[ordering.key]))
+        elif ordering.desc:
+            return self.q.order_by(desc(fields[ordering.key]))
+        else:
+            raise RuntimeError('Should NOT have happened')
 
     def has_gsrn(self, gsrn: str) -> 'MeteringPointQuery':
         """
