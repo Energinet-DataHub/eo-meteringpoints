@@ -9,6 +9,6 @@ from .handlers import dispatcher
 
 
 broker.listen(
-    topics=[t.METERINGPOINTS, t.TECHNOLOGIES],
+    topics=[t.AUTH, t.METERINGPOINTS, t.TECHNOLOGIES],
     handler=dispatcher,
 )

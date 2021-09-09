@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "c10095ebb01a08ce296154a6c0bc52bc7a79d81f7432151a40b90283ba32e490"
+            "sha256": "b3d0a9b1d338f35fe5517eefa94b1900b95d626a85399fca1df4089ddaf38d3e"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -23,21 +23,6 @@
             ],
             "markers": "python_version >= '3.6'",
             "version": "==1.7.1"
-        },
-        "certifi": {
-            "hashes": [
-                "sha256:2bbf76fd432960138b3ef6dda3dde0544f27cbf8546c458e60baf371917ba9ee",
-                "sha256:50b1e4f8446b06f41be7dd6338db18e0990601dce795c2b1686458aa7e8fa7d8"
-            ],
-            "version": "==2021.5.30"
-        },
-        "charset-normalizer": {
-            "hashes": [
-                "sha256:0c8911edd15d19223366a194a513099a302055a962bca2cec0f54b8b63175d8b",
-                "sha256:f23667ebe1084be45f6ae0538e4a5a865206544097e4e8bbcacf42cd02a348f3"
-            ],
-            "markers": "python_version >= '3'",
-            "version": "==2.0.4"
         },
         "click": {
             "hashes": [
@@ -125,14 +110,6 @@
             ],
             "markers": "python_version >= '3' and platform_machine in 'x86_64 X86_64 aarch64 AARCH64 ppc64le PPC64LE amd64 AMD64 win32 WIN32'",
             "version": "==1.1.1"
-        },
-        "idna": {
-            "hashes": [
-                "sha256:14475042e284991034cb48e06f6851428fb14c4dc953acd9be9a5e95c7b6dd7a",
-                "sha256:467fbad99067910785144ce333826c71fb0e63a425657295239737f7ecd125f3"
-            ],
-            "markers": "python_version >= '3'",
-            "version": "==3.2"
         },
         "importlib-resources": {
             "hashes": [
@@ -250,10 +227,10 @@
         },
         "peterplys": {
             "hashes": [
-                "sha256:89462b676ee8fae7ba8bde7254adef58140ce267b4db02de493ef5723ce06893"
+                "sha256:e61dd8204af5341177d4e746c3e216f94c3fe02bac521d550d6a7a8535caebe5"
             ],
             "index": "pypi",
-            "version": "==0.1.10"
+            "version": "==0.1.11"
         },
         "psycopg2": {
             "hashes": [
