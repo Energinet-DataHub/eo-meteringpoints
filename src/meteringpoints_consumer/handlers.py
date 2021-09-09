@@ -26,7 +26,10 @@ def on_meteringpoint_update(
     if msg.meteringpoint.address:
         controller.set_meteringpoint_address(msg.meteringpoint.address)
     if msg.meteringpoint.technology:
-        controller.set_meteringpoint_technology(msg.meteringpoint.technology)
+        controller.set_meteringpoint_technology(
+          session=session,
+          gsrn=msg.meteringpoint.gsrn,
+          technology=msg.meteringpoint.technology)
 
 
 @db.atomic()
