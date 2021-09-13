@@ -1,4 +1,5 @@
 from energytt_platform.api import Application, ScopedGuard
+from energytt_platform.api.endpoints import HealthCheck
 
 from meteringpoints_shared.config import TOKEN_SECRET
 
@@ -15,17 +16,53 @@ def create_app() -> Application:
     """
     Creates a new instance of the application.
     """
-    return Application.create(
+    app = Application(
         name='MeteringPoints API',
-        secret=TOKEN_SECRET,
-        health_check_path='/health',
-        endpoints=(
-            ('POST', '/list', GetMeteringPointList(), [ScopedGuard('meteringpoints.read')]),
-            ('GET',  '/details', GetMeteringPointDetails(), [ScopedGuard('meteringpoints.read')]),
-            # ('POST', '/list', GetMeteringPointList(), [ScopedGuard('meteringpoints.read')]),
-            # ('GET',  '/details', GetMeteringPointDetails(), [ScopedGuard('meteringpoints.read')]),
-            # ('POST', '/onboard/web-access-code', OnboardMeteringPointsFromWebAccessCode()),
-            # ('POST', '/onboard/cpr', OnboardMeteringPointsFromCPR()),
-            # ('POST', '/onboard/cvr', OnboardMeteringPointsFromCVR()),
-        ),
+        secret=TOKEN_SECRET
     )
+
+    app.add_endpoint(
+        method='POST',
+        path='/list',
+        endpoint=GetMeteringPointList(),
+        guards=[ScopedGuard('meteringpoints.read')]
+    )
+
+    app.add_endpoint(
+        method='GET',
+        path='/details',
+        endpoint=GetMeteringPointDetails(),
+        guards=[ScopedGuard('meteringpoints.read')]
+    )
+
+    app.add_endpoint(
+        method='GET',
+        path='/health',
+        endpoint=HealthCheck(),
+    )
+
+    # app.add_endpoint(
+    #     method='POST',
+    #     path='/onboard/web-access-code',
+    #     endpoint=OnboardMeteringPointsFromWebAccessCode(),
+    # )
+
+    # app.add_endpoint(
+    #     method='POST',
+    #     path='/onboard/cpr',
+    #     endpoint=OnboardMeteringPointsFromWebAccessCode(),
+    # )
+
+    # app.add_endpoint(
+    #     method='POST',
+    #     path='/onboard/cpr',
+    #     endpoint=OnboardMeteringPointsFromCPR(),
+    # )
+
+    # app.add_endpoint(
+    #     method='POST',
+    #     path='/onboard/cvr',
+    #     endpoint=OnboardMeteringPointsFromCVR(),
+    # )
+
+    return app
