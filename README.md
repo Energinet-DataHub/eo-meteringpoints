@@ -6,3 +6,8 @@ MeteringPoints domain
     docker build -t meteringpoints:v1 .
     docker run --entrypoint /app/entrypoint_api.sh meteringpoints:v1
     docker run --entrypoint /app/entrypoint_consumer.sh meteringpoints:v1
+
+
+# Test
+
+    pipenv run python -m pytest ../tests/

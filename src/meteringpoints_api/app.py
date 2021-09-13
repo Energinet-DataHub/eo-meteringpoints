@@ -22,6 +22,8 @@ def create_app() -> Application:
         endpoints=(
             ('POST', '/list', GetMeteringPointList(), [ScopedGuard('meteringpoints.read')]),
             ('GET',  '/details', GetMeteringPointDetails(), [ScopedGuard('meteringpoints.read')]),
+            # ('POST', '/list', GetMeteringPointList(), [ScopedGuard('meteringpoints.read')]),
+            # ('GET',  '/details', GetMeteringPointDetails(), [ScopedGuard('meteringpoints.read')]),
             # ('POST', '/onboard/web-access-code', OnboardMeteringPointsFromWebAccessCode()),
             # ('POST', '/onboard/cpr', OnboardMeteringPointsFromCPR()),
             # ('POST', '/onboard/cvr', OnboardMeteringPointsFromCVR()),

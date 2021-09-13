@@ -93,9 +93,6 @@ class GetMeteringPointDetails(Endpoint):
             .is_accessible_by(context.token.subject) \
             .has_gsrn(request.gsrn) \
             .one_or_none()
-        # meteringpoint = MeteringPointQuery(session) \
-        #     .has_gsrn(request.gsrn) \
-        #     .one_or_none()
 
         return self.Response(
             success=meteringpoint is not None,

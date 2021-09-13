@@ -1,4 +1,9 @@
+import datetime
+
 import pytest
+from energytt_platform.models.auth import InternalToken
+from energytt_platform.tokens import TokenEncoder
+from flask.testing import FlaskClient
 from unittest.mock import patch
 
 from energytt_platform.bus.messages.meteringpoints import MeteringPointUpdate
@@ -9,6 +14,7 @@ from energytt_platform.models.tech import Technology, TechnologyType
 from energytt_platform.models.common import EnergyDirection
 from energytt_platform.models.meteringpoints import MeteringPoint
 
+from meteringpoints_shared.db import db
 from meteringpoints_shared.models import DbMeteringPoint, DbTechnology
 from meteringpoints_shared.queries import MeteringPointQuery
 
@@ -28,27 +34,47 @@ metering_point1 = MeteringPoint(
 
 
 class TestMeteringPointUpdate:
-    # Patch db method that returns session
-    @patch('meteringpoints_shared.db.db.session_class')
-    def test__metering_point_update__metering_point_added_to_db(self, make_session_func, session):
+
+    def test__metering_point_update__metering_point_added_to_db(
+            self,
+            session: db.Session,
+            client: FlaskClient,
+            token_encoder: TokenEncoder,
+    ):
+        """
+        TODO Describe test...
+        """
 
         # -- Arrange ---------------------------------------------------------
 
-        make_session_func.return_value = session
-
-        metering_point_update_msg = MeteringPointUpdate(
-            meteringpoint=metering_point1
-        )
+        token = token_encoder.encode(InternalToken(
+            issued=datetime.datetime.now(),
+        ))
 
         # -- Act -------------------------------------------------------------
 
-        dispatcher(metering_point_update_msg)
+        dispatcher(MeteringPointUpdate(
+            meteringpoint=metering_point1
+        ))
+
+        dispatcher(MeteringPointUpdate(
+            meteringpoint=metering_point1
+        ))
+
+        response = client.post('/list', json={
+            'offset': 0,
+            'limit': 10,
+        })
+
+        response_json = response.get_json()
 
         # -- Assert ----------------------------------------------------------
 
-        query = MeteringPointQuery(session) \
-            .has_gsrn(metering_point1.gsrn)
-        result = query.one()
+        assert len(response_json['meteringpoints']) == 10
 
-        assert result.sector == metering_point1.sector
-        assert result.type == metering_point1.type
+        # query = MeteringPointQuery(session) \
+        #     .has_gsrn(metering_point1.gsrn)
+        # result = query.one()
+        #
+        # assert result.sector == metering_point1.sector
+        # assert result.type == metering_point1.type
