@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timedelta
 
 import pytest
 from energytt_platform.models.auth import InternalToken
@@ -48,7 +48,13 @@ class TestMeteringPointUpdate:
         # -- Arrange ---------------------------------------------------------
 
         token = token_encoder.encode(InternalToken(
-            issued=datetime.datetime.now(),
+            issued=datetime.now(),
+            expires=datetime.now() + timedelta(hours=5),
+            actor="foo",
+            subject="foo",
+            scope=[
+                "meteringpoints.r0ead",
+            ]
         ))
 
         # -- Act -------------------------------------------------------------
@@ -61,11 +67,13 @@ class TestMeteringPointUpdate:
             meteringpoint=metering_point1
         ))
 
+        client.environ_base['HTTP_AUTHORIZATION'] = 'Bearer: ' + token
+
         response = client.post('/list', json={
             'offset': 0,
             'limit': 10,
         })
-
+        # TODO: Currently messes up in the guards
         response_json = response.get_json()
 
         # -- Assert ----------------------------------------------------------
