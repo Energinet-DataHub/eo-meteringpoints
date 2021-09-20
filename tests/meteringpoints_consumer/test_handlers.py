@@ -1,33 +1,24 @@
 from datetime import datetime, timedelta, timezone
-
 from typing import List
-from energytt_platform.bus.messages.tech import TechnologyUpdate
-
-import pytest
-
-from unittest.mock import patch
 from flask.testing import FlaskClient
 
 
-from energytt_platform.bus.messages.delegates \
-    import MeteringPointDelegateGranted
-from energytt_platform.models.delegates import MeteringPointDelegate
-
-
-from energytt_platform.models.auth import InternalToken
 from energytt_platform.tokens import TokenEncoder
 
 from energytt_platform.bus.messages.meteringpoints import MeteringPointUpdate
-from energytt_platform.bus import messages as m
-from meteringpoints_consumer.handlers import dispatcher
+from energytt_platform.bus.messages.tech import TechnologyUpdate
+from energytt_platform.bus.messages.delegates \
+    import MeteringPointDelegateGranted
 
 from energytt_platform.models.tech import Technology, TechnologyType
 from energytt_platform.models.common import Address, EnergyDirection
 from energytt_platform.models.meteringpoints import MeteringPoint
+from energytt_platform.models.delegates import MeteringPointDelegate
+from energytt_platform.models.auth import InternalToken
+
+from meteringpoints_consumer.handlers import dispatcher
 
 from meteringpoints_shared.db import db
-from meteringpoints_shared.models import DbMeteringPoint, DbTechnology
-from meteringpoints_shared.queries import MeteringPointQuery
 
 
 '''
@@ -46,6 +37,10 @@ from meteringpoints_shared.queries import MeteringPointQuery
         TEST_2.4 metering_point.type matches
         TEST_2.5 metering_point.sector matches
 
+    TEST_3 Multiple points added and fetched result matches
+        TEST_3.1 Fetched metering_point count matches inserted metering_point count
+        TEST_3.2 Fetched metering_points matches inserted metering_point
+        TEST_3.3 Received status code 200
 
     ### /list requests
     - Test scope
@@ -104,8 +99,8 @@ METERPING_POINT_TYPES = [
     EnergyDirection.production,
 ]
 
-TECH_CODES = ['100', '200', '300', '400', '500', '600', '700']
-FUEL_CODES = ['101', '201', '301', '401', '501', '601', '701']
+TECH_CODES = ['100', '200', '300', '400']
+FUEL_CODES = ['101', '201', '301', '401']
 
 TECHNOLOGY_TYPES = [
     TechnologyType.coal,
@@ -306,7 +301,7 @@ class TestMeteringPointUpdate:
             meteringpoint=dummy_metering_point
         ))
 
-        # Deligate access, needed to fetch it using api
+        # Delegate access, needed to fetch it using api
         dispatcher(MeteringPointDelegateGranted(
             delegate=MeteringPointDelegate(
                 subject=subject,
@@ -363,7 +358,7 @@ class TestMeteringPointUpdate:
         assert mp_address['municipality_code'] == dummy_mp_address.municipality_code
         assert mp_address['location_description'] == dummy_mp_address.location_description
 
-    def test__metering_point_update__multiple_metering_points_added(
+    def test__metering_point_update__single_metering_point_added_and_updated(
             self,
             session: db.Session,
             client: FlaskClient,
@@ -381,7 +376,7 @@ class TestMeteringPointUpdate:
             Addtionally tests the following:
                 - Correct amount of metering_points returned
                 - HTTP status code
-        
+
         Steps:
             1. Create 1st dummy metering_point
             2. Create 2rd dummy metering_point with new values but same gsrn
@@ -419,10 +414,10 @@ class TestMeteringPointUpdate:
             include_technology=True,
         )
 
-        # -- Act -------------------------------------------------------------
-
         # insert technology codes needed to read technology
         insert_all_technology_codes()
+
+        # -- Act -------------------------------------------------------------
 
         # Insert original single metering point
         dispatcher(MeteringPointUpdate(
@@ -434,7 +429,7 @@ class TestMeteringPointUpdate:
             meteringpoint=dummy_metering_point_update,
         ))
 
-        # Deligate access, needed to fetch it using api
+        # Delegate access, needed to fetch it using api
         dispatcher(MeteringPointDelegateGranted(
             delegate=MeteringPointDelegate(
                 subject=subject,
@@ -490,3 +485,141 @@ class TestMeteringPointUpdate:
         assert mp_address['city_sub_division_name'] == dummy_mp_address.city_sub_division_name
         assert mp_address['municipality_code'] == dummy_mp_address.municipality_code
         assert mp_address['location_description'] == dummy_mp_address.location_description
+
+    def test__metering_point_update__multiple_metering_points_added(
+            self,
+            session: db.Session,
+            client: FlaskClient,
+            token_encoder: TokenEncoder,
+    ):
+        """
+        Test Case(s):
+            TEST_3 Multiple points added and fetched result matches
+                TEST_3.1 Fetched metering_point count matches inserted metering_point count
+                TEST_3.2 Fetched metering_points matches inserted metering_point
+                TEST_3.3 Received status code 200
+
+            Addtionally tests the following:
+
+        Steps:
+            1. Create 10 dummy metering_points with different gsrn
+            2. Insert dummy metering_points
+            2. Delegate access for each gsrn
+            3. Fetchs metering_points using /list
+            4. Compare each dummy metering_point with fetched metering_point
+        """
+
+        # -- Arrange ---------------------------------------------------------
+
+        subject = "foo"
+
+        token = get_dummy_token(
+            token_encoder=token_encoder,
+            subject=subject,
+            scopes=[
+                'meteringpoints.read',
+            ],
+        )
+
+        # Amount of metering_points to insert
+        meteringpoint_count = 10
+
+        # Create a list of dummy metering_points
+        dummy_metering_point_list = get_dummy_metering_point_list(
+            meteringpoint_count,
+            include_address=True,
+            include_technology=True,
+        )
+
+        dummy_metering_point_gsrn_list = [
+            o.gsrn for o in dummy_metering_point_list]
+
+        # insert technology codes needed to read technology
+        insert_all_technology_codes()
+
+        # -- Act -------------------------------------------------------------
+
+        for dummy_metering_point in dummy_metering_point_list:
+            # Insert metering point
+            dispatcher(MeteringPointUpdate(
+                meteringpoint=dummy_metering_point,
+            ))
+
+            # Delegate access, needed to fetch it using api
+            dispatcher(MeteringPointDelegateGranted(
+                delegate=MeteringPointDelegate(
+                    subject=subject,
+                    gsrn=dummy_metering_point.gsrn,
+                )
+            ))
+
+        response = client.post(
+            path='/list',
+            json={
+                'offset': 0,
+                'limit': 10,
+                'filters': {
+                    'gsrn': dummy_metering_point_gsrn_list,
+                },
+            },
+            headers={
+                'Authorization': 'Bearer: ' + token
+            }
+        )
+
+        response_json = response.get_json()
+
+        # # -- Assert ----------------------------------------------------------
+
+        assert response.status_code == 200
+
+        fetched_mp_list = response_json['meteringpoints']
+
+        assert len(fetched_mp_list) == len(dummy_metering_point_gsrn_list)
+
+        def find_metering_point_by_gsrn(metering_point_list, gsrn: str):
+            """
+            Finds a dummy meteringpoint by gsrn if it exists.
+            Returns None if not found
+            """
+            for x in metering_point_list:
+                if x['gsrn'] == gsrn:
+                    return x
+            return None
+
+        # Loop each inserted dummy metering_point and check that
+        # it exists in the fetched output
+        for dummy_mp in dummy_metering_point_list:
+            fetched_mp = find_metering_point_by_gsrn(
+                metering_point_list=fetched_mp_list,
+                gsrn=dummy_mp.gsrn,
+            )
+
+            if fetched_mp is None:
+                assert False, 'One or more metering points were not fetched as expected'
+
+            assert fetched_mp['type'] == dummy_mp.type.value
+            assert fetched_mp['sector'] == dummy_mp.sector
+
+            # Compare technology
+            dummy_mp_technology = dummy_mp.technology
+            mp_technology = fetched_mp['technology']
+
+            assert mp_technology['fuel_code'] == dummy_mp_technology.fuel_code
+            assert mp_technology['tech_code'] == dummy_mp_technology.tech_code
+            assert mp_technology['type'] == dummy_mp_technology.type.value
+
+            # Compare address
+            dummy_mp_address = dummy_mp.address
+            mp_address = fetched_mp['address']
+
+            assert mp_address['street_code'] == dummy_mp_address.street_code
+            assert mp_address['street_name'] == dummy_mp_address.street_name
+            assert mp_address['building_number'] == dummy_mp_address.building_number
+            assert mp_address['floor_id'] == dummy_mp_address.floor_id
+            assert mp_address['room_id'] == dummy_mp_address.room_id
+            assert mp_address['post_code'] == dummy_mp_address.post_code
+            assert mp_address['city_name'] == dummy_mp_address.city_name
+            assert mp_address['city_sub_division_name'] == dummy_mp_address.city_sub_division_name
+            assert mp_address['municipality_code'] == dummy_mp_address.municipality_code
+            assert mp_address['location_description'] == dummy_mp_address.location_description
