@@ -5,14 +5,16 @@ from flask.testing import FlaskClient
 
 from energytt_platform.tokens import TokenEncoder
 
-from energytt_platform.bus.messages.meteringpoints import MeteringPointAddressUpdate, MeteringPointRemoved, MeteringPointTechnologyUpdate
+from energytt_platform.bus.messages.meteringpoints import \
+    MeteringPointAddressUpdate, MeteringPointTechnologyUpdate
 
 from energytt_platform.bus.messages.meteringpoints import MeteringPointUpdate
 from energytt_platform.bus.messages.tech import TechnologyUpdate
 from energytt_platform.bus.messages.delegates \
     import MeteringPointDelegateGranted
 
-from energytt_platform.models.tech import Technology, TechnologyCodes, TechnologyType
+from energytt_platform.models.tech import \
+    Technology, TechnologyCodes, TechnologyType
 from energytt_platform.models.common import Address, EnergyDirection
 from energytt_platform.models.meteringpoints import MeteringPoint
 from energytt_platform.models.delegates import MeteringPointDelegate
@@ -26,36 +28,36 @@ from meteringpoints_shared.db import db
 '''
 
     TEST_1 Single point added and fetched result matches
-        TEST_1.1 metering_point.technology matches
-        TEST_1.2 metering_point.address matches
-        TEST_1.3 metering_point.sector matches
-        TEST_1.4 metering_point.type matches
-        TEST_1.5 metering_point.sector matches
+        TEST_1.1 meteringpoint.technology matches
+        TEST_1.2 meteringpoint.address matches
+        TEST_1.3 meteringpoint.sector matches
+        TEST_1.4 meteringpoint.type matches
+        TEST_1.5 meteringpoint.sector matches
 
     TEST_2 Single point added then updated and fetched result matches
-        TEST_2.1 metering_point.technology matches
-        TEST_2.2 metering_point.address matches
-        TEST_2.3 metering_point.sector matches
-        TEST_2.4 metering_point.type matches
-        TEST_2.5 metering_point.sector matches
+        TEST_2.1 meteringpoint.technology matches
+        TEST_2.2 meteringpoint.address matches
+        TEST_2.3 meteringpoint.sector matches
+        TEST_2.4 meteringpoint.type matches
+        TEST_2.5 meteringpoint.sector matches
 
     TEST_3 Multiple points added and fetched result matches
-        TEST_3.1 Fetched metering_point count matches inserted metering_point count
-        TEST_3.2 Fetched metering_points matches inserted metering_point
+        TEST_3.1 Fetched meteringpoint count matches inserted count
+        TEST_3.2 Fetched meteringpoints matches inserted meteringpoint
         TEST_3.3 Received status code 200
 
-    TEST_4 Create/Update/remove metering_point.address
-        TEST_4.1 Insert metering_point.address
-        TEST_4.2 Update metering_point address
-        TEST_4.3 Remove metering_point address
+    TEST_4 Create/Update/remove meteringpoint.address
+        TEST_4.1 Insert meteringpoint.address
+        TEST_4.2 Update meteringpoint address
+        TEST_4.3 Remove meteringpoint address
 
-    TEST_5 Create/Update/remove metering_point.technology
-        TEST_5.1 Insert metering_point.technology
-        TEST_5.2 Update metering_point.technology
-        TEST_5.3 Remove metering_point.technology
+    TEST_5 Create/Update/remove meteringpoint.technology
+        TEST_5.1 Insert meteringpoint.technology
+        TEST_5.2 Update meteringpoint.technology
+        TEST_5.3 Remove meteringpoint.technology
 
-    TEST_6 Remove metering_point 
-        TEST_6.1 Remove metering_point using on_meteringpoint_removed handler
+    TEST_6 Remove meteringpoint
+        TEST_6.1 Remove meteringpoint using on_meteringpoint_removed handler
 
     ### /list requests
     - Test scope
@@ -158,16 +160,16 @@ def get_dummy_address(number: int) -> Address:
     )
 
 
-def get_dummy_metering_point(
+def get_dummy_meteringpoint(
         number: int,
         use_gsrn: str = None,
         include_technology: bool = False,
         include_address: bool = False
 ) -> MeteringPoint:
     """
-    Returns dummy metering_point
+    Returns dummy meteringpoint
     """
-    metering_point_type_count = len(METERPING_POINT_TYPES)
+    meteringpoint_type_count = len(METERPING_POINT_TYPES)
 
     technology = get_dummy_technology(number) if include_technology else None
     address = get_dummy_address(number) if include_address else None
@@ -180,32 +182,32 @@ def get_dummy_metering_point(
     return MeteringPoint(
         gsrn=gsrn,
         sector='DK'+str(number),
-        type=METERPING_POINT_TYPES[number % metering_point_type_count],
+        type=METERPING_POINT_TYPES[number % meteringpoint_type_count],
         technology=technology,
         address=address
     )
 
 
-def get_dummy_metering_point_list(
+def get_dummy_meteringpoint_list(
     count: int,
     use_gsrn: str = None,
     include_technology: bool = False,
     include_address: bool = False
 ) -> List[MeteringPoint]:
     """
-    Returns a list of dummy metering_points
+    Returns a list of dummy meteringpoints
     """
-    metering_point_list = []
+    meteringpoint_list = []
     for x in range(count):
-        metering_point = get_dummy_metering_point(
+        meteringpoint = get_dummy_meteringpoint(
             number=x,
             use_gsrn=use_gsrn,
             include_technology=include_technology,
             include_address=include_address,
         )
-        metering_point_list.append(metering_point)
+        meteringpoint_list.append(meteringpoint)
 
-    return metering_point_list
+    return meteringpoint_list
 
 
 def get_dummy_token(
@@ -235,31 +237,6 @@ def get_dummy_token(
     return token_encoder.encode(internal_token)
 
 
-def insert_metering_point(metering_point: MeteringPoint):
-    dispatcher(MeteringPointUpdate(
-        meteringpoint=metering_point
-    ))
-
-
-def insert_metering_points(metering_points: List[MeteringPoint]):
-    for metering_point in metering_points:
-        insert_metering_point(metering_point=metering_point)
-
-
-def insert_all_technology_codes():
-
-    for idx, (tech_code, fuel_code) in enumerate(zip(TECH_CODES, FUEL_CODES)):
-        technology = Technology(
-            tech_code=tech_code,
-            fuel_code=fuel_code,
-            type=TECHNOLOGY_TYPES[idx % len(TECHNOLOGY_TYPES)]
-        )
-
-        dispatcher(TechnologyUpdate(
-            technology=technology
-        ))
-
-
 def get_all_technology_codes():
     for idx, (tech_code, fuel_code) in enumerate(zip(TECH_CODES, FUEL_CODES)):
         yield Technology(
@@ -271,7 +248,7 @@ def get_all_technology_codes():
 
 class TestMeteringPointUpdate:
 
-    def test__metering_point_update__single_metering_point_added(
+    def test__meteringpoint_update__single_meteringpoint_added(
             self,
             session: db.Session,
             client: FlaskClient,
@@ -280,21 +257,21 @@ class TestMeteringPointUpdate:
         """
         Test Case(s):
             TEST#1 Single point added and fetched result matches
-                TEST#1.1 metering_point.technology matches
-                TEST#1.2 metering_point.address matches
-                TEST#1.3 metering_point.sector matches
-                TEST#1.4 metering_point.type matches
-                TEST#1.5 metering_point.sector matches
+                TEST#1.1 meteringpoint.technology matches
+                TEST#1.2 meteringpoint.address matches
+                TEST#1.3 meteringpoint.sector matches
+                TEST#1.4 meteringpoint.type matches
+                TEST#1.5 meteringpoint.sector matches
 
             Addtionally tests the following:
-                - Correct amount of metering_points returned
+                - Correct amount of meteringpoints returned
                 - HTTP status code
 
         Steps:
-            1. Create dummy metering_point
+            1. Create dummy meteringpoint
             2. Insert dummy point
-            3. Fetch metering_point using /list
-            4. Assert fetched metering_point equals the dummy metering_point
+            3. Fetch meteringpoint using /list
+            4. Assert fetched meteringpoint equals the dummy meteringpoint
         """
 
         # -- Arrange ---------------------------------------------------------
@@ -309,7 +286,7 @@ class TestMeteringPointUpdate:
             ],
         )
 
-        mp = get_dummy_metering_point(
+        mp = get_dummy_meteringpoint(
             number=1,
             include_address=True,
             include_technology=True,
@@ -355,6 +332,7 @@ class TestMeteringPointUpdate:
         assert r.status_code == 200
         assert len(r.json['meteringpoints']) == 1
 
+        address = mp.address
         assert r.json['meteringpoints'] == [
             {
                 'gsrn': mp.gsrn,
@@ -366,21 +344,21 @@ class TestMeteringPointUpdate:
                     'type': mp.technology.type.value,
                 },
                 'address': {
-                    'street_code': mp.address.street_code,
-                    'street_name': mp.address.street_name,
-                    'building_number': mp.address.building_number,
-                    'floor_id': mp.address.floor_id,
-                    'room_id': mp.address.room_id,
-                    'post_code': mp.address.post_code,
-                    'city_name': mp.address.city_name,
-                    'city_sub_division_name': mp.address.city_sub_division_name,
-                    'municipality_code': mp.address.municipality_code,
-                    'location_description': mp.address.location_description,
+                    'street_code': address.street_code,
+                    'street_name': address.street_name,
+                    'building_number': address.building_number,
+                    'floor_id': address.floor_id,
+                    'room_id': address.room_id,
+                    'post_code': address.post_code,
+                    'city_name': address.city_name,
+                    'city_sub_division_name': address.city_sub_division_name,
+                    'municipality_code': address.municipality_code,
+                    'location_description': address.location_description,
                 }
             }
         ]
 
-    def test__metering_point_update__single_metering_point_added_and_updated(
+    def test__meteringpoint_update__single_meteringpoint_added_and_updated(
             self,
             session: db.Session,
             client: FlaskClient,
@@ -389,23 +367,23 @@ class TestMeteringPointUpdate:
         """
         Test Case(s):
             TEST_2 Single point added then updated and fetched result matches
-                TEST_2.1 metering_point.technology matches
-                TEST_2.2 metering_point.address matches
-                TEST_2.3 metering_point.sector matches
-                TEST_2.4 metering_point.type matches
-                TEST_2.5 metering_point.sector matches
+                TEST_2.1 meteringpoint.technology matches
+                TEST_2.2 meteringpoint.address matches
+                TEST_2.3 meteringpoint.sector matches
+                TEST_2.4 meteringpoint.type matches
+                TEST_2.5 meteringpoint.sector matches
 
             Addtionally tests the following:
-                - Correct amount of metering_points returned
+                - Correct amount of meteringpoints returned
                 - HTTP status code
 
         Steps:
-            1. Create 1st dummy metering_point
-            2. Create 2rd dummy metering_point with new values but same gsrn
+            1. Create 1st dummy meteringpoint
+            2. Create 2rd dummy meteringpoint with new values but same gsrn
             3. Insert 1st dummy point
-            4. Insert/update 1st dummy metering_point with the 2rd metering_point
-            5. Fetch metering_point using /list
-            6. Assert fetched metering_point equals the 2rd dummy metering_point
+            4. Insert/update 1st dummy meteringpoint with the 2rd meteringpoint
+            5. Fetch meteringpoint using /list
+            6. Assert fetched meteringpoint equals the 2rd dummy meteringpoint
         """
 
         # -- Arrange ---------------------------------------------------------
@@ -422,14 +400,14 @@ class TestMeteringPointUpdate:
 
         static_gsrn = 'GSRN1'
 
-        mp_old = get_dummy_metering_point(
+        mp_old = get_dummy_meteringpoint(
             1,
             use_gsrn=static_gsrn,  # Static GSRN needed to update again
             include_address=True,
             include_technology=True,
         )
 
-        mp = get_dummy_metering_point(
+        mp = get_dummy_meteringpoint(
             2,  # Get new variant with new properties
             use_gsrn=static_gsrn,  # Static GSRN needed to update again
             include_address=True,
@@ -481,6 +459,7 @@ class TestMeteringPointUpdate:
         assert r.status_code == 200
         assert len(r.json['meteringpoints']) == 1
 
+        address = mp.address
         assert r.json['meteringpoints'] == [
             {
                 'gsrn': mp.gsrn,
@@ -492,21 +471,21 @@ class TestMeteringPointUpdate:
                     'type': mp.technology.type.value,
                 },
                 'address': {
-                    'street_code': mp.address.street_code,
-                    'street_name': mp.address.street_name,
-                    'building_number': mp.address.building_number,
-                    'floor_id': mp.address.floor_id,
-                    'room_id': mp.address.room_id,
-                    'post_code': mp.address.post_code,
-                    'city_name': mp.address.city_name,
-                    'city_sub_division_name': mp.address.city_sub_division_name,
-                    'municipality_code': mp.address.municipality_code,
-                    'location_description': mp.address.location_description,
+                    'street_code': address.street_code,
+                    'street_name': address.street_name,
+                    'building_number': address.building_number,
+                    'floor_id': address.floor_id,
+                    'room_id': address.room_id,
+                    'post_code': address.post_code,
+                    'city_name': address.city_name,
+                    'city_sub_division_name': address.city_sub_division_name,
+                    'municipality_code': address.municipality_code,
+                    'location_description': address.location_description,
                 }
             }
         ]
 
-    def test__metering_point_update__multiple_metering_points_added(
+    def test__meteringpoint_update__multiple_meteringpoints_added(
             self,
             session: db.Session,
             client: FlaskClient,
@@ -515,18 +494,18 @@ class TestMeteringPointUpdate:
         """
         Test Case(s):
             TEST_3 Multiple points added and fetched result matches
-                TEST_3.1 Fetched metering_point count matches inserted metering_point count
-                TEST_3.2 Fetched metering_points matches inserted metering_point
+                TEST_3.1 Fetched meteringpoint count matches inserted count
+                TEST_3.2 Fetched meteringpoints matches inserted meteringpoint
                 TEST_3.3 Received status code 200
 
             Addtionally tests the following:
 
         Steps:
-            1. Create 10 dummy metering_points with different gsrn
-            2. Insert dummy metering_points
+            1. Create 10 dummy meteringpoints with different gsrn
+            2. Insert dummy meteringpoints
             2. Delegate access for each gsrn
-            3. Fetchs metering_points using /list
-            4. Compare each dummy metering_point with fetched metering_point
+            3. Fetchs meteringpoints using /list
+            4. Compare each dummy meteringpoint with fetched meteringpoint
         """
 
         # -- Arrange ---------------------------------------------------------
@@ -541,18 +520,18 @@ class TestMeteringPointUpdate:
             ],
         )
 
-        # Amount of metering_points to insert
+        # Amount of meteringpoints to insert
         meteringpoint_count = 10
 
-        # Create a list of dummy metering_points
-        dummy_metering_point_list = get_dummy_metering_point_list(
+        # Create a list of dummy meteringpoints
+        dummy_meteringpoint_list = get_dummy_meteringpoint_list(
             meteringpoint_count,
             include_address=True,
             include_technology=True,
         )
 
-        dummy_metering_point_gsrn_list = [
-            o.gsrn for o in dummy_metering_point_list]
+        dummy_meteringpoint_gsrn_list = [
+            o.gsrn for o in dummy_meteringpoint_list]
 
         # insert technology codes needed to read technology
         for technology in get_all_technology_codes():
@@ -562,17 +541,17 @@ class TestMeteringPointUpdate:
 
         # -- Act -------------------------------------------------------------
 
-        for dummy_metering_point in dummy_metering_point_list:
+        for dummy_meteringpoint in dummy_meteringpoint_list:
             # Insert metering point
             dispatcher(MeteringPointUpdate(
-                meteringpoint=dummy_metering_point,
+                meteringpoint=dummy_meteringpoint,
             ))
 
             # Delegate access, needed to fetch it using api
             dispatcher(MeteringPointDelegateGranted(
                 delegate=MeteringPointDelegate(
                     subject=subject,
-                    gsrn=dummy_metering_point.gsrn,
+                    gsrn=dummy_meteringpoint.gsrn,
                 )
             ))
 
@@ -582,7 +561,7 @@ class TestMeteringPointUpdate:
                 'offset': 0,
                 'limit': 10,
                 'filters': {
-                    'gsrn': dummy_metering_point_gsrn_list,
+                    'gsrn': dummy_meteringpoint_gsrn_list,
                 },
             },
             headers={
@@ -593,12 +572,12 @@ class TestMeteringPointUpdate:
         # -- Assert ----------------------------------------------------------
 
         mp_count = len(r.json['meteringpoints'])
-        dummy_mp_count = len(dummy_metering_point_gsrn_list)
+        dummy_mp_count = len(dummy_meteringpoint_gsrn_list)
         assert mp_count == dummy_mp_count
 
-        # Loop each inserted dummy metering_point and check that
+        # Loop each inserted dummy meteringpoint and check that
         # it exists in the fetched output
-        for mp in dummy_metering_point_list:
+        for mp in dummy_meteringpoint_list:
             # Find fetched meteringpoint matching dummy mp
             fetched_mp = None
             for x in r.json['meteringpoints']:
@@ -606,8 +585,9 @@ class TestMeteringPointUpdate:
                     fetched_mp = x
 
             if fetched_mp is None:
-                assert False, 'One or more meteringpoints were not fetched as expected'
+                assert False, 'One or more meteringpoints were not fetched'
 
+            address = mp.address
             assert fetched_mp == {
                 'gsrn': mp.gsrn,
                 'type': mp.type.value,
@@ -618,20 +598,21 @@ class TestMeteringPointUpdate:
                     'type': mp.technology.type.value,
                 },
                 'address': {
-                    'street_code': mp.address.street_code,
-                    'street_name': mp.address.street_name,
-                    'building_number': mp.address.building_number,
-                    'floor_id': mp.address.floor_id,
-                    'room_id': mp.address.room_id,
-                    'post_code': mp.address.post_code,
-                    'city_name': mp.address.city_name,
-                    'city_sub_division_name': mp.address.city_sub_division_name,
-                    'municipality_code': mp.address.municipality_code,
+                    'street_code': address.street_code,
+                    'street_name': address.street_name,
+                    'building_number': address.building_number,
+                    'floor_id': address.floor_id,
+                    'room_id': address.room_id,
+                    'post_code': address.post_code,
+                    'city_name': address.city_name,
+                    'city_sub_division_name': address.city_sub_division_name,
+                    'municipality_code': address.municipality_code,
                     'location_description': mp.address.location_description,
                 }
             }
 
-class f_TestMeteringPointAddressUpdate:
+
+class TestMeteringPointAddressUpdate:
     def test__meteringpoint_address_update__address_inserted_correctly(
             self,
             session: db.Session,
@@ -640,24 +621,24 @@ class f_TestMeteringPointAddressUpdate:
     ):
         """
         Test Case(s):
-            TEST_4 Create/Update/remove metering_point.address
-                TEST_4.1 Insert metering_point.address
+            TEST_4 Create/Update/remove meteringpoint.address
+                TEST_4.1 Insert meteringpoint.address
 
             Addtionally tests the following:
-                - Correct amount of metering_points returned
+                - Correct amount of meteringpoints returned
                 - HTTP status code
 
         Steps:
-            1. Create dummy metering_point without address
+            1. Create dummy meteringpoint without address
             2. Insert dummy point
-            3. Insert new address to metering_point
-            3. Fetch metering_point using /list
-            4. Assert fetched metering_point.address equals the dummy metering_point.address
+            3. Insert new address to meteringpoint
+            3. Fetch meteringpoint using /list
+            4. Assert fetched address equals the dummy address
         """
 
         # -- Arrange ---------------------------------------------------------
 
-        subject = "foo"
+        subject = 'foo'
 
         token = get_dummy_token(
             token_encoder=token_encoder,
@@ -667,85 +648,73 @@ class f_TestMeteringPointAddressUpdate:
             ],
         )
 
-        dummy_metering_point = get_dummy_metering_point(
-            1,
+        mp = get_dummy_meteringpoint(
+            number=1,
             include_address=False,
             include_technology=True,
         )
 
-        dummy_mp_address = get_dummy_address(1)
+        address = get_dummy_address(1)
 
         # -- Act -------------------------------------------------------------
 
         # insert technology codes needed to read technology
-        insert_all_technology_codes()
+        for technology in get_all_technology_codes():
+            dispatcher(TechnologyUpdate(
+                technology=technology
+            ))
 
         # Insert single metering point
         dispatcher(MeteringPointUpdate(
-            meteringpoint=dummy_metering_point,
+            meteringpoint=mp,
         ))
 
         # Insert address to metering point
         dispatcher(MeteringPointAddressUpdate(
-            gsrn=dummy_metering_point.gsrn,
-            address=dummy_mp_address,
+            gsrn=mp.gsrn,
+            address=address,
         ))
 
         # Delegate access, needed to fetch it using api
         dispatcher(MeteringPointDelegateGranted(
             delegate=MeteringPointDelegate(
                 subject=subject,
-                gsrn=dummy_metering_point.gsrn,
+                gsrn=mp.gsrn,
             )
         ))
 
-        response = client.post(
+        r = client.post(
             path='/list',
             json={
                 'offset': 0,
                 'limit': 10,
                 'filters': {
-                    'gsrn': [dummy_metering_point.gsrn],
+                    'gsrn': [mp.gsrn],
                 },
             },
             headers={
-                'Authorization': 'Bearer: ' + token
+                'Authorization': f'Bearer: {token}',
             }
         )
 
-        response_json = response.get_json()
-
         # -- Assert ----------------------------------------------------------
 
-        assert response.status_code == 200
-        assert len(response_json['meteringpoints']) == 1
-
-        mp = response_json['meteringpoints'][0]
-
-        assert mp['type'] == dummy_metering_point.type.value
-        assert mp['sector'] == dummy_metering_point.sector
-
-        # Compare technology
-        dummy_mp_technology = dummy_metering_point.technology
-        mp_technology = mp['technology']
-
-        assert mp_technology['fuel_code'] == dummy_mp_technology.fuel_code
-        assert mp_technology['tech_code'] == dummy_mp_technology.tech_code
-        assert mp_technology['type'] == dummy_mp_technology.type.value
+        assert r.status_code == 200
+        assert len(r.json['meteringpoints']) == 1
 
         # Compare address
-        mp_address = mp['address']
-
-        assert mp_address['street_code'] == dummy_mp_address.street_code
-        assert mp_address['street_name'] == dummy_mp_address.street_name
-        assert mp_address['building_number'] == dummy_mp_address.building_number
-        assert mp_address['floor_id'] == dummy_mp_address.floor_id
-        assert mp_address['room_id'] == dummy_mp_address.room_id
-        assert mp_address['post_code'] == dummy_mp_address.post_code
-        assert mp_address['city_name'] == dummy_mp_address.city_name
-        assert mp_address['city_sub_division_name'] == dummy_mp_address.city_sub_division_name
-        assert mp_address['municipality_code'] == dummy_mp_address.municipality_code
-        assert mp_address['location_description'] == dummy_mp_address.location_description
+        assert r.json['meteringpoints'][0]['address'] == {
+            'street_code': address.street_code,
+            'street_name': address.street_name,
+            'building_number': address.building_number,
+            'floor_id': address.floor_id,
+            'room_id': address.room_id,
+            'post_code': address.post_code,
+            'city_name': address.city_name,
+            'city_sub_division_name': address.city_sub_division_name,
+            'municipality_code': address.municipality_code,
+            'location_description': address.location_description,
+        }
 
     def test__meteringpoint_address_update__address_updates_correctly(
             self,
@@ -755,24 +724,24 @@ class f_TestMeteringPointAddressUpdate:
     ):
         """
         Test Case(s):
-            TEST_4 Create/Update/remove metering_point.address
-                TEST_4.2 Update metering_point address
+            TEST_4 Create/Update/remove meteringpoint.address
+                TEST_4.2 Update meteringpoint address
 
             Addtionally tests the following:
-                - Correct amount of metering_points returned
+                - Correct amount of meteringpoints returned
                 - HTTP status code
 
         Steps:
-            1. Create dummy metering_point with address
+            1. Create dummy meteringpoint with address
             2. Insert dummy point
-            3. Update metering_point address
-            3. Fetch metering_point using /list
-            4. Assert fetched metering_point.address equals the dummy metering_point.address
+            3. Update meteringpoint address
+            3. Fetch meteringpoint using /list
+            4. Assert fetched mp.address equals the dummy mp.address
         """
 
         # -- Arrange ---------------------------------------------------------
 
-        subject = "foo"
+        subject = 'foo'
 
         token = get_dummy_token(
             token_encoder=token_encoder,
@@ -782,87 +751,73 @@ class f_TestMeteringPointAddressUpdate:
             ],
         )
 
-        dummy_metering_point = get_dummy_metering_point(
-            1,
-            include_address=False,
+        mp = get_dummy_meteringpoint(
+            number=1,
+            include_address=True,
             include_technology=True,
         )
 
-        dummy_mp_address_old = get_dummy_address(1)
-        dummy_mp_address_new = get_dummy_address(2)
-        dummy_metering_point.address = dummy_mp_address_old
+        address = get_dummy_address(2)
 
         # -- Act -------------------------------------------------------------
 
         # insert technology codes needed to read technology
-        insert_all_technology_codes()
+        for technology in get_all_technology_codes():
+            dispatcher(TechnologyUpdate(
+                technology=technology
+            ))
 
         # Insert single metering point
         dispatcher(MeteringPointUpdate(
-            meteringpoint=dummy_metering_point,
+            meteringpoint=mp,
         ))
 
         # Update metering point address to the new given address
         dispatcher(MeteringPointAddressUpdate(
-            gsrn=dummy_metering_point.gsrn,
-            address=dummy_mp_address_new,
+            gsrn=mp.gsrn,
+            address=address,
         ))
 
         # Delegate access, needed to fetch it using api
         dispatcher(MeteringPointDelegateGranted(
             delegate=MeteringPointDelegate(
                 subject=subject,
-                gsrn=dummy_metering_point.gsrn,
+                gsrn=mp.gsrn,
             )
         ))
 
-        response = client.post(
+        r = client.post(
             path='/list',
             json={
                 'offset': 0,
                 'limit': 10,
                 'filters': {
-                    'gsrn': [dummy_metering_point.gsrn],
+                    'gsrn': [mp.gsrn],
                 },
             },
             headers={
-                'Authorization': 'Bearer: ' + token
+                'Authorization': f'Bearer: {token}',
             }
         )
 
-        response_json = response.get_json()
-
         # -- Assert ----------------------------------------------------------
 
-        assert response.status_code == 200
-        assert len(response_json['meteringpoints']) == 1
-
-        mp = response_json['meteringpoints'][0]
-
-        assert mp['type'] == dummy_metering_point.type.value
-        assert mp['sector'] == dummy_metering_point.sector
-
-        # Compare technology
-        dummy_mp_technology = dummy_metering_point.technology
-        mp_technology = mp['technology']
-
-        assert mp_technology['fuel_code'] == dummy_mp_technology.fuel_code
-        assert mp_technology['tech_code'] == dummy_mp_technology.tech_code
-        assert mp_technology['type'] == dummy_mp_technology.type.value
+        assert r.status_code == 200
+        assert len(r.json['meteringpoints']) == 1
 
         # Compare address
-        mp_address = mp['address']
-
-        assert mp_address['street_code'] == dummy_mp_address_new.street_code
-        assert mp_address['street_name'] == dummy_mp_address_new.street_name
-        assert mp_address['building_number'] == dummy_mp_address_new.building_number
-        assert mp_address['floor_id'] == dummy_mp_address_new.floor_id
-        assert mp_address['room_id'] == dummy_mp_address_new.room_id
-        assert mp_address['post_code'] == dummy_mp_address_new.post_code
-        assert mp_address['city_name'] == dummy_mp_address_new.city_name
-        assert mp_address['city_sub_division_name'] == dummy_mp_address_new.city_sub_division_name
-        assert mp_address['municipality_code'] == dummy_mp_address_new.municipality_code
-        assert mp_address['location_description'] == dummy_mp_address_new.location_description
+        assert r.json['meteringpoints'][0]['address'] == {
+            'street_code': address.street_code,
+            'street_name': address.street_name,
+            'building_number': address.building_number,
+            'floor_id': address.floor_id,
+            'room_id': address.room_id,
+            'post_code': address.post_code,
+            'city_name': address.city_name,
+            'city_sub_division_name': address.city_sub_division_name,
+            'municipality_code': address.municipality_code,
+            'location_description': address.location_description,
+        }
 
     def test__meteringpoint_address_update__address_removed_correctly(
             self,
@@ -872,24 +827,24 @@ class f_TestMeteringPointAddressUpdate:
     ):
         """
         Test Case(s):
-            TEST_4 Create/Update/remove metering_point.address
-                TEST_4.2 Remove metering_point address
+            TEST_4 Create/Update/remove meteringpoint.address
+                TEST_4.2 Remove meteringpoint address
 
 
             Addtionally tests the following:
                 - HTTP status code
 
         Steps:
-            1. Create dummy metering_point with address
+            1. Create dummy meteringpoint with address
             2. Insert dummy point
-            3. Remove metering metering_point address
-            3. Fetch metering_point using /list
-            4. Assert fetched metering_point.address equals None
+            3. Remove metering meteringpoint address
+            3. Fetch meteringpoint using /list
+            4. Assert fetched meteringpoint.address equals None
         """
 
         # -- Arrange ---------------------------------------------------------
 
-        subject = "foo"
+        subject = 'foo'
 
         token = get_dummy_token(
             token_encoder=token_encoder,
@@ -899,8 +854,8 @@ class f_TestMeteringPointAddressUpdate:
             ],
         )
 
-        dummy_metering_point = get_dummy_metering_point(
-            1,
+        mp = get_dummy_meteringpoint(
+            number=1,
             include_address=True,
             include_technology=True,
         )
@@ -908,16 +863,19 @@ class f_TestMeteringPointAddressUpdate:
         # -- Act -------------------------------------------------------------
 
         # insert technology codes needed to read technology
-        insert_all_technology_codes()
+        for technology in get_all_technology_codes():
+            dispatcher(TechnologyUpdate(
+                technology=technology
+            ))
 
         # Insert single metering point
         dispatcher(MeteringPointUpdate(
-            meteringpoint=dummy_metering_point,
+            meteringpoint=mp,
         ))
 
         # delete metering point address
         dispatcher(MeteringPointAddressUpdate(
-            gsrn=dummy_metering_point.gsrn,
+            gsrn=mp.gsrn,
             address=None,
         ))
 
@@ -925,49 +883,31 @@ class f_TestMeteringPointAddressUpdate:
         dispatcher(MeteringPointDelegateGranted(
             delegate=MeteringPointDelegate(
                 subject=subject,
-                gsrn=dummy_metering_point.gsrn,
+                gsrn=mp.gsrn,
             )
         ))
 
-        response = client.post(
+        r = client.post(
             path='/list',
             json={
                 'offset': 0,
                 'limit': 10,
                 'filters': {
-                    'gsrn': [dummy_metering_point.gsrn],
+                    'gsrn': [mp.gsrn],
                 },
             },
             headers={
-                'Authorization': 'Bearer: ' + token
+                'Authorization': f'Bearer: {token}',
             }
         )
 
-        response_json = response.get_json()
-
         # -- Assert ----------------------------------------------------------
 
-        assert response.status_code == 200
-        assert len(response_json['meteringpoints']) == 1
-
-        mp = response_json['meteringpoints'][0]
-
-        assert mp['type'] == dummy_metering_point.type.value
-        assert mp['sector'] == dummy_metering_point.sector
-
-        # Compare technology
-        dummy_mp_technology = dummy_metering_point.technology
-        mp_technology = mp['technology']
-
-        assert mp_technology['fuel_code'] == dummy_mp_technology.fuel_code
-        assert mp_technology['tech_code'] == dummy_mp_technology.tech_code
-        assert mp_technology['type'] == dummy_mp_technology.type.value
-
-        # Compare address
-        assert mp['address'] is None
+        assert r.status_code == 200
+        assert r.json['meteringpoints'][0]['address'] is None
 
 
-class f_TestMeteringPointTechnologyUpdate:
+class TestMeteringPointTechnologyUpdate:
     def test__meteringpoint_technology_update__technology_inserted_correctly(
             self,
             session: db.Session,
@@ -976,24 +916,24 @@ class f_TestMeteringPointTechnologyUpdate:
     ):
         """
         Test Case(s):
-            TEST_5 Create/Update/remove metering_point.technology
-                TEST_5.1 Insert metering_point.technology
+            TEST_5 Create/Update/remove meteringpoint.technology
+                TEST_5.1 Insert meteringpoint.technology
 
             Addtionally tests the following:
-                - Correct amount of metering_points returned
+                - Correct amount of meteringpoints returned
                 - HTTP status code
 
         Steps:
-            1. Create dummy metering_point without technology
+            1. Create dummy meteringpoint without technology
             2. Insert dummy point
-            3. Insert new technology to metering_point
-            3. Fetch metering_point using /list
-            4. Assert fetched metering_point.technology equals the dummy metering_point.technology
+            3. Insert new technology to meteringpoint
+            3. Fetch meteringpoint using /list
+            4. Assert fetched technology equals the dummy technology
         """
 
         # -- Arrange ---------------------------------------------------------
 
-        subject = "foo"
+        subject = 'foo'
 
         token = get_dummy_token(
             token_encoder=token_encoder,
@@ -1003,90 +943,66 @@ class f_TestMeteringPointTechnologyUpdate:
             ],
         )
 
-        dummy_metering_point = get_dummy_metering_point(
-            1,
+        meteringpoint = get_dummy_meteringpoint(
+            number=1,
             include_address=True,
             include_technology=False,
         )
 
-        dummy_mp_technology = get_dummy_technology(1)
-
-        technology_code = TechnologyCodes(
-            tech_code=dummy_mp_technology.tech_code,
-            fuel_code=dummy_mp_technology.fuel_code
-        )
+        technology = get_dummy_technology(1)
 
         # -- Act -------------------------------------------------------------
 
         # insert technology codes needed to read technology
-        insert_all_technology_codes()
+        for technology in get_all_technology_codes():
+            dispatcher(TechnologyUpdate(
+                technology=technology
+            ))
 
         # Insert single metering point
         dispatcher(MeteringPointUpdate(
-            meteringpoint=dummy_metering_point,
+            meteringpoint=meteringpoint,
         ))
 
         # Insert technology to metering point
         dispatcher(MeteringPointTechnologyUpdate(
-            gsrn=dummy_metering_point.gsrn,
-            codes=technology_code,
+            gsrn=meteringpoint.gsrn,
+            codes=TechnologyCodes(
+                tech_code=technology.tech_code,
+                fuel_code=technology.fuel_code
+            )
         ))
 
         # Delegate access, needed to fetch it using api
         dispatcher(MeteringPointDelegateGranted(
             delegate=MeteringPointDelegate(
                 subject=subject,
-                gsrn=dummy_metering_point.gsrn,
+                gsrn=meteringpoint.gsrn,
             )
         ))
 
-        response = client.post(
+        r = client.post(
             path='/list',
             json={
                 'offset': 0,
                 'limit': 10,
                 'filters': {
-                    'gsrn': [dummy_metering_point.gsrn],
+                    'gsrn': [meteringpoint.gsrn],
                 },
             },
             headers={
-                'Authorization': 'Bearer: ' + token
+                'Authorization': f'Bearer: {token}',
             }
         )
 
-        response_json = response.get_json()
-
         # -- Assert ----------------------------------------------------------
 
-        assert response.status_code == 200
-        assert len(response_json['meteringpoints']) == 1
-
-        mp = response_json['meteringpoints'][0]
-
-        assert mp['type'] == dummy_metering_point.type.value
-        assert mp['sector'] == dummy_metering_point.sector
-
-        # Compare technology
-        mp_technology = mp['technology']
-
-        assert mp_technology['fuel_code'] == dummy_mp_technology.fuel_code
-        assert mp_technology['tech_code'] == dummy_mp_technology.tech_code
-        assert mp_technology['type'] == dummy_mp_technology.type.value
-
-        # Compare address
-        mp_address = mp['address']
-        dummy_mp_address = dummy_metering_point.address
-
-        assert mp_address['street_code'] == dummy_mp_address.street_code
-        assert mp_address['street_name'] == dummy_mp_address.street_name
-        assert mp_address['building_number'] == dummy_mp_address.building_number
-        assert mp_address['floor_id'] == dummy_mp_address.floor_id
-        assert mp_address['room_id'] == dummy_mp_address.room_id
-        assert mp_address['post_code'] == dummy_mp_address.post_code
-        assert mp_address['city_name'] == dummy_mp_address.city_name
-        assert mp_address['city_sub_division_name'] == dummy_mp_address.city_sub_division_name
-        assert mp_address['municipality_code'] == dummy_mp_address.municipality_code
-        assert mp_address['location_description'] == dummy_mp_address.location_description
+        assert r.status_code == 200
+        assert r.json['meteringpoints'][0]['technology'] == {
+            'fuel_code': technology.fuel_code,
+            'tech_code': technology.tech_code,
+            'type': technology.type.value,
+        }
 
     def test__meteringpoint_technology_update__technology_updated_correctly(
             self,
@@ -1096,25 +1012,25 @@ class f_TestMeteringPointTechnologyUpdate:
     ):
         """
         Test Case(s):
-            TEST_5 Create/Update/remove metering_point.technology
-                TEST_5.2 Update metering_point.technology
+            TEST_5 Create/Update/remove meteringpoint.technology
+                TEST_5.2 Update meteringpoint.technology
 
             Addtionally tests the following:
-                - Correct amount of metering_points returned
+                - Correct amount of meteringpoints returned
                 - HTTP status code
 
         Steps:
-            1. Create dummy metering_point with technology
+            1. Create dummy meteringpoint with technology
             2. Insert dummy point
             3. Create new technology
-            4. Ypdate metering_point technology with new technology
-            5. Fetch metering_point using /list
-            6. Assert fetched metering_point.technology equals the new dummy technology
+            4. Ypdate meteringpoint technology with new technology
+            5. Fetch meteringpoint using /list
+            6. Assert fetched technology equals the new dummy technology
         """
 
         # -- Arrange ---------------------------------------------------------
 
-        subject = "foo"
+        subject = 'foo'
 
         token = get_dummy_token(
             token_encoder=token_encoder,
@@ -1124,34 +1040,33 @@ class f_TestMeteringPointTechnologyUpdate:
             ],
         )
 
-        dummy_metering_point = get_dummy_metering_point(
-            1,
+        mp = get_dummy_meteringpoint(
+            number=1,
             include_address=True,
-            include_technology=False,
+            include_technology=True,
         )
 
-        dummy_mp_technology_old = get_dummy_technology(1)
-        dummy_mp_technology_new = get_dummy_technology(1)
-
-        # Make sure inserted metering_point contains old technology
-        dummy_metering_point.technology = dummy_mp_technology_old
+        technology = get_dummy_technology(2)
 
         # -- Act -------------------------------------------------------------
 
         # insert technology codes needed to read technology
-        insert_all_technology_codes()
+        for technology in get_all_technology_codes():
+            dispatcher(TechnologyUpdate(
+                technology=technology
+            ))
 
         # Insert single metering point
         dispatcher(MeteringPointUpdate(
-            meteringpoint=dummy_metering_point,
+            meteringpoint=mp,
         ))
 
         # Update metering point technology
         dispatcher(MeteringPointTechnologyUpdate(
-            gsrn=dummy_metering_point.gsrn,
+            gsrn=mp.gsrn,
             codes=TechnologyCodes(
-                tech_code=dummy_mp_technology_new.tech_code,
-                fuel_code=dummy_mp_technology_new.fuel_code
+                tech_code=technology.tech_code,
+                fuel_code=technology.fuel_code
             ),
         ))
 
@@ -1159,57 +1074,32 @@ class f_TestMeteringPointTechnologyUpdate:
         dispatcher(MeteringPointDelegateGranted(
             delegate=MeteringPointDelegate(
                 subject=subject,
-                gsrn=dummy_metering_point.gsrn,
+                gsrn=mp.gsrn,
             )
         ))
 
-        response = client.post(
+        r = client.post(
             path='/list',
             json={
                 'offset': 0,
                 'limit': 10,
                 'filters': {
-                    'gsrn': [dummy_metering_point.gsrn],
+                    'gsrn': [mp.gsrn],
                 },
             },
             headers={
-                'Authorization': 'Bearer: ' + token
+                'Authorization': f'Bearer: {token}',
             }
         )
 
-        response_json = response.get_json()
-
         # -- Assert ----------------------------------------------------------
 
-        assert response.status_code == 200
-        assert len(response_json['meteringpoints']) == 1
-
-        mp = response_json['meteringpoints'][0]
-
-        assert mp['type'] == dummy_metering_point.type.value
-        assert mp['sector'] == dummy_metering_point.sector
-
-        # Compare technology equals the new technology and not the old
-        mp_technology = mp['technology']
-
-        assert mp_technology['fuel_code'] == dummy_mp_technology_new.fuel_code
-        assert mp_technology['tech_code'] == dummy_mp_technology_new.tech_code
-        assert mp_technology['type'] == dummy_mp_technology_new.type.value
-
-        # Compare address
-        mp_address = mp['address']
-        dummy_mp_address = dummy_metering_point.address
-
-        assert mp_address['street_code'] == dummy_mp_address.street_code
-        assert mp_address['street_name'] == dummy_mp_address.street_name
-        assert mp_address['building_number'] == dummy_mp_address.building_number
-        assert mp_address['floor_id'] == dummy_mp_address.floor_id
-        assert mp_address['room_id'] == dummy_mp_address.room_id
-        assert mp_address['post_code'] == dummy_mp_address.post_code
-        assert mp_address['city_name'] == dummy_mp_address.city_name
-        assert mp_address['city_sub_division_name'] == dummy_mp_address.city_sub_division_name
-        assert mp_address['municipality_code'] == dummy_mp_address.municipality_code
-        assert mp_address['location_description'] == dummy_mp_address.location_description
+        assert r.status_code == 200
+        assert r.json['meteringpoints'][0]['technology'] == {
+            'fuel_code': technology.fuel_code,
+            'tech_code': technology.tech_code,
+            'type': technology.type.value,
+        }
 
     def test__meteringpoint_technology_update__technology_removed_correctly(
             self,
@@ -1219,24 +1109,24 @@ class f_TestMeteringPointTechnologyUpdate:
     ):
         """
         Test Case(s):
-            TEST_5 Create/Update/remove metering_point.technology
-                TEST_5.3 Remove metering_point.technology
+            TEST_5 Create/Update/remove meteringpoint.technology
+                TEST_5.3 Remove meteringpoint.technology
 
             Addtionally tests the following:
-                - Correct amount of metering_points returned
+                - Correct amount of meteringpoints returned
                 - HTTP status code
 
         Steps:
-            1. Create dummy metering_point with technology
+            1. Create dummy meteringpoint with technology
             2. Insert dummy point
-            3. Remove metering_point technology
-            5. Fetch metering_point using /list
-            6. Assert fetched metering_point.technology equals None
+            3. Remove meteringpoint technology
+            5. Fetch meteringpoint using /list
+            6. Assert fetched meteringpoint.technology equals None
         """
 
         # -- Arrange ---------------------------------------------------------
 
-        subject = "foo"
+        subject = 'foo'
 
         token = get_dummy_token(
             token_encoder=token_encoder,
@@ -1246,8 +1136,8 @@ class f_TestMeteringPointTechnologyUpdate:
             ],
         )
 
-        dummy_metering_point = get_dummy_metering_point(
-            1,
+        mp = get_dummy_meteringpoint(
+            number=1,
             include_address=True,
             include_technology=True,
         )
@@ -1255,16 +1145,19 @@ class f_TestMeteringPointTechnologyUpdate:
         # -- Act -------------------------------------------------------------
 
         # insert technology codes needed to read technology
-        insert_all_technology_codes()
+        for technology in get_all_technology_codes():
+            dispatcher(TechnologyUpdate(
+                technology=technology
+            ))
 
         # Insert single metering point
         dispatcher(MeteringPointUpdate(
-            meteringpoint=dummy_metering_point,
+            meteringpoint=mp,
         ))
 
-        # Remove metering_point.technology by setting it to None
+        # Remove meteringpoint.technology by setting it to None
         dispatcher(MeteringPointTechnologyUpdate(
-            gsrn=dummy_metering_point.gsrn,
+            gsrn=mp.gsrn,
             codes=None,
         ))
 
@@ -1272,81 +1165,56 @@ class f_TestMeteringPointTechnologyUpdate:
         dispatcher(MeteringPointDelegateGranted(
             delegate=MeteringPointDelegate(
                 subject=subject,
-                gsrn=dummy_metering_point.gsrn,
+                gsrn=mp.gsrn,
             )
         ))
 
-        response = client.post(
+        r = client.post(
             path='/list',
             json={
                 'offset': 0,
                 'limit': 10,
                 'filters': {
-                    'gsrn': [dummy_metering_point.gsrn],
+                    'gsrn': [mp.gsrn],
                 },
             },
             headers={
-                'Authorization': 'Bearer: ' + token
+                'Authorization': f'Bearer: {token}',
             }
         )
 
-        response_json = response.get_json()
-
         # -- Assert ----------------------------------------------------------
 
-        assert response.status_code == 200
-        assert len(response_json['meteringpoints']) == 1
-
-        mp = response_json['meteringpoints'][0]
-
-        assert mp['type'] == dummy_metering_point.type.value
-        assert mp['sector'] == dummy_metering_point.sector
-
-        # Compare technology - None => Deleted
-        assert mp['technology'] is None
-
-        # Compare address
-        mp_address = mp['address']
-        dummy_mp_address = dummy_metering_point.address
-
-        assert mp_address['street_code'] == dummy_mp_address.street_code
-        assert mp_address['street_name'] == dummy_mp_address.street_name
-        assert mp_address['building_number'] == dummy_mp_address.building_number
-        assert mp_address['floor_id'] == dummy_mp_address.floor_id
-        assert mp_address['room_id'] == dummy_mp_address.room_id
-        assert mp_address['post_code'] == dummy_mp_address.post_code
-        assert mp_address['city_name'] == dummy_mp_address.city_name
-        assert mp_address['city_sub_division_name'] == dummy_mp_address.city_sub_division_name
-        assert mp_address['municipality_code'] == dummy_mp_address.municipality_code
-        assert mp_address['location_description'] == dummy_mp_address.location_description
+        assert r.status_code == 200
+        assert r.json['meteringpoints'][0]['technology'] is None
 
 
-class f_TestMeteringPointRemoved:
-    def test__metering_point_removed__metering_point_removed(
+class TestMeteringPointRemoved:
+    def test__meteringpoint_removed__meteringpoint_removed(
         self,
         session: db.Session,
         client: FlaskClient,
         token_encoder: TokenEncoder,
     ):
         """
-        TEST_6 Remove metering_point 
-            TEST_6.1 Remove metering_point using on_meteringpoint_removed handler
+        TEST_6 Remove meteringpoint
+            TEST_6.1 Remove meteringpoint using meteringpoint_removed handler
 
         Addtionally tests the following:
             -
 
         Steps:
-            1. Create multiple dummy metering_points with different gsrn
-            2. Insert dummy metering_points
+            1. Create 2 dummy meteringpoints
+            2. Insert dummy meteringpoints
             3. Delegate access for each gsrn
-            4. Remove 1 metering_point
-            3. Fetchs metering_points using /list
-            4. Check that the correct metering_point has been removed
+            4. Remove meteringpoint
+            3. Fetchs meteringpoint using /list
+            4. Check that correct meteringpoint has been removed
         """
 
         # -- Arrange ---------------------------------------------------------
 
-        subject = "foo"
+        subject = 'foo'
 
         token = get_dummy_token(
             token_encoder=token_encoder,
@@ -1356,118 +1224,73 @@ class f_TestMeteringPointRemoved:
             ],
         )
 
-        # Amount of metering_points to insert
-        meteringpoint_count = 5
-
-        # Create a list of dummy metering_points
-        dummy_metering_point_list = get_dummy_metering_point_list(
-            meteringpoint_count,
+        mp_1 = get_dummy_meteringpoint(
+            number=1,
             include_address=True,
             include_technology=True,
         )
 
-        # Get list of metering_point's gsrn
-        dummy_metering_point_gsrn_list = [
-            o.gsrn for o in dummy_metering_point_list]
-
-        # metering_point to be removed
-        gsrn_to_be_remove = dummy_metering_point_gsrn_list[0]
-
-        # insert technology codes needed to read technology
-        insert_all_technology_codes()
+        mp_2 = get_dummy_meteringpoint(
+            number=1,
+            include_address=True,
+            include_technology=True,
+        )
 
         # -- Act -------------------------------------------------------------
 
-        for dummy_metering_point in dummy_metering_point_list:
-            # Insert metering point
-            dispatcher(MeteringPointUpdate(
-                meteringpoint=dummy_metering_point,
+        # insert technology codes needed to read technology
+        for technology in get_all_technology_codes():
+            dispatcher(TechnologyUpdate(
+                technology=technology
             ))
 
-            # Delegate access, needed to fetch it using api
-            dispatcher(MeteringPointDelegateGranted(
-                delegate=MeteringPointDelegate(
-                    subject=subject,
-                    gsrn=dummy_metering_point.gsrn,
-                )
-            ))
-
-        dispatcher(MeteringPointRemoved(
-            gsrn=gsrn_to_be_remove,
+        # Insert both meteringpoint
+        dispatcher(MeteringPointUpdate(
+            meteringpoint=mp_1,
         ))
 
-        response = client.post(
+        dispatcher(MeteringPointUpdate(
+            meteringpoint=mp_2,
+        ))
+
+        # Remove meteringpoint.technology by setting it to None
+        dispatcher(MeteringPointTechnologyUpdate(
+            gsrn=mp_1.gsrn,
+            codes=None,
+        ))
+
+        # Delegate access, needed to fetch it using api
+        dispatcher(MeteringPointDelegateGranted(
+            delegate=MeteringPointDelegate(
+                subject=subject,
+                gsrn=mp_1.gsrn,
+            )
+        ))
+
+        dispatcher(MeteringPointDelegateGranted(
+            delegate=MeteringPointDelegate(
+                subject=subject,
+                gsrn=mp_2.gsrn,
+            )
+        ))
+
+        r = client.post(
             path='/list',
             json={
                 'offset': 0,
-                'limit': 20,
+                'limit': 10,
                 'filters': {
-                    'gsrn': dummy_metering_point_gsrn_list,
+                    'gsrn': [mp_1.gsrn, mp_2.gsrn],
                 },
             },
             headers={
-                'Authorization': 'Bearer: ' + token
+                'Authorization': f'Bearer: {token}',
             }
         )
 
-        response_json = response.get_json()
-
         # -- Assert ----------------------------------------------------------
 
-        assert response.status_code == 200
+        assert r.status_code == 200
+        assert len(r.json['meteringpoints']) == 1
 
-        fetched_mp_list = response_json['meteringpoints']
-
-        expected_metering_point_count = len(dummy_metering_point_gsrn_list) - 1
-        assert len(fetched_mp_list) == expected_metering_point_count
-
-        def find_metering_point_by_gsrn(metering_point_list, gsrn: str):
-            """
-            Finds a dummy meteringpoint by gsrn if it exists.
-            Returns None if not found
-            """
-            for x in metering_point_list:
-                if x['gsrn'] == gsrn:
-                    return x
-            return None
-
-        # Loop each inserted dummy metering_point and check that
-        # it exists in the fetched output
-        for dummy_mp in dummy_metering_point_list:
-            fetched_mp = find_metering_point_by_gsrn(
-                metering_point_list=fetched_mp_list,
-                gsrn=dummy_mp.gsrn,
-            )
-
-            if dummy_mp.gsrn == gsrn_to_be_remove:
-                # Check if removed metering_point is actually removed
-                assert fetched_mp is None
-                continue
-            elif fetched_mp is None:
-                assert False, 'One or more metering points(excl. deleted mp) were not fetched as expected'
-
-            assert fetched_mp['type'] == dummy_mp.type.value
-            assert fetched_mp['sector'] == dummy_mp.sector
-
-            # Compare technology
-            dummy_mp_technology = dummy_mp.technology
-            mp_technology = fetched_mp['technology']
-
-            assert mp_technology['fuel_code'] == dummy_mp_technology.fuel_code
-            assert mp_technology['tech_code'] == dummy_mp_technology.tech_code
-            assert mp_technology['type'] == dummy_mp_technology.type.value
-
-            # Compare address
-            dummy_mp_address = dummy_mp.address
-            mp_address = fetched_mp['address']
-
-            assert mp_address['street_code'] == dummy_mp_address.street_code
-            assert mp_address['street_name'] == dummy_mp_address.street_name
-            assert mp_address['building_number'] == dummy_mp_address.building_number
-            assert mp_address['floor_id'] == dummy_mp_address.floor_id
-            assert mp_address['room_id'] == dummy_mp_address.room_id
-            assert mp_address['post_code'] == dummy_mp_address.post_code
-            assert mp_address['city_name'] == dummy_mp_address.city_name
-            assert mp_address['city_sub_division_name'] == dummy_mp_address.city_sub_division_name
-            assert mp_address['municipality_code'] == dummy_mp_address.municipality_code
-            assert mp_address['location_description'] == dummy_mp_address.location_description
+        assert r.json['meteringpoints'][0]['gsrn'] == mp_2.gsrn
