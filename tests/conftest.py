@@ -4,6 +4,7 @@ https://docs.pytest.org/en/2.7.3/plugins.html?highlight=re#conftest-py-plugins
 """
 import pytest
 from unittest.mock import patch
+from datetime import datetime, timedelta, timezone
 
 from energytt_platform.models.auth import InternalToken
 from energytt_platform.tokens import TokenEncoder
@@ -47,3 +48,29 @@ def token_encoder():
         schema=InternalToken,
         secret=TOKEN_SECRET,
     )
+    
+
+@pytest.fixture(scope='function')
+def valid_token(token_encoder: TokenEncoder[InternalToken]):
+    """
+    TODO
+    """
+    yield InternalToken(
+        issued=datetime.now(tz=timezone.utc),
+        expires=datetime.now(tz=timezone.utc) + timedelta(days=1),
+        actor='foo',
+        subject='bar',
+        scope=['meteringpoints.read'],
+    )
+
+
+@pytest.fixture(scope='function')
+def valid_token_encoded(
+        valid_token: InternalToken,
+        token_encoder: TokenEncoder[InternalToken],
+):
+    """
+    TODO
+    """
+    yield token_encoder.encode(valid_token)
+
