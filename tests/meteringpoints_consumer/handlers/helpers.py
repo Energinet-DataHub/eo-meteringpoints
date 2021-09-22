@@ -178,16 +178,11 @@ def insert_meteringpoint_and_delegate_access_to_subject(
 
 
 def make_dict_of_metering_point(mp: MeteringPoint) -> Dict[str, Any]:
-    return {
-        'gsrn': mp.gsrn,
-        'type': mp.type.value,
-        'sector': mp.sector,
-        'technology': {
-            'fuel_code': mp.technology.fuel_code,
-            'tech_code': mp.technology.tech_code,
-            'type': mp.technology.type.value,
-        },
-        'address': {
+    address = None
+    technology = None 
+
+    if mp.address is not None:
+        address = {
             'street_code': mp.address.street_code,
             'street_name': mp.address.street_name,
             'building_number': mp.address.building_number,
@@ -199,6 +194,20 @@ def make_dict_of_metering_point(mp: MeteringPoint) -> Dict[str, Any]:
             'municipality_code': mp.address.municipality_code,
             'location_description': mp.address.location_description,
         }
+    
+    if mp.technology is not None:
+        technology = {
+            'fuel_code': mp.technology.fuel_code,
+            'tech_code': mp.technology.tech_code,
+            'type': mp.technology.type.value,
+        }
+
+    return {
+        'gsrn': mp.gsrn,
+        'type': mp.type.value,
+        'sector': mp.sector,
+        'technology': technology,
+        'address': address
     }
 
 
