@@ -1,21 +1,17 @@
 from flask.testing import FlaskClient
 
-from energytt_platform.tokens import TokenEncoder
-
-
 from energytt_platform.bus.messages.meteringpoints import MeteringPointUpdate
 
 from meteringpoints_consumer.handlers import dispatcher
 
 from meteringpoints_shared.db import db
 
-from .helpers import get_dummy_meteringpoint, get_dummy_meteringpoint_list
-from .helpers import get_dummy_token
-from .helpers import get_dummy_meteringpoint
 from .helpers import \
     insert_meteringpoint_and_delegate_access_to_subject, \
     make_dict_of_metering_point, \
-    insert_technology_from_meteringpoint
+    insert_technology_from_meteringpoint, \
+    get_dummy_meteringpoint, \
+    get_dummy_meteringpoint_list
 
 
 class TestOnMeteringPointUpdate:
