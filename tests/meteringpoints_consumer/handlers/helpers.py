@@ -179,7 +179,7 @@ def insert_meteringpoint_and_delegate_access_to_subject(
 
 def make_dict_of_metering_point(mp: MeteringPoint) -> Dict[str, Any]:
     address = None
-    technology = None 
+    technology = None
 
     if mp.address is not None:
         address = {
@@ -194,7 +194,7 @@ def make_dict_of_metering_point(mp: MeteringPoint) -> Dict[str, Any]:
             'municipality_code': mp.address.municipality_code,
             'location_description': mp.address.location_description,
         }
-    
+
     if mp.technology is not None:
         technology = {
             'fuel_code': mp.technology.fuel_code,
