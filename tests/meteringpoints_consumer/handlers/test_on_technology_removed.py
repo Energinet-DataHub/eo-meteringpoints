@@ -7,7 +7,7 @@ from energytt_platform.models.tech import Technology, TechnologyType
 from meteringpoints_consumer.handlers import dispatcher
 from meteringpoints_shared.db import db
 
-from .helpers import \
+from ...helpers import \
     get_dummy_meteringpoint_list, \
     insert_meteringpoint_and_delegate_access_to_subject, \
     get_dummy_meteringpoint

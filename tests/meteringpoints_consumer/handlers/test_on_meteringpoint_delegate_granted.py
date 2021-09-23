@@ -10,7 +10,7 @@ from meteringpoints_consumer.handlers import dispatcher
 from energytt_platform.bus.messages.meteringpoints import \
     MeteringPointUpdate
 
-from .helpers import \
+from ...helpers import \
     make_dict_of_metering_point, \
     insert_technology_from_meteringpoint, \
     get_dummy_meteringpoint, \

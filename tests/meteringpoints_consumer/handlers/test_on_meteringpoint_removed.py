@@ -7,7 +7,7 @@ from meteringpoints_consumer.handlers import dispatcher
 
 from meteringpoints_shared.db import db
 
-from .helpers import \
+from ...helpers import \
     insert_meteringpoint_and_delegate_access_to_subject, \
     insert_technology_from_meteringpoint, \
     get_dummy_meteringpoint, \
