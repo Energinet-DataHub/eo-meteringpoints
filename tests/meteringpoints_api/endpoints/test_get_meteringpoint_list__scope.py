@@ -8,12 +8,10 @@ from ...helpers import \
     get_dummy_token, \
     insert_meteringpoint_and_delegate_access_to_subject, \
     make_dict_of_metering_point, \
-    insert_technology_from_meteringpoint, \
-    get_dummy_meteringpoint, \
-    get_dummy_address
+    get_dummy_meteringpoint
 
 
-class TestGetMeteringPointList:
+class TestGetMeteringPointListScope:
     def test__scope_read_type_in_token__able_to_fetch_mp(
         self,
         session: db.Session,
@@ -113,8 +111,8 @@ class TestGetMeteringPointList:
 
         # TODO: Update to check actual response error
         assert r.status_code == 500
-    
-    def test__scope_is_invalid_unable_to_fetch_mp(
+
+    def test__scope_is_invalid__unable_to_fetch_mp(
         self,
         session: db.Session,
         client: FlaskClient,
