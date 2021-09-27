@@ -22,23 +22,6 @@ class TestMeteringPointAddressUpdate:
             client: FlaskClient,
             valid_token_encoded: str,
     ):
-        """
-        Test Case(s):
-            TEST_4 Create/Update/remove meteringpoint.address
-                TEST_4.1 Insert meteringpoint.address
-
-            Addtionally tests the following:
-                - Correct amount of meteringpoints returned
-                - HTTP status code
-
-        Steps:
-            1. Create dummy meteringpoint without address
-            2. Insert dummy point
-            3. Insert new address to meteringpoint
-            3. Fetch meteringpoint using /list
-            4. Assert fetched address equals the dummy address
-        """
-
         # -- Arrange ---------------------------------------------------------
 
         subject = 'bar'
@@ -100,23 +83,6 @@ class TestMeteringPointAddressUpdate:
             client: FlaskClient,
             valid_token_encoded: str,
     ):
-        """
-        Test Case(s):
-            TEST_4 Create/Update/remove meteringpoint.address
-                TEST_4.2 Update meteringpoint address
-
-            Addtionally tests the following:
-                - Correct amount of meteringpoints returned
-                - HTTP status code
-
-        Steps:
-            1. Create dummy meteringpoint with address
-            2. Insert dummy point
-            3. Update meteringpoint address
-            3. Fetch meteringpoint using /list
-            4. Assert fetched mp.address equals the dummy mp.address
-        """
-
         # -- Arrange ---------------------------------------------------------
 
         subject = 'bar'
@@ -176,23 +142,6 @@ class TestMeteringPointAddressUpdate:
             client: FlaskClient,
             valid_token_encoded: str,
     ):
-        """
-        Test Case(s):
-            TEST_4 Create/Update/remove meteringpoint.address
-                TEST_4.2 Remove meteringpoint address
-
-
-            Addtionally tests the following:
-                - HTTP status code
-
-        Steps:
-            1. Create dummy meteringpoint with address
-            2. Insert dummy point
-            3. Remove metering meteringpoint address
-            3. Fetch meteringpoint using /list
-            4. Assert fetched meteringpoint.address equals None
-        """
-
         # -- Arrange ---------------------------------------------------------
 
         subject = 'bar'
