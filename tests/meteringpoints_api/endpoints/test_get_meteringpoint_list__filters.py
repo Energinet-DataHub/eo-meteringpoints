@@ -8,13 +8,14 @@ from energytt_platform.models.meteringpoints import MeteringPoint
 from meteringpoints_shared.db import db
 from energytt_platform.models.common import EnergyDirection
 
-
+from meteringpoints_shared.models import DbMeteringPoint, DbMeteringPointDelegate
 from ...helpers import \
     METERPING_POINT_TYPES, \
     insert_meteringpoint_and_delegate_access_to_subject, \
     make_dict_of_metering_point
 
 
+SUBJECT = 'Subject1'
 mp_types = METERPING_POINT_TYPES
 mp_sectors = ('SECTOR_1', 'SECTOR_2')
 
@@ -23,39 +24,64 @@ combinations = product(
 )
 
 
+@pytest.fixture(scope='module')
+def seed_meteringpoints() -> List[MeteringPoint]:
+    """
+    TODO
+
+    :return:
+    """
+
+    mp_list = []
+
+    for i, (mp_type, mp_sector) in enumerate(combinations, start=1):
+        mp_list.append(DbMeteringPoint(
+            gsrn=f'GSRN#{i}',
+            type=mp_type,
+            sector=mp_sector,
+        ))
+
+    return mp_list
+
+
+@pytest.fixture(scope='module')
+def seeded_session(
+        session: db.Session,
+        seed_meteringpoints: List[MeteringPoint],
+) -> db.Session:
+    """
+    TODO
+
+    :param session:
+    :return:
+    """
+    session.begin()
+
+    for meteringpoint in seed_meteringpoints:
+        session.add(DbMeteringPoint(
+            gsrn=meteringpoint.gsrn,
+            type=meteringpoint.type,
+            sector=meteringpoint.sector,
+        ))
+
+        session.add(DbMeteringPointDelegate(
+            gsrn=meteringpoint.gsrn,
+            subject=SUBJECT,
+        ))
+
+    session.commit()
+
+    yield session
+
+
 class TestGetMeteringPointListFilters:
-    @pytest.fixture(scope='function')
-    def seed_session(self, session: db.Session) -> List[MeteringPoint]:
-        """
-        Generates multiple meteringpoints and insert them into the database,
-        as well as delegate access to subject = 'bar'
-        """
-        mp_list = []
-
-        for i, (mp_type, mp_sector) in \
-                enumerate(combinations, start=1):
-            gsrn = f'GSRN#{i}'
-            mp = MeteringPoint(
-                gsrn=gsrn,
-                type=mp_type,
-                sector=mp_sector,
-                technology=None,
-                address=None,
-            )
-
-            insert_meteringpoint_and_delegate_access_to_subject(
-                meteringpoint=mp,
-                token_subject='bar',
-            )
-            mp_list.append(mp)
-
-        return mp_list
 
     def test__filter_by_single_gsrn__single_point_fetched(
         self,
         seed_session,
         client: FlaskClient,
         valid_token_encoded: str,
+        seed_meteringpoints: List[MeteringPoint],
     ):
         # -- Arrange ---------------------------------------------------------
 
@@ -87,50 +113,62 @@ class TestGetMeteringPointListFilters:
 
     def test__filter_by_multiple_gsrn__multiple_point_fetched(
         self,
-        seed_session,
+        seed_session: db.Session,
         client: FlaskClient,
         valid_token_encoded: str,
+        seed_meteringpoints: List[MeteringPoint],
     ):
         # -- Arrange ---------------------------------------------------------
 
-        mp_list = seed_session
-        mp_gsrn_list = [o.gsrn for o in mp_list]
+        seed_meteringpoints = {m.gsrn: m for m in seed_meteringpoints}
+
+        # mp_list = seed_session
+        # mp_gsrn_list = [o.gsrn for o in mp_list]
+
+        gsrn_list = [m.gsrn for m in seed_meteringpoints]
+        gsrn_list.extend(('foo', 'bar'))
 
         # -- Act -------------------------------------------------------------
 
         r = client.post(
             path='/list',
+            headers={
+                'Authorization': f'Bearer: {valid_token_encoded}',
+            },
             json={
                 'offset': 0,
                 'limit': 100,
                 'filters': {
-                    'gsrn': mp_gsrn_list,
+                    'gsrn': gsrn_list,
                 },
             },
-            headers={
-                'Authorization': f'Bearer: {valid_token_encoded}',
-            }
         )
 
         # -- Assert ----------------------------------------------------------
 
-        assert len(r.json['meteringpoints']) == len(mp_gsrn_list)
+        assert r.status_code == 200
 
-        # Validate that the inserted metering points is also fetched
-        for mp in mp_list:
-            mp_dict = make_dict_of_metering_point(mp)
+        for meteringpoint in r.json['meteringpoints']:
+            expected = seed_meteringpoints[meteringpoint.gsrn]
+            assert make_dict_of_metering_point(meteringpoint) == expected
 
-            # Find fetched meteringpoint by gsrn
-            needle = mp_dict['gsrn']
-            haystack = r.json['meteringpoints']
-
-            filtered = filter(lambda obj: obj['gsrn'] == needle, haystack)
-            fetched_mp = next(filtered, None)
-
-            if fetched_mp is None:
-                assert False, 'One or more meteringpoints were not fetched'
-
-            assert fetched_mp == mp_dict
+        # # assert len(r.json['meteringpoints']) == len(mp_gsrn_list)
+        #
+        # # Validate that the inserted metering points is also fetched
+        # for mp in mp_list:
+        #     mp_dict = make_dict_of_metering_point(mp)
+        #
+        #     # Find fetched meteringpoint by gsrn
+        #     needle = mp_dict['gsrn']
+        #     haystack = r.json['meteringpoints']
+        #
+        #     filtered = filter(lambda obj: obj['gsrn'] == needle, haystack)
+        #     fetched_mp = next(filtered, None)
+        #
+        #     if fetched_mp is None:
+        #         assert False, 'One or more meteringpoints were not fetched'
+        #
+        #     assert fetched_mp == mp_dict
 
     def test__filter_by_meteringpoint_type__correct_meteringpoints_fetched(
         self,
@@ -210,6 +248,8 @@ class TestGetMeteringPointListFilters:
         )
 
         # -- Assert ----------------------------------------------------------
+
+        assert r.status_code == 200
         assert len(r.json['meteringpoints']) == len(expected_mp_list)
 
         # Validate that the inserted metering points is also fetched
