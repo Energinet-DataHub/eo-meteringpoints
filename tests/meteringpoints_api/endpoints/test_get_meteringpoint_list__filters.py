@@ -11,11 +11,9 @@ from energytt_platform.models.common import EnergyDirection
 from meteringpoints_shared.models import DbMeteringPoint, DbMeteringPointDelegate
 from ...helpers import \
     METERPING_POINT_TYPES, \
-    insert_meteringpoint_and_delegate_access_to_subject, \
     make_dict_of_metering_point
 
 
-SUBJECT = 'Subject1'
 mp_types = METERPING_POINT_TYPES
 mp_sectors = ('SECTOR_1', 'SECTOR_2')
 
@@ -44,10 +42,11 @@ def seed_meteringpoints() -> List[MeteringPoint]:
     return mp_list
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='function')
 def seeded_session(
         session: db.Session,
         seed_meteringpoints: List[MeteringPoint],
+        token_subject: str,
 ) -> db.Session:
     """
     TODO
@@ -66,7 +65,7 @@ def seeded_session(
 
         session.add(DbMeteringPointDelegate(
             gsrn=meteringpoint.gsrn,
-            subject=SUBJECT,
+            subject=token_subject,
         ))
 
     session.commit()
@@ -78,15 +77,14 @@ class TestGetMeteringPointListFilters:
 
     def test__filter_by_single_gsrn__single_point_fetched(
         self,
-        seed_session,
         client: FlaskClient,
         valid_token_encoded: str,
         seed_meteringpoints: List[MeteringPoint],
+        seeded_session: db.Session,
     ):
         # -- Arrange ---------------------------------------------------------
 
-        mp_list = seed_session
-        mp_gsrn_list = [o.gsrn for o in mp_list]
+        mp = seed_meteringpoints[0]
 
         # -- Act -------------------------------------------------------------
 
@@ -96,7 +94,7 @@ class TestGetMeteringPointListFilters:
                 'offset': 0,
                 'limit': 10,
                 'filters': {
-                    'gsrn': [mp_gsrn_list[0]],
+                    'gsrn': [mp.gsrn],
                 },
             },
             headers={
@@ -108,24 +106,24 @@ class TestGetMeteringPointListFilters:
 
         assert len(r.json['meteringpoints']) == 1
 
-        fetched_mp = r.json['meteringpoints'][0]
-        assert fetched_mp == make_dict_of_metering_point(mp_list[0])
+        assert r.json == {
+            'meteringpoints': [make_dict_of_metering_point(mp)],
+            'success': True,
+            'total': 1
+        }
 
     def test__filter_by_multiple_gsrn__multiple_point_fetched(
         self,
-        seed_session: db.Session,
         client: FlaskClient,
         valid_token_encoded: str,
         seed_meteringpoints: List[MeteringPoint],
+        seeded_session: db.Session,
     ):
         # -- Arrange ---------------------------------------------------------
 
-        seed_meteringpoints = {m.gsrn: m for m in seed_meteringpoints}
+        seed_meteringpoints_dict = {m.gsrn: m for m in seed_meteringpoints}
 
-        # mp_list = seed_session
-        # mp_gsrn_list = [o.gsrn for o in mp_list]
-
-        gsrn_list = [m.gsrn for m in seed_meteringpoints]
+        gsrn_list = list(seed_meteringpoints_dict.keys())
         gsrn_list.extend(('foo', 'bar'))
 
         # -- Act -------------------------------------------------------------
@@ -149,39 +147,26 @@ class TestGetMeteringPointListFilters:
         assert r.status_code == 200
 
         for meteringpoint in r.json['meteringpoints']:
-            expected = seed_meteringpoints[meteringpoint.gsrn]
-            assert make_dict_of_metering_point(meteringpoint) == expected
+            expected = seed_meteringpoints_dict[meteringpoint["gsrn"]]
+            assert meteringpoint == make_dict_of_metering_point(expected)
 
-        # # assert len(r.json['meteringpoints']) == len(mp_gsrn_list)
-        #
-        # # Validate that the inserted metering points is also fetched
-        # for mp in mp_list:
-        #     mp_dict = make_dict_of_metering_point(mp)
-        #
-        #     # Find fetched meteringpoint by gsrn
-        #     needle = mp_dict['gsrn']
-        #     haystack = r.json['meteringpoints']
-        #
-        #     filtered = filter(lambda obj: obj['gsrn'] == needle, haystack)
-        #     fetched_mp = next(filtered, None)
-        #
-        #     if fetched_mp is None:
-        #         assert False, 'One or more meteringpoints were not fetched'
-        #
-        #     assert fetched_mp == mp_dict
-
-    def test__filter_by_meteringpoint_type__correct_meteringpoints_fetched(
+    def test__filter_by_type__correct_meteringpoints_fetched(
         self,
-        seed_session: List[MeteringPoint],
         client: FlaskClient,
         valid_token_encoded: str,
+        seed_meteringpoints: List[MeteringPoint],
+        seeded_session: db.Session,
     ):
         # -- Arrange ---------------------------------------------------------
 
-        mp_list = seed_session
         mp_type = EnergyDirection.consumption
 
-        expected_mp_list = [o for o in mp_list if o.type == mp_type]
+        seed_meteringpoints_dict = {m.gsrn: m for m in seed_meteringpoints}
+
+        expected_mp_list = [
+            o for o in seed_meteringpoints
+            if o.type == mp_type
+        ]
 
         # -- Act -------------------------------------------------------------
 
@@ -200,36 +185,26 @@ class TestGetMeteringPointListFilters:
         )
 
         # -- Assert ----------------------------------------------------------
+        assert r.status_code == 200
+
         assert len(r.json['meteringpoints']) == len(expected_mp_list)
 
-        # Validate that the inserted metering points is also fetched
-        for mp in expected_mp_list:
-            mp_dict = make_dict_of_metering_point(mp)
-
-            # Find fetched meteringpoint by gsrn
-            needle = mp_dict['gsrn']
-            haystack = r.json['meteringpoints']
-
-            filtered = filter(lambda obj: obj['gsrn'] == needle, haystack)
-            fetched_mp = next(filtered, None)
-
-            if fetched_mp is None:
-                assert False, 'One or more meteringpoints were not fetched'
-
-            assert fetched_mp == mp_dict
+        for meteringpoint in r.json['meteringpoints']:
+            expected = seed_meteringpoints_dict[meteringpoint["gsrn"]]
+            assert meteringpoint == make_dict_of_metering_point(expected)
 
     def test__filter_by_single_sector__correct_meteringpoints_fetched(
         self,
-        seed_session: List[MeteringPoint],
         client: FlaskClient,
         valid_token_encoded: str,
+        seed_meteringpoints: List[MeteringPoint],
+        seeded_session: db.Session,
     ):
         # -- Arrange ---------------------------------------------------------
 
-        mp_list = seed_session
-        sector = mp_sectors[0]
+        seed_meteringpoints_dict = {m.gsrn: m for m in seed_meteringpoints}
 
-        expected_mp_list = [o for o in mp_list if o.sector == sector]
+        sector = seed_meteringpoints[0].sector
 
         # -- Act -------------------------------------------------------------
 
@@ -250,36 +225,31 @@ class TestGetMeteringPointListFilters:
         # -- Assert ----------------------------------------------------------
 
         assert r.status_code == 200
-        assert len(r.json['meteringpoints']) == len(expected_mp_list)
 
-        # Validate that the inserted metering points is also fetched
-        for mp in expected_mp_list:
-            mp_dict = make_dict_of_metering_point(mp)
-
-            # Find fetched meteringpoint by gsrn
-            needle = mp_dict['gsrn']
-            haystack = r.json['meteringpoints']
-
-            filtered = filter(lambda obj: obj['gsrn'] == needle, haystack)
-            fetched_mp = next(filtered, None)
-
-            if fetched_mp is None:
-                assert False, 'One or more meteringpoints were not fetched'
-
-            assert fetched_mp == mp_dict
+        for meteringpoint in r.json['meteringpoints']:
+            expected = seed_meteringpoints_dict[meteringpoint["gsrn"]]
+            assert meteringpoint == make_dict_of_metering_point(expected)
 
     def test__filter_by_multiple_sectors__correct_meteringpoints_fetched(
         self,
-        seed_session: List[MeteringPoint],
         client: FlaskClient,
         valid_token_encoded: str,
+        seed_meteringpoints: List[MeteringPoint],
+        seeded_session: db.Session,
     ):
         # -- Arrange ---------------------------------------------------------
 
-        mp_list = seed_session
-        sector_list = [mp_sectors[0], mp_sectors[1]]
+        seed_meteringpoints_dict = {m.gsrn: m for m in seed_meteringpoints}
 
-        expected_mp_list = [o for o in mp_list if o.sector in sector_list]
+        sectors = [
+            seed_meteringpoints[0].sector,
+            seed_meteringpoints[1].sector,
+        ]
+
+        expected_mp_list = [
+            o for o in seed_meteringpoints
+            if o.sector in sectors
+        ]
 
         # -- Act -------------------------------------------------------------
 
@@ -289,7 +259,7 @@ class TestGetMeteringPointListFilters:
                 'offset': 0,
                 'limit': 100,
                 'filters': {
-                    'sector': sector_list,
+                    'sector': sectors,
                 },
             },
             headers={
@@ -301,26 +271,23 @@ class TestGetMeteringPointListFilters:
         assert len(r.json['meteringpoints']) == len(expected_mp_list)
 
         # Validate that the inserted metering points is also fetched
-        for mp in expected_mp_list:
-            mp_dict = make_dict_of_metering_point(mp)
+        assert r.status_code == 200
 
-            # Find fetched meteringpoint by gsrn
-            needle = mp_dict['gsrn']
-            haystack = r.json['meteringpoints']
+        assert len(r.json['meteringpoints']) == len(expected_mp_list)
 
-            filtered = filter(lambda obj: obj['gsrn'] == needle, haystack)
-            fetched_mp = next(filtered, None)
+        for meteringpoint in r.json['meteringpoints']:
+            expected = seed_meteringpoints_dict[meteringpoint["gsrn"]]
+            assert meteringpoint == make_dict_of_metering_point(expected)
 
-            if fetched_mp is None:
-                assert False, 'One or more meteringpoints were not fetched'
-
-            assert fetched_mp == mp_dict
-
+    @pytest.mark.parametrize("gsrn", [
+        [""], ["invalid-gsrn"], ['', 'invalid-gsrn']
+    ])
     def test__filter_by_invalid_gsrn__no_points_fetched(
         self,
-        seed_session: List[MeteringPoint],
         client: FlaskClient,
         valid_token_encoded: str,
+        seeded_session: db.Session,
+        gsrn: str,
     ):
         # -- Arrange ---------------------------------------------------------
 
@@ -332,7 +299,7 @@ class TestGetMeteringPointListFilters:
                 'offset': 0,
                 'limit': 10,
                 'filters': {
-                    'gsrn': [""],
+                    'gsrn': gsrn,
                 },
             },
             headers={
@@ -349,12 +316,14 @@ class TestGetMeteringPointListFilters:
             'total': 0
         }
 
-    @pytest.mark.parametrize("sector", ["", "invalid-sector"])
-    def test__filter_by_empty_sector__no_points_fetched(
+    @pytest.mark.parametrize("sector", [
+        [""], ["invalid-sector"], ['', 'invalid-sector']
+    ])
+    def test__filter_by_invalid_sector__no_points_fetched(
         self,
-        seed_session: List[MeteringPoint],
         client: FlaskClient,
         valid_token_encoded: str,
+        seeded_session: db.Session,
         sector: str,
     ):
         # -- Arrange ---------------------------------------------------------
@@ -367,7 +336,7 @@ class TestGetMeteringPointListFilters:
                 'offset': 0,
                 'limit': 10,
                 'filters': {
-                    'sector': [sector],
+                    'sector': sector,
                 },
             },
             headers={
@@ -383,11 +352,13 @@ class TestGetMeteringPointListFilters:
             'total': 0
         }
 
+    @pytest.mark.parametrize("invalid_type", ["", "invalid-type"])
     def test__filter_by_invalid_type__no_points_fetched(
         self,
-        seed_session: List[MeteringPoint],
         client: FlaskClient,
         valid_token_encoded: str,
+        seeded_session: db.Session,
+        invalid_type: str,
     ):
         # -- Arrange ---------------------------------------------------------
 
@@ -399,7 +370,7 @@ class TestGetMeteringPointListFilters:
                 'offset': 0,
                 'limit': 10,
                 'filters': {
-                    'type': "invalid-type",
+                    'type': invalid_type,
                 },
             },
             headers={

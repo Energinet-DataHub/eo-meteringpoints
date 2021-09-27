@@ -48,10 +48,13 @@ def token_encoder():
         schema=InternalToken,
         secret=TOKEN_SECRET,
     )
-    
 
 @pytest.fixture(scope='function')
-def valid_token(token_encoder: TokenEncoder[InternalToken]):
+def token_subject() -> str:
+    yield "bar"    
+
+@pytest.fixture(scope='function')
+def valid_token(token_encoder: TokenEncoder[InternalToken], token_subject: str):
     """
     TODO
     """
@@ -59,7 +62,7 @@ def valid_token(token_encoder: TokenEncoder[InternalToken]):
         issued=datetime.now(tz=timezone.utc),
         expires=datetime.now(tz=timezone.utc) + timedelta(days=1),
         actor='foo',
-        subject='bar',
+        subject=token_subject,
         scope=['meteringpoints.read'],
     )
 
