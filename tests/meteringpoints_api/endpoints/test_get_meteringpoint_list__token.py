@@ -40,8 +40,7 @@ class TestGetMeteringPointListToken:
 
         # -- Assert ----------------------------------------------------------
 
-        # TODO: Update to check actual response error
-        assert r.status_code == 500
+        assert r.status_code == 401
 
     def test__no_authorization_header__expect_error(
         self,
@@ -69,8 +68,7 @@ class TestGetMeteringPointListToken:
 
         # -- Assert ----------------------------------------------------------
 
-        # TODO: Update to check actual response error
-        assert r.status_code == 500
+        assert r.status_code == 401
 
     def test__token_expired_expected_error(
         self,
@@ -118,8 +116,7 @@ class TestGetMeteringPointListToken:
 
         # -- Assert ----------------------------------------------------------
 
-        # TODO: Update to check actual response error
-        assert r.status_code == 500
+        assert r.status_code == 401
 
     def test__token_invalid_expected_error(
         self,
@@ -161,8 +158,7 @@ class TestGetMeteringPointListToken:
 
         # -- Assert ----------------------------------------------------------
 
-        # TODO: Update to check actual response error
-        assert r.status_code == 500
+        assert r.status_code == 401
 
     def test__token_valid__fetch_successful(
         self,

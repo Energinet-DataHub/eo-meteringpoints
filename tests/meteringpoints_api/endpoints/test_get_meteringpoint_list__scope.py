@@ -110,7 +110,7 @@ class TestGetMeteringPointListScope:
         # -- Assert ----------------------------------------------------------
 
         # TODO: Update to check actual response error
-        assert r.status_code == 500
+        assert r.status_code == 401
 
     def test__scope_is_invalid__unable_to_fetch_mp(
         self,
@@ -159,4 +159,4 @@ class TestGetMeteringPointListScope:
         # -- Assert ----------------------------------------------------------
 
         # TODO: Update to check actual response error
-        assert r.status_code == 500
+        assert r.status_code == 401
