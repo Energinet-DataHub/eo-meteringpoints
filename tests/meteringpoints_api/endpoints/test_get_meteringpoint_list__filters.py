@@ -11,14 +11,8 @@ from energytt_platform.models.common import EnergyDirection
 
 from ...helpers import \
     METERPING_POINT_TYPES, \
-    get_dummy_address, \
-    get_dummy_meteringpoint_list, \
-    get_dummy_technology, \
-    get_dummy_token, \
     insert_meteringpoint_and_delegate_access_to_subject, \
-    insert_technology_from_meteringpoint, \
-    make_dict_of_metering_point, \
-    get_dummy_meteringpoint
+    make_dict_of_metering_point
 
 
 mp_types = METERPING_POINT_TYPES
@@ -282,9 +276,9 @@ class TestGetMeteringPointListFilters:
 
             assert fetched_mp == mp_dict
 
-    def test__filter_by_invalid_gsrn__error_expected(
+    def test__filter_by_invalid_gsrn__no_points_fetched(
         self,
-        seed_session,
+        seed_session: List[MeteringPoint],
         client: FlaskClient,
         valid_token_encoded: str,
     ):
@@ -309,3 +303,69 @@ class TestGetMeteringPointListFilters:
         # -- Assert ----------------------------------------------------------
 
         assert len(r.json['meteringpoints']) == 0
+        assert r.json == {
+            'meteringpoints': [],
+            'success': True,
+            'total': 0
+        }
+
+    @pytest.mark.parametrize("sector", ["", "invalid-sector"])
+    def test__filter_by_empty_sector__no_points_fetched(
+        self,
+        seed_session: List[MeteringPoint],
+        client: FlaskClient,
+        valid_token_encoded: str,
+        sector: str,
+    ):
+        # -- Arrange ---------------------------------------------------------
+
+        # -- Act -------------------------------------------------------------
+
+        r = client.post(
+            path='/list',
+            json={
+                'offset': 0,
+                'limit': 10,
+                'filters': {
+                    'sector': [sector],
+                },
+            },
+            headers={
+                'Authorization': f'Bearer: {valid_token_encoded}',
+            }
+        )
+
+        # -- Assert ----------------------------------------------------------
+        assert r.status_code == 200
+        assert r.json == {
+            'meteringpoints': [],
+            'success': True,
+            'total': 0
+        }
+
+    def test__filter_by_invalid_type__no_points_fetched(
+        self,
+        seed_session: List[MeteringPoint],
+        client: FlaskClient,
+        valid_token_encoded: str,
+    ):
+        # -- Arrange ---------------------------------------------------------
+
+        # -- Act -------------------------------------------------------------
+
+        r = client.post(
+            path='/list',
+            json={
+                'offset': 0,
+                'limit': 10,
+                'filters': {
+                    'type': "invalid-type",
+                },
+            },
+            headers={
+                'Authorization': f'Bearer: {valid_token_encoded}',
+            }
+        )
+
+        # -- Assert ----------------------------------------------------------
+        assert r.status_code == 400
