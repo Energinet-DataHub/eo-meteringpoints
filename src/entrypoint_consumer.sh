@@ -2,5 +2,9 @@
 set -e
 
 echo "Starting Message Bus consumer"
-cd migrations && alembic upgrade head && cd ..
+
+# Apply database migrations
+alembic --config=migrations/alembic.ini upgrade head
+
+# Run consumer
 python -m meteringpoints_consumer
