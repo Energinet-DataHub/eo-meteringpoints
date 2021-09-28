@@ -15,7 +15,7 @@ from ...helpers import \
 
 
 mp_types = METERPING_POINT_TYPES
-mp_sectors = ('SECTOR_1', 'SECTOR_2')
+mp_sectors = ('SECTOR_1', 'SECTOR_2', 'SECTOR_3', 'SECTOR_4')
 
 combinations = product(
     mp_types, mp_sectors
@@ -74,28 +74,28 @@ def seeded_session(
 
 
 class TestGetMeteringPointListLimit:
-    @pytest.mark.parametrize("limit", [1, 2, 3, 4])
-    def test__fetch_all_limit_by_x__result_limited_by_x(
+    @pytest.mark.parametrize("offset", [1, 2, 3, 4])
+    def test__fetch_using_valid_offset__offeset_applied_correct(
         self,
         client: FlaskClient,
         valid_token_encoded: str,
         seed_meteringpoints: List[MeteringPoint],
         seeded_session: db.Session,
-        limit: int,
+        offset: int,
     ):
         # -- Arrange ---------------------------------------------------------
         seed_meteringpoints_dict = {
-            m.gsrn: m for m in seed_meteringpoints[0: limit]
+            m.gsrn: m for m in seed_meteringpoints[offset:]
         }
         gsrn_list = list(seed_meteringpoints_dict.keys())
 
         # -- Act -------------------------------------------------------------
-
+        
         r = client.post(
             path='/list',
             json={
                 'offset': 0,
-                'limit': limit,
+                'limit': 100,
                 'filters': {
                     'gsrn': gsrn_list,
                 },
@@ -111,21 +111,21 @@ class TestGetMeteringPointListLimit:
 
         # -- Assert ----------------------------------------------------------
 
-        assert len(r.json['meteringpoints']) == limit
+        assert len(r.json['meteringpoints']) == len(gsrn_list)
 
         # Validate that the inserted metering points is also fetched
         for meteringpoint in r.json['meteringpoints']:
             expected = seed_meteringpoints_dict[meteringpoint["gsrn"]]
             assert meteringpoint == make_dict_of_metering_point(expected)
 
-    @pytest.mark.parametrize("limit", [-1, "invalid-limit", 1.5, True])
-    def test__fetch_using_invalid_limit__expect_error(
+    @pytest.mark.parametrize("offset", [-1, "invalid-offset", 1.5, True])
+    def test__fetch_using_invalid_offset__expect_error(
         self,
         client: FlaskClient,
         valid_token_encoded: str,
         seed_meteringpoints: List[MeteringPoint],
         seeded_session: db.Session,
-        limit: int,
+        offset: int,
     ):
         # -- Arrange ---------------------------------------------------------
         seed_meteringpoints_dict = {
@@ -138,8 +138,8 @@ class TestGetMeteringPointListLimit:
         r = client.post(
             path='/list',
             json={
-                'offset': 0,
-                'limit': limit,
+                'offset': offset,
+                'limit': 100,
                 'filters': {
                     'gsrn': gsrn_list,
                 },
@@ -175,7 +175,7 @@ class TestGetMeteringPointListLimit:
         r = client.post(
             path='/list',
             json={
-                'offset': 0,
+                'limit': 100,
                 'filters': {
                     'gsrn': gsrn_list,
                 },
