@@ -73,7 +73,7 @@ def seeded_session(
     yield session
 
 
-class TestGetMeteringPointListLimit:
+class TestGetMeteringPointListOffset:
     @pytest.mark.parametrize("offset", [1, 2, 3, 4])
     def test__fetch_using_valid_offset__offeset_applied_correct(
         self,
