@@ -149,18 +149,12 @@ class TestMeteringPointDelegateRevoked:
 
         assert len(r.json['meteringpoints']) == len(granted_mp_gsrn_list)
 
+        expected_mp_dict = {
+            m.gsrn: m for m in mp_list
+            if m.gsrn in granted_mp_gsrn_list
+        }
+
         # Validate that the inserted metering points is also fetched
-        for mp in granted_mp_list:
-            mp_dict = make_dict_of_metering_point(mp)
-
-            # Find fetched meteringpoint by gsrn
-            needle = mp_dict['gsrn']
-            haystack = r.json['meteringpoints']
-
-            filtered = filter(lambda obj: obj['gsrn'] == needle, haystack)
-            fetched_mp = next(filtered, None)
-
-            if fetched_mp is None:
-                assert False, 'One or more meteringpoints were not fetched'
-
-            assert fetched_mp == mp_dict
+        for meteringpoint in r.json['meteringpoints']:
+            expected = expected_mp_dict[meteringpoint["gsrn"]]
+            assert meteringpoint == make_dict_of_metering_point(expected)
