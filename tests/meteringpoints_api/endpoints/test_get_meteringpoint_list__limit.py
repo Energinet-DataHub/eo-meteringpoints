@@ -156,3 +156,39 @@ class TestGetMeteringPointListLimit:
         # -- Assert ----------------------------------------------------------
 
         assert r.status_code == 400
+
+    def test__fetch_without_limit__expect_400(
+        self,
+        client: FlaskClient,
+        valid_token_encoded: str,
+        seed_meteringpoints: List[MeteringPoint],
+        seeded_session: db.Session,
+    ):
+        # -- Arrange ---------------------------------------------------------
+        seed_meteringpoints_dict = {
+            m.gsrn: m for m in seed_meteringpoints
+        }
+        gsrn_list = list(seed_meteringpoints_dict.keys())
+
+        # -- Act -------------------------------------------------------------
+
+        r = client.post(
+            path='/list',
+            json={
+                'offset': 0,
+                'filters': {
+                    'gsrn': gsrn_list,
+                },
+                'ordering': {
+                    'order': 'asc',
+                    'key': 'gsrn',
+                },
+            },
+            headers={
+                'Authorization': f'Bearer: {valid_token_encoded}',
+            }
+        )
+
+        # -- Assert ----------------------------------------------------------
+
+        assert r.status_code == 400
