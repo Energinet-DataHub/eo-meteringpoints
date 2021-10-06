@@ -1,27 +1,26 @@
 from flask.testing import FlaskClient
 
-from energytt_platform.bus.messages.meteringpoints import \
-    MeteringPointRemoved
+from energytt_platform.bus.messages.tech import \
+    TechnologyRemoved, TechnologyUpdate
+from energytt_platform.models.tech import Technology, TechnologyType
 
 from meteringpoints_consumer.handlers import dispatcher
-
 from meteringpoints_shared.db import db
 
-from ...helpers import \
+from tests.helpers import \
+    get_dummy_meteringpoint_list, \
     insert_meteringpoint_and_delegate_access_to_subject, \
-    insert_technology_from_meteringpoint, \
-    get_dummy_meteringpoint, \
-    make_dict_of_metering_point
+    get_dummy_meteringpoint
 
 
-class TestMeteringPointRemoved:
-    def test__insert_one_mp_then_remove_it__fetched_result_is_empty(
+class TestTechnologyRemoved:
+
+    def test__add_technology_then_remove__fetched_mp_technology_is_none(
             self,
             session: db.Session,
             client: FlaskClient,
             valid_token_encoded: str,
     ):
-
         # -- Arrange ---------------------------------------------------------
 
         subject = 'bar'
@@ -32,19 +31,19 @@ class TestMeteringPointRemoved:
             include_technology=True,
         )
 
-        insert_technology_from_meteringpoint(
-            meteringpoint=mp
-        )
-
         insert_meteringpoint_and_delegate_access_to_subject(
             meteringpoint=mp,
             token_subject=subject,
         )
 
+        dispatcher(TechnologyUpdate(
+            technology=mp.technology
+        ))
+
         # -- Act -------------------------------------------------------------
 
-        dispatcher(MeteringPointRemoved(
-            gsrn=mp.gsrn,
+        dispatcher(TechnologyRemoved(
+            codes=mp.technology
         ))
 
         r = client.post(
@@ -64,45 +63,55 @@ class TestMeteringPointRemoved:
         # -- Assert ----------------------------------------------------------
 
         assert r.status_code == 200
-        assert len(r.json['meteringpoints']) == 0
+        assert len(r.json['meteringpoints']) == 1
 
-    def test__insert_multiple_mps_then_remove_one__correct_mp_removed(
+        fetched_mp = r.json['meteringpoints'][0]
+
+        assert fetched_mp['technology'] is None
+
+    def test__add_multiple_mps_remove_technology__mp_technology_is_none(
             self,
             session: db.Session,
             client: FlaskClient,
             valid_token_encoded: str,
     ):
-
         # -- Arrange ---------------------------------------------------------
 
         subject = 'bar'
 
-        mp_1 = get_dummy_meteringpoint(
-            number=1,
+        meteringpoint_count = 10
+
+        mp_list = get_dummy_meteringpoint_list(
+            count=meteringpoint_count,
             include_address=True,
-            include_technology=True,
-        )
-        insert_technology_from_meteringpoint(meteringpoint=mp_1)
-        insert_meteringpoint_and_delegate_access_to_subject(
-            meteringpoint=mp_1,
-            token_subject=subject,
+            include_technology=False,
         )
 
-        mp_2 = get_dummy_meteringpoint(
-            number=2,
-            include_address=True,
-            include_technology=True,
+        mp_gsrn_list = [o.gsrn for o in mp_list]
+
+        technology = Technology(
+            tech_code="100",
+            fuel_code='200',
+            type=TechnologyType.coal,
         )
-        insert_technology_from_meteringpoint(meteringpoint=mp_2)
-        insert_meteringpoint_and_delegate_access_to_subject(
-            meteringpoint=mp_2,
-            token_subject=subject,
-        )
+
+        dispatcher(TechnologyUpdate(
+            technology=technology
+        ))
+
+        for mp in mp_list:
+            # Populate with technology
+            mp.technology = technology
+
+            insert_meteringpoint_and_delegate_access_to_subject(
+                meteringpoint=mp,
+                token_subject=subject,
+            )
 
         # -- Act -------------------------------------------------------------
 
-        dispatcher(MeteringPointRemoved(
-            gsrn=mp_1.gsrn,
+        dispatcher(TechnologyRemoved(
+            codes=technology
         ))
 
         r = client.post(
@@ -111,7 +120,7 @@ class TestMeteringPointRemoved:
                 'offset': 0,
                 'limit': 10,
                 'filters': {
-                    'gsrn': [mp_1.gsrn, mp_2.gsrn],
+                    'gsrn': mp_gsrn_list,
                 },
             },
             headers={
@@ -120,9 +129,11 @@ class TestMeteringPointRemoved:
         )
 
         # -- Assert ----------------------------------------------------------
-        expected_result = make_dict_of_metering_point(mp_2)
 
         assert r.status_code == 200
-        assert len(r.json['meteringpoints']) == 1
+        assert len(r.json['meteringpoints']) == len(mp_list)
 
-        assert r.json['meteringpoints'][0] == expected_result
+        fetched_mp_list = r.json['meteringpoints']
+
+        for mp in fetched_mp_list:
+            assert mp['technology'] is None
