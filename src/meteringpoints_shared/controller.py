@@ -155,8 +155,9 @@ class DatabaseController(object):
         """
         TODO
         """
-        MeteringPointTechnologyQuery(session) \
+        DelegateQuery(session) \
             .has_gsrn(gsrn) \
+            .has_subject(subject) \
             .delete()
 
     # -- MeteringPoint Technologies ------------------------------------------
