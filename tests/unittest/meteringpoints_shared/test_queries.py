@@ -12,8 +12,9 @@ from energytt_platform.models.meteringpoints import MeteringPointType
 from meteringpoints_shared.models import (
     DbMeteringPoint,
     DbMeteringPointDelegate, MeteringPointFilters, MeteringPointOrdering, MeteringPointOrderingKeys,
+    DbMeteringPointAddress,
 )
-from meteringpoints_shared.queries import MeteringPointQuery
+from meteringpoints_shared.queries import MeteringPointQuery, MeteringPointAddressQuery
 
 TYPES = (MeteringPointType.consumption, MeteringPointType.production)
 SECTORS = ('DK1', 'DK2')
@@ -323,3 +324,85 @@ class TestMeteringPointQuery:
         assert [mp.gsrn for mp in results] == \
                [mp.gsrn for mp in sorted(seed_meteringpoints,
                                          key=f, reverse=sort_descending)]
+
+
+class TestMeteringPointAddressQuery:
+    def test__has_gsrn__gsrn_exists__should_return_correct_meteringpointaddress(
+            self,
+            session: db.Session,
+    ):
+        # -- Arrange -------------------------------------------------------------
+
+        gsrn = 'gsrn1'
+
+        session.add(DbMeteringPoint(
+            gsrn=gsrn,
+            type=MeteringPointType.consumption,
+            sector='DK1',
+        ))
+
+        session.add(DbMeteringPointAddress(
+            gsrn=gsrn,
+            street_code='street_code_1',
+            street_name='street_name_1',
+            building_number='building_number_1',
+            floor_id='floor_id_1',
+            room_id='room_id_1',
+            post_code='post_code_1',
+            city_name='city_name_1',
+            city_sub_division_name='city_sub_division_name1',
+            municipality_code='municipality_code_1',
+            location_description='location_description_1',
+        ))
+
+        session.commit()
+
+        # -- Act -----------------------------------------------------------------
+
+        result = MeteringPointAddressQuery(session) \
+            .has_gsrn(gsrn).all()
+
+        # -- Assert --------------------------------------------------------------
+
+        assert len(result) == 1
+        assert result[0].gsrn == gsrn
+
+    @pytest.mark.parametrize('gsrn', ('unknown_gsrn_1', '', None))
+    def test__has_gsrn__gsrn_does_not_exists__should_not_return_any_meteringpointaddress(
+            self,
+            session: db.Session,
+            gsrn: str,
+    ):
+        # -- Arrange -------------------------------------------------------------
+
+        session.add(DbMeteringPoint(
+            gsrn='gsrn1',
+            type=MeteringPointType.consumption,
+            sector='DK1',
+        ))
+
+        session.add(DbMeteringPointAddress(
+            gsrn='gsrn1',
+            street_code='street_code_1',
+            street_name='street_name_1',
+            building_number='building_number_1',
+            floor_id='floor_id_1',
+            room_id='room_id_1',
+            post_code='post_code_1',
+            city_name='city_name_1',
+            city_sub_division_name='city_sub_division_name1',
+            municipality_code='municipality_code_1',
+            location_description='location_description_1',
+        ))
+
+        session.commit()
+
+        # -- Act -----------------------------------------------------------------
+
+        result = MeteringPointAddressQuery(session) \
+            .has_gsrn(gsrn) \
+            .all()
+
+        # -- Assert --------------------------------------------------------------
+
+        assert len(result) == 0
