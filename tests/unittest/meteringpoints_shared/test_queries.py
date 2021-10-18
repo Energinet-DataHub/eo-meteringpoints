@@ -12,9 +12,9 @@ from energytt_platform.models.meteringpoints import MeteringPointType
 from meteringpoints_shared.models import (
     DbMeteringPoint,
     DbMeteringPointDelegate, MeteringPointFilters, MeteringPointOrdering, MeteringPointOrderingKeys,
-    DbMeteringPointAddress,
+    DbMeteringPointAddress, DbMeteringPointTechnology,
 )
-from meteringpoints_shared.queries import MeteringPointQuery, MeteringPointAddressQuery
+from meteringpoints_shared.queries import MeteringPointQuery, MeteringPointAddressQuery, MeteringPointTechnologyQuery
 
 TYPES = (MeteringPointType.consumption, MeteringPointType.production)
 SECTORS = ('DK1', 'DK2')
@@ -81,7 +81,7 @@ class TestMeteringPointQuery:
         assert query.count() == 1
         assert query.one().gsrn == gsrn
 
-    @pytest.mark.parametrize('gsrn', ('unknown_gsrn_1', '', None))
+    @pytest.mark.parametrize('gsrn', ('unknown_gsrn_1', None))
     def test__has_gsrn__gsrn_does_not_exists__should_return_no_meteringpoints(
             self,
             seeded_session: db.Session,
@@ -360,14 +360,15 @@ class TestMeteringPointAddressQuery:
         # -- Act -----------------------------------------------------------------
 
         result = MeteringPointAddressQuery(session) \
-            .has_gsrn(gsrn).all()
+            .has_gsrn(gsrn) \
+            .all()
 
         # -- Assert --------------------------------------------------------------
 
         assert len(result) == 1
         assert result[0].gsrn == gsrn
 
-    @pytest.mark.parametrize('gsrn', ('unknown_gsrn_1', '', None))
+    @pytest.mark.parametrize('gsrn', ('unknown_gsrn_1', None))
     def test__has_gsrn__gsrn_does_not_exists__should_not_return_any_meteringpointaddress(
             self,
             session: db.Session,
@@ -400,6 +401,73 @@ class TestMeteringPointAddressQuery:
         # -- Act -----------------------------------------------------------------
 
         result = MeteringPointAddressQuery(session) \
+            .has_gsrn(gsrn) \
+            .all()
+
+        # -- Assert --------------------------------------------------------------
+
+        assert len(result) == 0
+
+
+class TestMeteringPointTechnologyQuery:
+    def test__has_gsrn__gsrn_exists__should_return_correct_meteringpointtechnology(
+            self,
+            session: db.Session,
+    ):
+        # -- Arrange -------------------------------------------------------------
+
+        gsrn = 'gsrn1'
+
+        session.add(DbMeteringPoint(
+            gsrn=gsrn,
+            type=MeteringPointType.consumption,
+            sector='DK1',
+        ))
+
+        session.add(DbMeteringPointTechnology(
+            gsrn=gsrn,
+            tech_code='100',
+            fuel_code='102',
+        ))
+
+        session.commit()
+
+        # -- Act -----------------------------------------------------------------
+
+        result = MeteringPointTechnologyQuery(session) \
+            .has_gsrn(gsrn) \
+            .all()
+
+        # -- Assert --------------------------------------------------------------
+
+        assert len(result) == 1
+        assert result[0].gsrn == gsrn
+
+    @pytest.mark.parametrize('gsrn', ('unknown_gsrn_1', None))
+    def test__has_gsrn__gsrn_does_not_exists__should_not_return_any_meteringpointtechnology(
+            self,
+            session: db.Session,
+            gsrn: str,
+    ):
+        # -- Arrange -------------------------------------------------------------
+
+        session.add(DbMeteringPoint(
+            gsrn='gsrn1',
+            type=MeteringPointType.consumption,
+            sector='DK1',
+        ))
+
+        session.add(DbMeteringPointTechnology(
+            gsrn='gsrn1',
+            tech_code='100',
+            fuel_code='102',
+        ))
+
+        session.commit()
+
+        # -- Act -----------------------------------------------------------------
+
+        result = MeteringPointTechnologyQuery(session) \
             .has_gsrn(gsrn) \
             .all()
 
