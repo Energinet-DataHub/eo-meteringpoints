@@ -86,11 +86,10 @@ class TestMeteringPointTechnologyUpdate:
     TODO
     """
 
-    @pytest.mark.parametrize('meteringpoint, updated_technology, expected_technology_result', (
-            (METERINGPOINT_WITHOUT_TECHNOLOGY, TECHNOLOGY_1, TECHNOLOGY_1),
-            (METERINGPOINT_WITH_TECHNOLOGY_1, TECHNOLOGY_2, TECHNOLOGY_2),
-            (METERINGPOINT_WITH_TECHNOLOGY_1, TECHNOLOGY_1, TECHNOLOGY_1),
-            (METERINGPOINT_WITH_TECHNOLOGY_1, None, None),
+    @pytest.mark.parametrize('meteringpoint, updated_technology', (
+            (METERINGPOINT_WITHOUT_TECHNOLOGY, TECHNOLOGY_1),
+            (METERINGPOINT_WITH_TECHNOLOGY_1, TECHNOLOGY_2),
+            (METERINGPOINT_WITH_TECHNOLOGY_1, TECHNOLOGY_1),
     ))
     def test__update_meteringpoint_technology__should_return_updated_meteringpoint_technology(
             self,
@@ -99,14 +98,13 @@ class TestMeteringPointTechnologyUpdate:
             valid_token_encoded: str,
             meteringpoint: MeteringPoint,
             updated_technology: Optional[Technology],
-            expected_technology_result: Optional[Technology],
     ):
         """
         TODO
         """
-        # -- Arrange ---------------------------------------------------------
 
         # -- Act -------------------------------------------------------------
+
         for technology in TECHNOLOGIES:
             dispatcher(m.TechnologyUpdate(
                 technology=technology,
@@ -115,35 +113,34 @@ class TestMeteringPointTechnologyUpdate:
         if updated_technology is None:
             dispatcher(m.MeteringPointTechnologyUpdate(
                 gsrn=meteringpoint.gsrn,
-                codes=updated_technology
+                codes=None,
             ))
         else:
             dispatcher(m.MeteringPointTechnologyUpdate(
                 gsrn=meteringpoint.gsrn,
                 codes=TechnologyCodes(
                     tech_code=updated_technology.tech_code,
-                    fuel_code=updated_technology.fuel_code
-                )
+                    fuel_code=updated_technology.fuel_code,
+                ),
             ))
 
         r = client.post(
             path='/list',
+            headers={
+                'Authorization': f'Bearer: {valid_token_encoded}'
+            },
             json={
-                'offset': 0,
-                'limit': 10,
                 'filters': {
                     'gsrn': [meteringpoint.gsrn],
                 },
             },
-            headers={
-                'Authorization': f'Bearer: {valid_token_encoded}'
-            }
         )
 
         # -- Assert ----------------------------------------------------------
-        meteringpoint.technology = expected_technology_result
 
         expected_meteringpoint_simple = simple_serializer.serialize(meteringpoint)
+        expected_meteringpoint_simple['technology'] = \
+            simple_serializer.serialize(updated_technology)
 
         assert r.status_code == 200
         assert r.json == {
@@ -151,6 +148,102 @@ class TestMeteringPointTechnologyUpdate:
             'total': 1,
             'meteringpoints': [expected_meteringpoint_simple],
         }
+
+    def test__update_meteringpoint_technology_to_none__should_return_meteringpoint_technology(
+            self,
+            seed_meteringpoints: db.Session,
+            client: FlaskClient,
+            valid_token_encoded: str,
+    ):
+        """
+        TODO
+        """
+
+        # -- Act -------------------------------------------------------------
+
+        for technology in TECHNOLOGIES:
+            dispatcher(m.TechnologyUpdate(
+                technology=technology,
+            ))
+
+        dispatcher(m.MeteringPointTechnologyUpdate(
+            gsrn=METERINGPOINT_WITH_TECHNOLOGY_1.gsrn,
+            codes=None,
+        ))
+
+        r = client.post(
+            path='/list',
+            headers={
+                'Authorization': f'Bearer: {valid_token_encoded}'
+            },
+            json={
+                'filters': {
+                    'gsrn': [METERINGPOINT_WITH_TECHNOLOGY_1.gsrn],
+                },
+            },
+        )
+
+        # -- Assert ----------------------------------------------------------
+
+        expected_meteringpoint_simple = simple_serializer.serialize(METERINGPOINT_WITH_TECHNOLOGY_1)
+        expected_meteringpoint_simple['technology'] = None
+
+        assert r.status_code == 200
+        assert r.json == {
+            'success': True,
+            'total': 1,
+            'meteringpoints': [expected_meteringpoint_simple],
+        }
+
+    def test__add_two_meteringpoints_update_one__should_update_only_update_correct_meteringpoint_technology(
+            self,
+            seed_meteringpoints: db.Session,
+            client: FlaskClient,
+            valid_token_encoded: str,
+    ):
+        """
+        TODO
+        """
+        # -- Act -------------------------------------------------------------
+
+        for technology in TECHNOLOGIES:
+            dispatcher(m.TechnologyUpdate(
+                technology=technology,
+            ))
+
+        dispatcher(m.MeteringPointTechnologyUpdate(
+            gsrn=METERINGPOINT_WITHOUT_TECHNOLOGY.gsrn,
+            codes=TechnologyCodes(
+                tech_code=TECHNOLOGY_1.tech_code,
+                fuel_code=TECHNOLOGY_1.fuel_code,
+            ),
+        ))
+
+        r = client.post(
+            path='/list',
+            headers={
+                'Authorization': f'Bearer: {valid_token_encoded}',
+            },
+        )
+
+        # -- Assert ----------------------------------------------------------
+
+        assert r.status_code == 200
+
+        # Make dictionary from fetched meteringpoint
+        result_mp_technology_dict = {mp['gsrn']: mp['technology'] for mp in r.json['meteringpoints']}
+
+        # Updated meteringpoint expected to be updated
+        assert result_mp_technology_dict[METERINGPOINT_WITHOUT_TECHNOLOGY.gsrn] == \
+               simple_serializer.serialize(TECHNOLOGY_1)
+
+        # Expected to stay the same
+        assert result_mp_technology_dict[METERINGPOINT_WITH_TECHNOLOGY_1.gsrn] == \
+               simple_serializer.serialize(TECHNOLOGY_1)
+
+        # Expected to stay the same
+        assert result_mp_technology_dict[METERINGPOINT_WITH_TECHNOLOGY_2.gsrn] == \
+               simple_serializer.serialize(TECHNOLOGY_2)
 
 
 class TestTechnologyUpdate:
@@ -177,21 +270,54 @@ class TestTechnologyUpdate:
 
         r = client.post(
             path='/list',
+            headers={
+                'Authorization': f'Bearer: {valid_token_encoded}'
+            },
             json={
-                'offset': 0,
-                'limit': 10,
                 'filters': {
                     'gsrn': [METERINGPOINT_WITH_TECHNOLOGY_1.gsrn],
                 },
             },
-            headers={
-                'Authorization': f'Bearer: {valid_token_encoded}'
-            }
         )
 
         # -- Assert ----------------------------------------------------------
 
         expected_meteringpoint_simple = simple_serializer.serialize(METERINGPOINT_WITH_TECHNOLOGY_1)
+
+        assert r.status_code == 200
+        assert r.json == {
+            'success': True,
+            'total': 1,
+            'meteringpoints': [expected_meteringpoint_simple],
+        }
+
+    def test__do_not_add_technology__meteringpoint_technology_is_none(
+            self,
+            seed_meteringpoints: db.Session,
+            client: FlaskClient,
+            valid_token_encoded: str,
+    ):
+        """
+        TODO
+        """
+        # -- Act -------------------------------------------------------------
+
+        r = client.post(
+            path='/list',
+            headers={
+                'Authorization': f'Bearer: {valid_token_encoded}'
+            },
+            json={
+                'filters': {
+                    'gsrn': [METERINGPOINT_WITH_TECHNOLOGY_1.gsrn],
+                },
+            },
+        )
+
+        # -- Assert ----------------------------------------------------------
+
+        expected_meteringpoint_simple = simple_serializer.serialize(METERINGPOINT_WITH_TECHNOLOGY_1)
+        expected_meteringpoint_simple['technology'] = None
 
         assert r.status_code == 200
         assert r.json == {
@@ -231,17 +357,26 @@ class TestTechnologyRemoved:
 
         r = client.post(
             path='/list',
+            headers={
+                'Authorization': f'Bearer: {valid_token_encoded}'
+            },
             json={
-                'offset': 0,
-                'limit': 10,
                 'filters': {
                     'gsrn': [METERINGPOINT_WITH_TECHNOLOGY_1.gsrn],
                 },
             },
-            headers={
-                'Authorization': f'Bearer: {valid_token_encoded}'
-            }
         )
+
+        assert r.status_code == 200
+
+        expected_meteringpoint_simple = simple_serializer.serialize(METERINGPOINT_WITH_TECHNOLOGY_1)
+        expected_meteringpoint_simple['technology'] = None
+
+        assert r.json == {
+            'success': True,
+            'total': 1,
+            'meteringpoints': [expected_meteringpoint_simple],
+        }
 
     def test__remove_different_technology__should_return_meteringpoint_technology(
             self,
@@ -252,9 +387,9 @@ class TestTechnologyRemoved:
         """
         Test that remove technology removes the correct technology.
         """
-        # -- Arrange ---------------------------------------------------------
 
         # -- Act -------------------------------------------------------------
+
         dispatcher(m.TechnologyUpdate(
             technology=TECHNOLOGY_1
         ))
@@ -274,8 +409,6 @@ class TestTechnologyRemoved:
         r = client.post(
             path='/list',
             json={
-                'offset': 0,
-                'limit': 10,
                 'filters': {
                     'gsrn': [METERINGPOINT_WITH_TECHNOLOGY_1.gsrn],
                 },

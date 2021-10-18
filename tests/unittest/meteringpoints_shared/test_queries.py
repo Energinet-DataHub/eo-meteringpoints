@@ -1,9 +1,9 @@
-from typing import List, Dict
+from typing import List
 
 import pytest
 from itertools import product
 
-from energytt_platform.models.common import ResultOrdering, Order
+from energytt_platform.models.common import Order
 from energytt_platform.models.meteringpoints import MeteringPoint
 
 from meteringpoints_shared.db import db
@@ -41,11 +41,6 @@ def seed_meteringpoints() -> List[MeteringPoint]:
 
 
 @pytest.fixture(scope='function')
-def meteringpoint_dict(seed_meteringpoints: List[MeteringPoint]):
-    return {o.gsrn: o for o in seed_meteringpoints}
-
-
-@pytest.fixture(scope='function')
 def seeded_session(
         session: db.Session,
         seed_meteringpoints: List[MeteringPoint],
@@ -70,34 +65,35 @@ def seeded_session(
 
 class TestMeteringPointQuery:
     @pytest.mark.parametrize('gsrn', ('gsrn0', 'gsrn1', 'gsrn2'))
-    def test__query_has_gsrn__gsrn_exists__should_return_correct_meteringpoint(
+    def test__has_gsrn__gsrn_exists__should_return_correct_meteringpoint(
             self,
             seeded_session: db.Session,
             gsrn: str,
     ):
         # -- Act -------------------------------------------------------------
 
-        query = MeteringPointQuery(seeded_session).has_gsrn(gsrn)
+        query = MeteringPointQuery(seeded_session) \
+            .has_gsrn(gsrn)
 
         # -- Assert ----------------------------------------------------------
 
         assert query.count() == 1
         assert query.one().gsrn == gsrn
 
-    @pytest.mark.parametrize('gsrn', ('unknown_gsrn_1', ''))
-    def test__query_has_gsrn__gsrn_does_not_exists__should_return_correct_meteringpoint(
+    @pytest.mark.parametrize('gsrn', ('unknown_gsrn_1', '', None))
+    def test__has_gsrn__gsrn_does_not_exists__should_return_no_meteringpoints(
             self,
             seeded_session: db.Session,
             gsrn: str,
     ):
         # -- Act -------------------------------------------------------------
 
-        query = MeteringPointQuery(seeded_session).has_gsrn(gsrn)
+        query = MeteringPointQuery(seeded_session) \
+            .has_gsrn(gsrn)
 
         # -- Assert ----------------------------------------------------------
 
         assert query.count() == 0
-        assert query.one_or_none() is None
 
     @pytest.mark.parametrize('gsrn, expected_gsrn_returned', (
             (['gsrn0'], ['gsrn0']),
@@ -106,7 +102,7 @@ class TestMeteringPointQuery:
             (['unknown_gsrn_1', 'gsrn1'], ['gsrn1']),
             ([], []),
     ))
-    def test__query_has_any_gsrn__should_return_correct_meteringpoints(
+    def test__has_any_gsrn__should_return_correct_meteringpoints(
             self,
             seeded_session: db.Session,
             gsrn: List[str],
@@ -114,36 +110,37 @@ class TestMeteringPointQuery:
     ):
         # -- Act -------------------------------------------------------------
 
-        query = MeteringPointQuery(seeded_session).has_any_gsrn(gsrn)
+        query = MeteringPointQuery(seeded_session) \
+            .has_any_gsrn(gsrn)
 
         # -- Assert ----------------------------------------------------------
 
         assert query.count() == len(expected_gsrn_returned)
-        assert all(meteringpoint.gsrn in expected_gsrn_returned for meteringpoint in query.all())
+        assert all(mp.gsrn in expected_gsrn_returned for mp in query.all())
 
     @pytest.mark.parametrize('meteringpoint_type', (
             MeteringPointType.consumption,
             MeteringPointType.production,
     ))
-    def test__query_is_type__should_return_correct_meteringpoints(
+    def test__is_type__should_return_correct_meteringpoints(
             self,
             seeded_session: db.Session,
             meteringpoint_type: MeteringPointType,
     ):
         # -- Act -------------------------------------------------------------
 
-        query = MeteringPointQuery(seeded_session).is_type(meteringpoint_type)
+        query = MeteringPointQuery(seeded_session) \
+            .is_type(meteringpoint_type)
 
         # -- Assert ----------------------------------------------------------
+
         assert query.count() > 0
-        assert all(meteringpoint.type == meteringpoint_type for meteringpoint in query.all())
+        assert all(mp.type is meteringpoint_type for mp in query.all())
 
     @pytest.mark.parametrize('sector', (
             'DK1',
-            'DK2',
-            'unknown_sector',
     ))
-    def test__query_in_sector__should_return_correct_meteringpoints(
+    def test__in_sector__sector_exists__should_return_correct_meteringpoints(
             self,
             seeded_session: db.Session,
             seed_meteringpoints: List[MeteringPoint],
@@ -151,12 +148,32 @@ class TestMeteringPointQuery:
     ):
         # -- Act - ------------------------------------------------------------
 
-        query = MeteringPointQuery(seeded_session).in_sector(sector)
+        query = MeteringPointQuery(seeded_session) \
+            .in_sector(sector)
 
         # -- Assert ----------------------------------------------------------
 
-        assert query.count() == sum(o.sector is sector for o in seed_meteringpoints)
-        assert all(meteringpoint.sector == sector for meteringpoint in query.all())
+        assert query.count() == len([mp for mp in seed_meteringpoints if mp.sector == sector])
+        assert all(mp.sector == sector for mp in query.all())
+
+    @pytest.mark.parametrize('sector', (
+            '',
+            'unknown_sector',
+    ))
+    def test__in_sector__sector_does_not_exist__should_return_nothing(
+            self,
+            seeded_session: db.Session,
+            seed_meteringpoints: List[MeteringPoint],
+            sector: str,
+    ):
+        # -- Act - ------------------------------------------------------------
+
+        query = MeteringPointQuery(seeded_session) \
+            .in_sector(sector)
+
+        # -- Assert ----------------------------------------------------------
+
+        assert query.count() == 0
 
     @pytest.mark.parametrize('sectors', (
             ['DK1'],
@@ -167,7 +184,7 @@ class TestMeteringPointQuery:
             [''],
             [],
     ))
-    def test__query_in_any_sector__should_return_correct_meteringpoints(
+    def test__in_any_sector__should_return_correct_meteringpoints(
             self,
             seeded_session: db.Session,
             seed_meteringpoints: List[MeteringPoint],
@@ -175,11 +192,12 @@ class TestMeteringPointQuery:
     ):
         # -- Act -------------------------------------------------------------
 
-        query = MeteringPointQuery(seeded_session).in_any_sector(sectors)
+        query = MeteringPointQuery(seeded_session) \
+            .in_any_sector(sectors)
 
         # -- Assert ----------------------------------------------------------
 
-        assert query.count() == sum(o.sector in sectors for o in seed_meteringpoints)
+        assert query.count() == len([mp for mp in seed_meteringpoints if mp.sector in sectors])
         assert all(meteringpoint.sector in sectors for meteringpoint in query.all())
 
     @pytest.mark.parametrize('gsrn_with_delegated_access', (
@@ -187,7 +205,7 @@ class TestMeteringPointQuery:
             ['gsrn1', 'gsrn2'],
             [],
     ))
-    def test__query_is_accessible_by__should_return_meteringpoints_with_delegated_access(
+    def test__is_accessible_by__should_return_meteringpoints_with_delegated_access(
             self,
             seeded_session: db.Session,
             seed_meteringpoints: List[MeteringPoint],
@@ -205,111 +223,103 @@ class TestMeteringPointQuery:
                 subject=subject,
             ))
         seeded_session.commit()
-        query = MeteringPointQuery(seeded_session).is_accessible_by(subject)
+
+        query = MeteringPointQuery(seeded_session) \
+            .is_accessible_by(subject)
 
         # -- Assert ----------------------------------------------------------
 
         assert query.count() == len(gsrn_with_delegated_access)
-        assert all(meteringpoint.gsrn in gsrn_with_delegated_access for meteringpoint in query.all())
+        assert all(mp.gsrn in gsrn_with_delegated_access for mp in query.all())
 
     @pytest.mark.parametrize('filters', (
             MeteringPointFilters(),
             MeteringPointFilters(gsrn=['gsrn1']),
             MeteringPointFilters(gsrn=['gsrn1', 'gsrn2']),
-            MeteringPointFilters(gsrn=['unknown_gsrn']),
-            MeteringPointFilters(gsrn=['unknown_gsrn', 'gsrn1']),
             MeteringPointFilters(type=MeteringPointType.production),
             MeteringPointFilters(type=MeteringPointType.consumption),
             MeteringPointFilters(sector=['DK1']),
             MeteringPointFilters(sector=['DK1', 'DK2']),
-            MeteringPointFilters(sector=['unknown_sector']),
-            MeteringPointFilters(sector=['unknown_sector', 'DK2']),
-            MeteringPointFilters(
-                gsrn=['gsrn1'],
-                type=MeteringPointType.production,
-            ),
-            MeteringPointFilters(
-                gsrn=['gsrn1'],
-                type=MeteringPointType.production,
-                sector=['DK1'],
-            ),
     ))
-    def test__query_apply_filters__should_return_correct_meteringpoints(
+    def test__query_apply_filters__meteringpoints_match_filters__should_return_correct_meteringpoints(
             self,
             seeded_session: db.Session,
             filters: MeteringPointFilters,
             seed_meteringpoints: List[MeteringPoint],
     ):
-        # -- Arrange ---------------------------------------------------------
-
-        expected_meteringpoints = seed_meteringpoints
-
-        if filters.gsrn is not None:
-            expected_meteringpoints = [
-                m for m in expected_meteringpoints
-                if m.gsrn in filters.gsrn
-            ]
-
-        if filters.type is not None:
-            expected_meteringpoints = [
-                m for m in expected_meteringpoints
-                if m.type == filters.type
-            ]
-
-        if filters.sector is not None:
-            expected_meteringpoints = [
-                m for m in expected_meteringpoints
-                if m.sector in filters.sector
-            ]
-
-        expected_meteringpoints_gsrn = [m.gsrn for m in expected_meteringpoints]
 
         # -- Act -------------------------------------------------------------
 
-        query = MeteringPointQuery(seeded_session).apply_filters(filters)
+        results = MeteringPointQuery(seeded_session) \
+            .apply_filters(filters) \
+            .all()
 
-        assert query.count() == len(expected_meteringpoints)
-        assert all(meteringpoint.gsrn in expected_meteringpoints_gsrn for meteringpoint in query.all())
+        # -- Assert -------------------------------------------------------------
+
+        assert len(results) > 0
+
+        if filters.gsrn is not None:
+            assert all(mp.gsrn in filters.gsrn for mp in results)
+
+        if filters.type is not None:
+            assert all(mp.type is filters.type for mp in results)
+
+        if filters.sector is not None:
+            assert all(mp.sector in filters.sector for mp in results)
+
+    @pytest.mark.parametrize('filters', (
+            MeteringPointFilters(gsrn=[]),
+            MeteringPointFilters(gsrn=['UNKNOWN_GSRN']),
+            MeteringPointFilters(sector=[]),
+            MeteringPointFilters(sector=['UNKNOWN_SECTOR']),
+    ))
+    def test__query_apply_filters__meteringpoints_does_not_match_filters__should_return_no_meteringpoints(
+            self,
+            seeded_session: db.Session,
+            filters: MeteringPointFilters,
+            seed_meteringpoints: List[MeteringPoint],
+    ):
+
+        # -- Act -------------------------------------------------------------
+
+        results = MeteringPointQuery(seeded_session) \
+            .apply_filters(filters) \
+            .all()
+
+        # -- Assert -------------------------------------------------------------
+
+        assert len(results) == 0
 
     @pytest.mark.parametrize('ordering', (
             MeteringPointOrdering(key=MeteringPointOrderingKeys.gsrn, order=Order.asc),
             MeteringPointOrdering(key=MeteringPointOrderingKeys.gsrn, order=Order.desc),
-            MeteringPointOrdering(key=MeteringPointOrderingKeys.type, order=Order.asc),
-            MeteringPointOrdering(key=MeteringPointOrderingKeys.type, order=Order.desc),
             MeteringPointOrdering(key=MeteringPointOrderingKeys.sector, order=Order.asc),
             MeteringPointOrdering(key=MeteringPointOrderingKeys.sector, order=Order.desc),
     ))
-    def test__query_apply_ordering__should_return_correct_meteringpoints(
+    def test__apply_ordering__should_return_correct_meteringpoints(
             self,
             seeded_session: db.Session,
             ordering: MeteringPointOrdering,
             seed_meteringpoints: List[MeteringPoint],
     ):
-        # seed_meteringpoints[0].type.name
-        # -- Arrange ---------------------------------------------------------
-        expected_meteringpoints = []
+        # -- Act -------------------------------------------------------------
+
+        results = MeteringPointQuery(seeded_session) \
+            .apply_ordering(ordering) \
+            .all()
+
+        # -- Assert ----------------------------------------------------------
 
         sort_descending = ordering.order == Order.desc
 
-        if ordering.key == MeteringPointOrderingKeys.gsrn:
-            expected_meteringpoints = sorted(seed_meteringpoints, key=lambda x: x.gsrn, reverse=sort_descending)
-        elif ordering.key == MeteringPointOrderingKeys.type:
-            expected_meteringpoints = sorted(
-                seed_meteringpoints,
-                key=lambda x: x.type.value,
-                reverse=not sort_descending,  # Not pretty but it works
-            )
-        elif ordering.key == MeteringPointOrderingKeys.sector:
-            expected_meteringpoints = sorted(seed_meteringpoints, key=lambda x: x.sector, reverse=sort_descending)
+        if ordering.key is MeteringPointOrderingKeys.gsrn:
+            f = lambda mp: mp.gsrn
+        elif ordering.key is MeteringPointOrderingKeys.sector:
+            f = lambda mp: mp.sector
+        else:
+            raise RuntimeError('Should not happen')
 
-        expected_meteringpoints_gsrn = [m.gsrn for m in expected_meteringpoints]
-
-        # -- Act -------------------------------------------------------------
-
-        query = MeteringPointQuery(seeded_session).apply_ordering(ordering)
-
-        # -- Assert ----------------------------------------------------------
-        assert query.count() == len(expected_meteringpoints)
-
-        returned_meteringpoints_gsrn = [m.gsrn for m in query.all()]
-        assert returned_meteringpoints_gsrn == expected_meteringpoints_gsrn
+        assert len(results) == len(seed_meteringpoints)
+        assert [mp.gsrn for mp in results] == \
+               [mp.gsrn for mp in sorted(seed_meteringpoints,
+                                         key=f, reverse=sort_descending)]

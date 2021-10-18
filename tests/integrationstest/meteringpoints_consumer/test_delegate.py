@@ -4,13 +4,15 @@ from flask.testing import FlaskClient
 
 from energytt_platform.bus import messages as m
 from energytt_platform.serialize import simple_serializer
-from energytt_platform.models.common import Address
 from energytt_platform.models.delegates import MeteringPointDelegate
 from energytt_platform.models.meteringpoints import \
     MeteringPointType, MeteringPoint
 
 from meteringpoints_consumer.handlers import dispatcher
 from meteringpoints_shared.db import db
+
+# TODO: Implementering
+#   - Grant access, revoke access, grant access again
 
 METERINGPOINT_1 = MeteringPoint(
     gsrn='gsrn1',
@@ -23,7 +25,6 @@ METERINGPOINT_2 = MeteringPoint(
     sector='DK1',
     type=MeteringPointType.production,
 )
-
 
 METERINGPOINT_3 = MeteringPoint(
     gsrn='gsrn3',
@@ -43,7 +44,7 @@ METERINGPOINTS = [
     METERINGPOINT_3,
 ]
 
-
+# TODO: Remove seedin function, no need for it
 @pytest.fixture(scope='function')
 def seed_meteringpoints(session: db.Session,):
     """
@@ -59,6 +60,7 @@ def seed_meteringpoints(session: db.Session,):
 
 
 class TestMeteringPointDelegateGranted:
+    # TODO: No need to parametrize (So remove this)
     @pytest.mark.parametrize('gsrn, expected_result', (
         (METERINGPOINT_1.gsrn, METERINGPOINT_1_simple),
         (METERINGPOINT_2.gsrn, METERINGPOINT_2_simple),
@@ -120,6 +122,7 @@ class TestMeteringPointDelegateGranted:
 
 
 class TestMeteringPointDelegateRevoked:
+    # TODO: No need for three tests, move into code
     @pytest.mark.parametrize('gsrn, expected_result', (
         (METERINGPOINT_1.gsrn, [METERINGPOINT_2_simple, METERINGPOINT_3_simple]),  # noqa: E501
         (METERINGPOINT_2.gsrn, [METERINGPOINT_1_simple, METERINGPOINT_3_simple]),  # noqa: E501
