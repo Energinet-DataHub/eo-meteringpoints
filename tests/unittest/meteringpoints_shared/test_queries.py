@@ -12,59 +12,59 @@ from energytt_platform.models.meteringpoints import MeteringPointType
 from meteringpoints_shared.models import (
     DbMeteringPoint,
     DbMeteringPointDelegate, MeteringPointFilters, MeteringPointOrdering, MeteringPointOrderingKeys,
-    DbMeteringPointAddress, DbMeteringPointTechnology,
+    DbMeteringPointAddress, DbMeteringPointTechnology, DbTechnology,
 )
-from meteringpoints_shared.queries import MeteringPointQuery, MeteringPointAddressQuery, MeteringPointTechnologyQuery
-
-TYPES = (MeteringPointType.consumption, MeteringPointType.production)
-SECTORS = ('DK1', 'DK2')
-COMBINATIONS = list(product(TYPES, SECTORS))
-
-
-@pytest.fixture(scope='module')
-def seed_meteringpoints() -> List[MeteringPoint]:
-    """
-    TODO
-
-    :return:
-    """
-
-    mp_list = []
-
-    for i, (type, sector) in enumerate(COMBINATIONS):
-        mp_list.append(DbMeteringPoint(
-            gsrn=f'gsrn{i}',
-            type=type,
-            sector=sector,
-        ))
-
-    return mp_list
-
-
-@pytest.fixture(scope='function')
-def seeded_session(
-        session: db.Session,
-        seed_meteringpoints: List[MeteringPoint],
-        token_subject: str,
-) -> db.Session:
-    """
-    TODO
-    """
-    session.begin()
-
-    for meteringpoint in seed_meteringpoints:
-        session.add(DbMeteringPoint(
-            gsrn=meteringpoint.gsrn,
-            type=meteringpoint.type,
-            sector=meteringpoint.sector,
-        ))
-
-    session.commit()
-
-    yield session
+from meteringpoints_shared.queries import MeteringPointQuery, MeteringPointAddressQuery, MeteringPointTechnologyQuery, \
+    DelegateQuery, TechnologyQuery
 
 
 class TestMeteringPointQuery:
+    TYPES = (MeteringPointType.consumption, MeteringPointType.production)
+    SECTORS = ('DK1', 'DK2')
+    COMBINATIONS = list(product(TYPES, SECTORS))
+
+    @pytest.fixture(scope='function')
+    def seed_meteringpoints(self) -> List[MeteringPoint]:
+        """
+        TODO
+
+        :return:
+        """
+
+        mp_list = []
+
+        for i, (type, sector) in enumerate(self.COMBINATIONS):
+            mp_list.append(DbMeteringPoint(
+                gsrn=f'gsrn{i}',
+                type=type,
+                sector=sector,
+            ))
+
+        return mp_list
+
+    @pytest.fixture(scope='function')
+    def seeded_session(
+            self,
+            session: db.Session,
+            seed_meteringpoints: List[MeteringPoint],
+            token_subject: str,
+    ) -> db.Session:
+        """
+        TODO
+        """
+        session.begin()
+
+        for meteringpoint in seed_meteringpoints:
+            session.add(DbMeteringPoint(
+                gsrn=meteringpoint.gsrn,
+                type=meteringpoint.type,
+                sector=meteringpoint.sector,
+            ))
+
+        session.commit()
+
+        yield session
+
     @pytest.mark.parametrize('gsrn', ('gsrn0', 'gsrn1', 'gsrn2'))
     def test__has_gsrn__gsrn_exists__should_return_correct_meteringpoint(
             self,
@@ -469,6 +469,238 @@ class TestMeteringPointTechnologyQuery:
 
         result = MeteringPointTechnologyQuery(session) \
             .has_gsrn(gsrn) \
+            .all()
+
+        # -- Assert --------------------------------------------------------------
+
+        assert len(result) == 0
+
+
+class TestDelegateQuery:
+    # FIXME: Following tests fails when running with the other tests, but succeed when running alone
+    #  - test__has_subject__single_subject_exists__should_return_correct_delegate
+    #  - test__has_subject__single_subject_exists__should_return_correct_delegate
+    DELEGATE_1 = DbMeteringPointDelegate(
+        gsrn='gsrn1',
+        subject='subject1',
+    )
+
+    DELEGATE_2 = DbMeteringPointDelegate(
+        gsrn='gsrn2',
+        subject='subject2',
+    )
+
+    # NOTE: Shares subject with DELEGATE_2
+    DELEGATE_3 = DbMeteringPointDelegate(
+        gsrn='gsrn3',
+        subject='subject2',
+    )
+
+    @pytest.fixture(scope='function')
+    def seeded_session(
+            self,
+            session: db.session
+    ) -> db.Session:
+
+        session.add(self.DELEGATE_1)
+        session.add(self.DELEGATE_2)
+        session.add(self.DELEGATE_3)
+        session.commit()
+        yield session
+
+    def test__has_gsrn__single_gsrn_exists__should_return_correct_delegate(
+            self,
+            seeded_session: db.Session,
+    ):
+        # -- Act -----------------------------------------------------------------
+
+        result = DelegateQuery(seeded_session) \
+            .has_gsrn(self.DELEGATE_2.gsrn) \
+            .all()
+
+        # -- Assert --------------------------------------------------------------
+
+        assert len(result) == 1
+        assert result[0].gsrn == self.DELEGATE_2.gsrn
+
+    @pytest.mark.parametrize('gsrn', ('unknown_gsrn_1', None))
+    def test__has_gsrn__gsrn_does_not_exists__should_not_return_any_delegate(
+            self,
+            seeded_session: db.Session,
+            gsrn: str,
+    ):
+        # -- Act -----------------------------------------------------------------
+
+        result = DelegateQuery(seeded_session) \
+            .has_gsrn(gsrn) \
+            .all()
+
+        # -- Assert --------------------------------------------------------------
+
+        assert len(result) == 0
+
+    def test__has_subject__single_subject_exists__should_return_correct_delegate(
+            self,
+            seeded_session: db.Session,
+    ):
+        # -- Act -----------------------------------------------------------------
+
+        result = DelegateQuery(seeded_session) \
+            .has_subject(self.DELEGATE_1.subject) \
+            .all()
+
+        # -- Assert --------------------------------------------------------------
+
+        assert len(result) == 1
+        assert result[0].subject == self.DELEGATE_1.subject
+
+    def test__has_subject__multiple_subject_exists__should_return_correct_delegate(
+            self,
+            seeded_session: db.Session,
+    ):
+        # -- Act -----------------------------------------------------------------
+
+        result = DelegateQuery(seeded_session) \
+            .has_subject(self.DELEGATE_2.subject) \
+            .all()
+
+        # -- Assert --------------------------------------------------------------
+
+        assert len(result) > 0
+        assert all(delegate.subject == self.DELEGATE_2.subject for delegate in result)
+
+    @pytest.mark.parametrize('subject', ('unknown_subject_1', None))
+    def test__has_subject__subject_does_not_exists__should_not_return_any_delegate(
+            self,
+            seeded_session: db.Session,
+            subject: str,
+    ):
+        # -- Act -----------------------------------------------------------------
+
+        result = DelegateQuery(seeded_session) \
+            .has_subject(subject) \
+            .all()
+
+        # -- Assert --------------------------------------------------------------
+
+        assert len(result) == 0
+
+
+class TestTechnologyQuery:
+    TECHNOLOGY_1 = DbTechnology(
+        tech_code='100',
+        fuel_code='101',
+    )
+
+    TECHNOLOGY_2 = DbTechnology(
+        tech_code='200',
+        fuel_code='201',
+    )
+
+    # Shares codes with the others
+    TECHNOLOGY_3 = DbTechnology(
+        tech_code='100',
+        fuel_code='201',
+    )
+
+    @pytest.fixture(scope='function')
+    def seeded_session(
+            self,
+            session: db.session
+    ) -> db.Session:
+        session.add(self.TECHNOLOGY_1)
+        session.add(self.TECHNOLOGY_2)
+        session.add(self.TECHNOLOGY_3)
+        session.commit()
+        yield session
+
+    def test__has_tech_code__single_exists__should_return_correct_technology(
+            self,
+            seeded_session: db.Session,
+    ):
+
+        # -- Act -----------------------------------------------------------------
+
+        result = TechnologyQuery(seeded_session) \
+            .has_tech_code(self.TECHNOLOGY_2.tech_code) \
+            .all()
+
+        # -- Assert --------------------------------------------------------------
+
+        assert len(result) == 1
+        assert result[0].tech_code == self.TECHNOLOGY_2.tech_code
+
+    def test__has_tech_code__multiple_exists__should_return_correct_technology(
+            self,
+            seeded_session: db.Session,
+    ):
+        # -- Act -----------------------------------------------------------------
+
+        result = TechnologyQuery(seeded_session) \
+            .has_tech_code(self.TECHNOLOGY_3.tech_code) \
+            .all()
+
+        # -- Assert --------------------------------------------------------------
+
+        assert len(result) > 0
+        assert all(tech.tech_code == self.TECHNOLOGY_3.tech_code for tech in result)
+
+    @pytest.mark.parametrize('tech_code', ('unknown_tech_code', None))
+    def test__has_tech_code__does_not_exists__should_not_return_any_technology(
+            self,
+            seeded_session: db.Session,
+            tech_code: str,
+    ):
+        # -- Act -----------------------------------------------------------------
+
+        result = TechnologyQuery(seeded_session) \
+            .has_tech_code(tech_code) \
+            .all()
+
+        # -- Assert --------------------------------------------------------------
+
+        assert len(result) == 0
+
+    def test__has_fuel_code__single_exists__should_return_correct_technology(
+            self,
+            seeded_session: db.Session,
+    ):
+        # -- Act -----------------------------------------------------------------
+
+        result = TechnologyQuery(seeded_session) \
+            .has_fuel_code(self.TECHNOLOGY_1.fuel_code) \
+            .all()
+
+        # -- Assert --------------------------------------------------------------
+
+        assert len(result) == 1
+        assert result[0].fuel_code == self.TECHNOLOGY_1.fuel_code
+
+    def test__has_fuel_code__multiple_exists__should_return_correct_technology(
+            self,
+            seeded_session: db.Session,
+    ):
+        # -- Act -----------------------------------------------------------------
+
+        result = TechnologyQuery(seeded_session) \
+            .has_fuel_code(self.TECHNOLOGY_3.fuel_code) \
+            .all()
+
+        # -- Assert --------------------------------------------------------------
+
+        assert len(result) > 0
+        assert all(tech.fuel_code == self.TECHNOLOGY_3.fuel_code for tech in result)
+
+    @pytest.mark.parametrize('fuel_code', ('unknown_fuel_code', None))
+    def test__has_fuel_code__does_not_exists__should_not_return_any_technology(
+            self,
+            seeded_session: db.Session,
+            fuel_code: str,
+    ):
+        # -- Act -----------------------------------------------------------------
+
+        result = TechnologyQuery(seeded_session) \
+            .has_fuel_code(fuel_code) \
             .all()
 
         # -- Assert --------------------------------------------------------------
