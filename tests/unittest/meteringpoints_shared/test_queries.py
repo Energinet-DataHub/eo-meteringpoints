@@ -566,7 +566,7 @@ class TestDelegateQuery:
 
         # -- Assert --------------------------------------------------------------
 
-        assert len(result) > 0
+        assert len(result) == 2
         assert all(delegate.subject == self.DELEGATE_2.subject for delegate in result)
 
     @pytest.mark.parametrize('subject', ('unknown_subject_1', None))
