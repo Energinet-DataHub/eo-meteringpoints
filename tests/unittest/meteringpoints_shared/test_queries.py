@@ -587,6 +587,9 @@ class TestDelegateQuery:
 
 
 class TestTechnologyQuery:
+    # FIXME: Following tests fails when running with the other tests, but succeed when running alone
+    # - test__has_fuel_code__multiple_exists__should_return_correct_technology
+    # - test__has_fuel_code__single_exists__should_return_correct_technology
     TECHNOLOGY_1 = DbTechnology(
         tech_code='100',
         fuel_code='101',
