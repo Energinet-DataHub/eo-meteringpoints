@@ -7,7 +7,14 @@ from energytt_platform.models.meteringpoints import MeteringPoint, MeteringPoint
 from energytt_platform.models.common import Address
 
 from meteringpoints_shared.controller import controller
-from meteringpoints_shared.models import DbMeteringPoint
+from meteringpoints_shared.models import DbMeteringPoint, DbTechnology
+from meteringpoints_shared.queries import MeteringPointQuery
+
+TECHNOLGY_1 = DbTechnology(
+    type=TechnologyType.nuclear,
+    tech_code='100',
+    fuel_code='101',
+)
 
 METERINGPOINT_WITHOUT_TECHNOLOGY = DbMeteringPoint(
     gsrn='gsrn1',
@@ -21,18 +28,14 @@ METERINGPOINT_WITH_TECHNOLOGY = DbMeteringPoint(
     gsrn='gsrn2',
     type=MeteringPointType.consumption,
     sector='DK2',
-    technology=Technology(
-        type=TechnologyType.nuclear,
-        tech_code='100',
-        fuel_code='101',
-    ),
+    technology=TECHNOLGY_1,
     address=None,
 )
 
 METERINGPOINT_WITH_ADDRESS = DbMeteringPoint(
     gsrn='gsrn3',
     type=MeteringPointType.consumption,
-    sector='DK2',
+    sector='DK3',
     technology=None,
     address=Address(
         street_code='street_code_1',
@@ -54,6 +57,10 @@ METERINGPOINTS = [
     METERINGPOINT_WITH_ADDRESS,
 ]
 
+TECHNOLOGIES = [
+    TECHNOLGY_1
+]
+
 
 @pytest.fixture(scope='function')
 def seeded_session(
@@ -61,11 +68,16 @@ def seeded_session(
 ) -> db.Session:
     for meteringpoint in METERINGPOINTS:
         session.add(meteringpoint)
+
+    for technology in TECHNOLOGIES:
+        session.add(technology)
+
     session.commit()
-    yield session
+    return session
 
 
 class TestDatabaseController:
+    # FIXME: Test does not work if run all at once
 
     @pytest.mark.parametrize('meteringpoint', (
             METERINGPOINT_WITHOUT_TECHNOLOGY,
@@ -88,11 +100,30 @@ class TestDatabaseController:
 
         assert fetched_meteringpoint == meteringpoint
 
-    def f_test__get_or_create_meteringpoint__meteringpoint_does_not_exists__should_create_and_return_meteringpoint(
+    def test__get_or_create_meteringpoint__meteringpoint_does_not_exists__should_create_and_return_meteringpoint(
             self,
             seeded_session: db.Session,
     ):
         # -- Arrange -------------------------------------------------------------
+        gsrn = 'gsrn100'
+
         # -- Act -----------------------------------------------------------------
+
+        meteringpoint = controller.get_or_create_meteringpoint(
+            session=seeded_session,
+            gsrn=gsrn,
+        )
+
+        # Check database for new meteringpoint
+        db_meteringpoint = MeteringPointQuery(seeded_session) \
+            .has_gsrn(gsrn) \
+            .one_or_none()
+
         # -- Assert --------------------------------------------------------------
-        pass
+
+        assert meteringpoint.gsrn == gsrn
+        assert db_meteringpoint.gsrn == gsrn
+
+
+
+
