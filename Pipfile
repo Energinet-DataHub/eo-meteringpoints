@@ -7,6 +7,7 @@ verify_ssl = true
 mypy = "*"
 flake8 = "*"
 pytest = "*"
+testcontainers = "*"
 
 [packages]
 peterplys = "0.4.1"
