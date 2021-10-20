@@ -13,10 +13,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Python ${{ python-version }}
+      - name: Set up Python ${{ env.python-version }}
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ python-version }}
+          python-version: ${{ env.python-version }}
 
       - name: Install pipenv
         run: |
@@ -39,10 +39,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Set up Python ${{ python-version }}
+    - name: Set up Python ${{ env.python-version }}
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ python-version }}
+        python-version: ${{ env.python-version }}
 
     - name: Install pipenv
       run: |
@@ -66,10 +66,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Python ${{ python-version }}
+      - name: Set up Python ${{ env.python-version }}
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ python-version }}
+          python-version: ${{ env.python-version }}
 
       - name: Install pipenv
         run: |
@@ -93,10 +93,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Python ${{ python-version }}
+      - name: Set up Python ${{ env.python-version }}
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ python-version }}
+          python-version: ${{ env.python-version }}
 
       - name: Install pipenv
         run: |
