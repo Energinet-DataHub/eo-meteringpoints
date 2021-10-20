@@ -12,6 +12,10 @@ peterplys = "0.4.1"
 
 [scripts]
 update-platform = "pip install --upgrade ./../ett-platform-utils"
+lint-flake8 = "flake8"
+unittest= "bash ./scripts/run_unittests.sh"
+integrationtest= "bash ./scripts/run_unittests.sh"
+temp_test= "bash ./scripts/run_temperoy_test.sh"
 
 [requires]
 python_version = "3.8"
