@@ -1,6 +1,9 @@
 name: ci
 
-on: [push]
+env:
+  python-version: 3.8
+
+on: [push, pull_request]
 
 jobs:
   build:
@@ -10,10 +13,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Python 3.8
+      - name: Set up Python ${{ python-version }}
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: ${{ python-version }}
 
       - name: Install pipenv
         run: |
@@ -36,10 +39,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Set up Python 3.8
+    - name: Set up Python ${{ python-version }}
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8
+        python-version: ${{ python-version }}
 
     - name: Install pipenv
       run: |
@@ -57,16 +60,16 @@ jobs:
 
   unittest:
     name: Unittest
-    needs: build
+    needs: lint
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Python 3.8
+      - name: Set up Python ${{ python-version }}
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: ${{ python-version }}
 
       - name: Install pipenv
         run: |
@@ -84,16 +87,16 @@ jobs:
 
   integrationtest:
     name: Integrationtest
-    needs: build
+    needs: unittest
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Python 3.8
+      - name: Set up Python ${{ python-version }}
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: ${{ python-version }}
 
       - name: Install pipenv
         run: |
@@ -105,7 +108,7 @@ jobs:
           path: ~/.local/share/virtualenvs
           key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
 
-      - name: Running temporary test
+      - name: Running integrationtest
         run: |
           pipenv run integrationtest
 
