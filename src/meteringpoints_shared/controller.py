@@ -133,7 +133,7 @@ class DatabaseController(object):
             subject: str,
     ):
         """
-        Creates or updates technology codes for a DbMeteringPoint.
+        Grant subject access to DbMeteringPoint with gsrn.
         """
         exists = DelegateQuery(session) \
             .has_gsrn(gsrn) \
