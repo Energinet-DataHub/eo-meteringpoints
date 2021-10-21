@@ -3,7 +3,12 @@ name: ci
 env:
   python-version: 3.8
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request: {}
+  workflow_dispatch: {}
 
 jobs:
   build:
@@ -55,8 +60,8 @@ jobs:
         key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
 
     - name: Analysing the code with flake8
-      run: |
-        pipenv run lint-flake8
+      run: pipenv run lint-flake8
+      working-directory: src/
 
   unittest:
     name: Unittest
