@@ -11,7 +11,6 @@ testcontainers = "*"
 
 [packages]
 peterplys = "0.4.1"
-pytest = "*"
 
 [scripts]
 update-platform = "pip install --upgrade ./../ett-platform-utils"
