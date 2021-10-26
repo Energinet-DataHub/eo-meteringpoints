@@ -126,8 +126,7 @@ class DbMeteringPointDelegate(db.ModelBase):
     """
     __tablename__ = 'meteringpoint_delegate'
     __table_args__ = (
-        sa.PrimaryKeyConstraint('gsrn'),
-        sa.UniqueConstraint('gsrn', 'subject'),
+        sa.PrimaryKeyConstraint('gsrn', 'subject'),
     )
 
     gsrn = sa.Column(sa.String(), index=True, nullable=False)
