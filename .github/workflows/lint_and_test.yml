@@ -2,6 +2,7 @@ name: Lint and Test
 
 env:
   python-version: 3.8
+  cache-directory: ~/.local/share/virtualenvs
 
 on:
   push:
@@ -23,18 +24,18 @@ jobs:
           python-version: ${{ env.python-version }}
 
       - uses: actions/cache@v1
-        id: cache-pip
+        id: cache
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-7
+          path: ${{ cache-directory }}
+          key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-8
 
       - name: Install Python packages
-        if: steps.cache-pip.outputs.cache-hit != 'true'
-        run: pip install --target ~/.cache/pip --upgrade pip setuptools wheel
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: pip install --upgrade pip setuptools wheel pipenv
 
-      - name: Install PIP packages
-        if: steps.cache-pip.outputs.cache-hit != 'true'
-        run: pip install --target ~/.cache/pip -r requirements_test.txt
+      - name: Install Pipenv dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: pipenv update --dev
 
   lint:
     name: Linting
@@ -48,11 +49,10 @@ jobs:
       with:
         python-version: ${{ env.python-version }}
 
-    - id: cache-pip
-      uses: actions/cache@v1
+    - uses: actions/cache@v1
       with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-7
+        path: ${{ cache-directory }}
+        key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-8
 
     - name: List cache
       run: ls ~/.cache/pip/
@@ -61,7 +61,7 @@ jobs:
       run: pip list
 
     - name: Analysing the code with flake8
-      run: flake8
+      run: pipenv run flake8
       working-directory: ./
 
   unittest:
@@ -76,14 +76,13 @@ jobs:
         with:
           python-version: ${{ env.python-version }}
 
-      - id: cache-pip
-        uses: actions/cache@v1
+      - uses: actions/cache@v1
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-7
+          path: ${{ cache-directory }}
+          key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-8
 
       - name: Run unittests
-        run: pytest tests/unittest/
+        run: pipenv run pytest tests/unittest/
 
   integrationtest:
     name: Integrationtest
@@ -97,11 +96,10 @@ jobs:
         with:
           python-version: ${{ env.python-version }}
 
-      - id: cache-pip
-        uses: actions/cache@v1
+      - uses: actions/cache@v1
         with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-7
+          path: ${{ cache-directory }}
+          key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-8
 
       - name: Run integrationtest
-        run: pytest tests/integrationstest/
+        run: pipenv run pytest tests/integrationstest/
