@@ -54,6 +54,9 @@ jobs:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-4
 
+    - name: Pip list
+      run: pip list
+
     - name: Analysing the code with flake8
       run: flake8
       working-directory: ./
