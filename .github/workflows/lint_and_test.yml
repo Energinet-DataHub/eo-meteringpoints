@@ -23,15 +23,14 @@ jobs:
         with:
           python-version: ${{ env.python-version }}
 
+      - name: Install Python packages
+        run: pip install --upgrade pip setuptools wheel pipenv
+
       - uses: actions/cache@v1
         id: cache
         with:
           path: ${{ env.cache-directory }}
-          key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-8
-
-      - name: Install Python packages
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: pip install --upgrade pip setuptools wheel pipenv
+          key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-9
 
       - name: Install Pipenv dependencies
         if: steps.cache.outputs.cache-hit != 'true'
@@ -49,16 +48,13 @@ jobs:
       with:
         python-version: ${{ env.python-version }}
 
+    - name: Install Python packages
+      run: pip install --upgrade pip setuptools wheel pipenv
+
     - uses: actions/cache@v1
       with:
         path: ${{ env.cache-directory }}
-        key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-8
-
-    - name: List cache
-      run: ls ~/.cache/pip/
-
-    - name: Pip list
-      run: pip list
+        key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-9
 
     - name: Analysing the code with flake8
       run: pipenv run flake8
@@ -76,10 +72,13 @@ jobs:
         with:
           python-version: ${{ env.python-version }}
 
+      - name: Install Python packages
+        run: pip install --upgrade pip setuptools wheel pipenv
+
       - uses: actions/cache@v1
         with:
           path: ${{ env.cache-directory }}
-          key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-8
+          key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-9
 
       - name: Run unittests
         run: pipenv run pytest tests/unittest/
@@ -96,10 +95,13 @@ jobs:
         with:
           python-version: ${{ env.python-version }}
 
+      - name: Install Python packages
+        run: pip install --upgrade pip setuptools wheel pipenv
+
       - uses: actions/cache@v1
         with:
           path: ${{ env.cache-directory }}
-          key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-8
+          key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-9
 
       - name: Run integrationtest
         run: pipenv run pytest tests/integrationstest/
