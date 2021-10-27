@@ -33,6 +33,7 @@ jobs:
         run: pip install --upgrade pip setuptools wheel
 
       - name: Install PIP dependencies
+        if: steps.cache-pip.outputs.cache-hit != 'true'
         run: pip install -r requirements_test.txt
 
   lint:
@@ -54,7 +55,7 @@ jobs:
         key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}
 
     - name: Analysing the code with flake8
-      run: flake8
+      run: . ./.venv/bin/activate && flake8
       working-directory: ./
 
   unittest:
