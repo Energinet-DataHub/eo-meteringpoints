@@ -55,7 +55,7 @@ jobs:
         key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}
 
     - name: Analysing the code with flake8
-      run: . ./.venv/bin/activate && flake8
+      run: ./.venv/bin/activate && flake8
       working-directory: ./
 
   unittest:
