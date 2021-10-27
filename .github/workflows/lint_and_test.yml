@@ -26,7 +26,7 @@ jobs:
       - uses: actions/cache@v1
         id: cache
         with:
-          path: ${{ cache-directory }}
+          path: ${{ env.cache-directory }}
           key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-8
 
       - name: Install Python packages
@@ -51,7 +51,7 @@ jobs:
 
     - uses: actions/cache@v1
       with:
-        path: ${{ cache-directory }}
+        path: ${{ env.cache-directory }}
         key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-8
 
     - name: List cache
@@ -78,7 +78,7 @@ jobs:
 
       - uses: actions/cache@v1
         with:
-          path: ${{ cache-directory }}
+          path: ${{ env.cache-directory }}
           key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-8
 
       - name: Run unittests
@@ -98,7 +98,7 @@ jobs:
 
       - uses: actions/cache@v1
         with:
-          path: ${{ cache-directory }}
+          path: ${{ env.cache-directory }}
           key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-8
 
       - name: Run integrationtest
