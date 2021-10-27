@@ -57,8 +57,8 @@ jobs:
         key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-9
 
     - name: Analysing the code with flake8
-      run: pipenv run flake8
       working-directory: ./
+      run: pipenv run flake8
 
   unittest:
     name: Unittest
@@ -83,7 +83,6 @@ jobs:
       - name: Run unittests
         working-directory: ./src
         run: pipenv run python -m pytest ../tests/unittest/
-        env:
 
   integrationtest:
     name: Integrationtest
