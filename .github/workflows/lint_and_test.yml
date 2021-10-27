@@ -25,16 +25,16 @@ jobs:
       - id: cache-pip
         uses: actions/cache@v1
         with:
-          path: ./.venv/
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-2
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-3
 
-      - name: Install packages
+      - name: Install Python packages
         if: steps.cache-pip.outputs.cache-hit != 'true'
-        run: python -m venv ./.venv && . ./.venv/bin/activate && pip install --upgrade pip setuptools wheel
+        run: pip install --upgrade pip setuptools wheel
 
-      - name: Install PIP dependencies
+      - name: Install PIP packages
         if: steps.cache-pip.outputs.cache-hit != 'true'
-        run: python -m venv ./.venv && . ./.venv/bin/activate && pip install -r requirements_test.txt
+        run: pip install -r requirements_test.txt
 
   lint:
     name: Linting
@@ -51,8 +51,8 @@ jobs:
     - id: cache-pip
       uses: actions/cache@v1
       with:
-        path: ./.venv/
-        key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-2
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-3
 
     - name: Analysing the code with flake8
       run: ./.venv/bin/activate && flake8
@@ -73,8 +73,8 @@ jobs:
       - id: cache-pip
         uses: actions/cache@v1
         with:
-          path: ./.venv/
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-2
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-3
 
       - name: Run unittests
         run: pytest tests/unittest/
@@ -94,8 +94,8 @@ jobs:
       - id: cache-pip
         uses: actions/cache@v1
         with:
-          path: ./.venv/
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-2
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-3
 
       - name: Run integrationtest
         run: pytest tests/integrationstest/
