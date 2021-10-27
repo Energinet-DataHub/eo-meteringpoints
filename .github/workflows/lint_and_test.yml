@@ -2,6 +2,7 @@ name: Lint and Test
 
 env:
   python-version: 3.8
+  cache-key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-6
 
 on:
   push:
@@ -26,7 +27,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-4
+          key: ${{ cache-key }}
 
       - name: Install Python packages
         if: steps.cache-pip.outputs.cache-hit != 'true'
@@ -52,7 +53,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-4
+        key: ${{ cache-key }}
 
     - name: Pip list
       run: pip list
@@ -77,7 +78,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-4
+          key: ${{ cache-key }}
 
       - name: Run unittests
         run: pytest tests/unittest/
@@ -98,7 +99,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-4
+          key: ${{ cache-key }}
 
       - name: Run integrationtest
         run: pytest tests/integrationstest/
