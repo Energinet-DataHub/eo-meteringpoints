@@ -30,7 +30,7 @@ jobs:
           key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-9
 
       - name: Install Pipenv
-        run: pip install --upgrade pipenv
+        run: python -m pip install --upgrade pipenv
 
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
@@ -49,18 +49,12 @@ jobs:
         python-version: ${{ env.python-version }}
 
     - name: Install Pipenv
-      run: pip install --upgrade pipenv
+      run: python -m pip install --upgrade pipenv
 
     - uses: actions/cache@v1
       with:
         path: ${{ env.cache-directory }}
         key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-9
-
-#    - name: List cache
-#      run: ls ~/.cache/pip/
-
-    - name: Pip list
-      run: pipenv run pip list
 
     - name: Analysing the code with flake8
       run: pipenv run flake8
@@ -79,7 +73,7 @@ jobs:
           python-version: ${{ env.python-version }}
 
       - name: Install Pipenv
-        run: pip install --upgrade pipenv
+        run: python -m pip install --upgrade pipenv
 
       - uses: actions/cache@v1
         with:
@@ -89,6 +83,7 @@ jobs:
       - name: Run unittests
         working-directory: ./src
         run: pipenv run python -m pytest ../tests/unittest/
+        env:
 
   integrationtest:
     name: Integrationtest
@@ -103,7 +98,7 @@ jobs:
           python-version: ${{ env.python-version }}
 
       - name: Install Pipenv
-        run: pip install --upgrade pipenv
+        run: python -m pip install --upgrade pipenv
 
       - uses: actions/cache@v1
         with:
