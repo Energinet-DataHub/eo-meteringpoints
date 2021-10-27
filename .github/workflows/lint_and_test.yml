@@ -1,24 +1,24 @@
 name: Lint and Test
 
+on:
+  pull_request: {}
+  workflow_dispatch: {}
+  push:
+    branches:
+      - main
+
 env:
   python-version: 3.8
   cache-directory: ~/.local/share/virtualenvs
 
-on:
-  push:
-    branches:
-      - main
-  pull_request: {}
-  workflow_dispatch: {}
-
 jobs:
   build:
-    name: Install dependencies
     runs-on: ubuntu-latest
+    name: Install dependencies
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Python ${{ env.python-version }}
+      - name: Install Python ${{ env.python-version }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ env.python-version }}
@@ -27,7 +27,7 @@ jobs:
         id: cache
         with:
           path: ${{ env.cache-directory }}
-          key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-9
+          key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}
 
       - name: Install Pipenv
         run: python -m pip install --upgrade pipenv
@@ -36,38 +36,14 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: pipenv update --dev
 
-  lint:
+  linting:
+    runs-on: ubuntu-latest
     name: Linting
-    runs-on: ubuntu-latest
     needs: build
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Set up Python ${{ env.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ env.python-version }}
-
-    - name: Install Pipenv
-      run: python -m pip install --upgrade pipenv
-
-    - uses: actions/cache@v1
-      with:
-        path: ${{ env.cache-directory }}
-        key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-9
-
-    - name: Analysing the code with flake8
-      working-directory: ./
-      run: pipenv run flake8
-
-  unittest:
-    name: Unittest
-    needs: lint
-    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Python ${{ env.python-version }}
+      - name: Install Python ${{ env.python-version }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ env.python-version }}
@@ -78,20 +54,43 @@ jobs:
       - uses: actions/cache@v1
         with:
           path: ${{ env.cache-directory }}
-          key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-9
+          key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}
+
+      - name: Analysing the code with flake8
+        run: pipenv run flake8
+
+  unittest:
+    runs-on: ubuntu-latest
+    name: Unittests
+    needs: linting
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Python ${{ env.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.python-version }}
+
+      - name: Install Pipenv
+        run: python -m pip install --upgrade pipenv
+
+      - uses: actions/cache@v1
+        with:
+          path: ${{ env.cache-directory }}
+          key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}
 
       - name: Run unittests
         working-directory: ./src
         run: pipenv run python -m pytest ../tests/unittest/
 
   integrationtest:
-    name: Integrationtest
-    needs: unittest
     runs-on: ubuntu-latest
+    name: Integrationtests
+    needs: unittest
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Python ${{ env.python-version }}
+      - name: Install Python ${{ env.python-version }}
         uses: actions/setup-python@v2
         with:
           python-version: ${{ env.python-version }}
@@ -102,8 +101,8 @@ jobs:
       - uses: actions/cache@v1
         with:
           path: ${{ env.cache-directory }}
-          key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-9
+          key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}
 
       - name: Run integrationtest
         working-directory: ./src
-        run: pipenv run pytest ../tests/integrationstest/
+        run: pipenv run python -m pytest ../tests/integrationstest/
