@@ -62,7 +62,7 @@ jobs:
   unittest:
     runs-on: ubuntu-latest
     name: Unittests
-    needs: linting
+    needs: build
     steps:
       - uses: actions/checkout@v2
 
@@ -86,7 +86,7 @@ jobs:
   integrationtest:
     runs-on: ubuntu-latest
     name: Integrationtests
-    needs: unittest
+    needs: build
     steps:
       - uses: actions/checkout@v2
 
