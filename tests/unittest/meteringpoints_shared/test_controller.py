@@ -2,163 +2,25 @@ import pytest
 from typing import Union
 
 from meteringpoints_shared.db import db
-
-from energytt_platform.models.tech import Technology, TechnologyType, TechnologyCodes
-from energytt_platform.models.meteringpoints import MeteringPointType
 from energytt_platform.models.common import Address
+from energytt_platform.models.tech import \
+    Technology, TechnologyType, TechnologyCodes
 
 from meteringpoints_shared.controller import controller
-from meteringpoints_shared.models import DbMeteringPoint, DbTechnology, DbMeteringPointAddress, DbMeteringPointDelegate, \
-    DbMeteringPointTechnology
-from meteringpoints_shared.queries import MeteringPointQuery, MeteringPointAddressQuery, MeteringPointTechnologyQuery, \
-    DelegateQuery, TechnologyQuery
-
-
-# # ---- Seed Data -------------------------
-#
-# METERINGPOINT_1_WITHOUT_TECHNOLOGY = DbMeteringPoint(
-#     gsrn='gsrn1',
-#     type=MeteringPointType.consumption,
-#     sector='DK1',
-# )
-#
-# METERINGPOINT_2_WITH_TECHNOLOGY = DbMeteringPoint(
-#     gsrn='gsrn2',
-#     type=MeteringPointType.consumption,
-#     sector='DK2',
-# )
-#
-# METERINGPOINT_TECHNOLGY_2 = DbMeteringPointTechnology(
-#     gsrn=METERINGPOINT_2_WITH_TECHNOLOGY.gsrn,
-#     tech_code='100',
-#     fuel_code='101',
-# )
-#
-# METERINGPOINT_3_WITH_ADDRESS = DbMeteringPoint(
-#     gsrn='gsrn3',
-#     type=MeteringPointType.consumption,
-#     sector='DK3',
-# )
-#
-# METERINGPOINT_ADDRESS_3 = DbMeteringPointAddress(
-#     gsrn=METERINGPOINT_3_WITH_ADDRESS.gsrn,
-#     street_code='street_code_1',
-#     street_name='street_name_1',
-#     building_number='building_number_1',
-#     floor_id='floor_id_1',
-#     room_id='room_id_1',
-#     post_code='post_code_1',
-#     city_name='city_name_1',
-#     city_sub_division_name='city_sub_division_name1',
-#     municipality_code='municipality_code_1',
-#     location_description='location_description_1',
-# )
-#
-# METERINGPOINT_4_WITH_DELEGATE = DbMeteringPoint(
-#     gsrn='gsrn4',
-#     type=MeteringPointType.consumption,
-#     sector='DK3',
-# )
-#
-# METERINGPOINT_DELEGATE_4 = DbMeteringPointDelegate(
-#     gsrn=METERINGPOINT_4_WITH_DELEGATE.gsrn,
-#     subject='subject',
-# )
-#
-# METERINGPOINT_5 = DbMeteringPoint(
-#     gsrn='gsrn5',
-#     type=MeteringPointType.consumption,
-#     sector='DK3',
-#
-# )
-#
-# METERINGPOINT_TECHNOLGY_5 = DbMeteringPointTechnology(
-#     gsrn=METERINGPOINT_5.gsrn,
-#     tech_code='500',
-#     fuel_code='501',
-# )
-#
-# METERINGPOINT_ADDRESS_5 = DbMeteringPointAddress(
-#     gsrn=METERINGPOINT_5.gsrn,
-#     street_code='street_code_1',
-#     street_name='street_name_1',
-#     building_number='building_number_1',
-#     floor_id='floor_id_1',
-#     room_id='room_id_1',
-#     post_code='post_code_1',
-#     city_name='city_name_1',
-#     city_sub_division_name='city_sub_division_name1',
-#     municipality_code='municipality_code_1',
-#     location_description='location_description_1',
-# )
-#
-# METERINGPOINT_DELEGATE_5 = DbMeteringPointDelegate(
-#     gsrn=METERINGPOINT_5.gsrn,
-#     subject='subject5',
-# )
-#
-# TECHNOLOGY_1 = DbTechnology(
-#     type=TechnologyType.nuclear,
-#     tech_code='001',
-#     fuel_code='002',
-# )
-#
-# TECHNOLOGY_2 = DbTechnology(
-#     type=TechnologyType.solar,
-#     tech_code='011',
-#     fuel_code='012',
-# )
-#
-# TECHNOLOGIES = [
-#     TECHNOLOGY_1,
-#     TECHNOLOGY_2,
-# ]
-#
-# METERINGPOINTS = [
-#     METERINGPOINT_1_WITHOUT_TECHNOLOGY,
-#     METERINGPOINT_2_WITH_TECHNOLOGY,
-#     METERINGPOINT_3_WITH_ADDRESS,
-#     METERINGPOINT_4_WITH_DELEGATE,
-#     METERINGPOINT_5,
-# ]
-#
-# METERINGPOINT_TECHNOLOGIES = [
-#     METERINGPOINT_TECHNOLGY_2,
-#     METERINGPOINT_TECHNOLGY_5,
-# ]
-#
-# ADDRESSES = [
-#     METERINGPOINT_ADDRESS_3,
-#     METERINGPOINT_ADDRESS_5,
-# ]
-#
-# DELEGATES = [
-#     METERINGPOINT_DELEGATE_4,
-#     METERINGPOINT_DELEGATE_5,
-# ]
-#
-#
-# @pytest.fixture(scope='function')
-# def seeded_session(
-#         session: db.Session,
-# ) -> db.Session:
-#     for meteringpoint in METERINGPOINTS:
-#         session.add(meteringpoint)
-#
-#     for meteringpoint_technology in METERINGPOINT_TECHNOLOGIES:
-#         session.add(meteringpoint_technology)
-#
-#     for meteringpoint_address in ADDRESSES:
-#         session.add(meteringpoint_address)
-#
-#     for meteringpoint_delegate in DELEGATES:
-#         session.add(meteringpoint_delegate)
-#
-#     for technology in TECHNOLOGIES:
-#         session.add(technology)
-#
-#     session.commit()
-#     return session
+from meteringpoints_shared.models import (
+    DbMeteringPoint,
+    DbTechnology,
+    DbMeteringPointAddress,
+    DbMeteringPointDelegate,
+    DbMeteringPointTechnology,
+)
+from meteringpoints_shared.queries import (
+    MeteringPointQuery,
+    MeteringPointAddressQuery,
+    MeteringPointTechnologyQuery,
+    DelegateQuery,
+    TechnologyQuery,
+)
 
 
 class TestDatabaseControllerMeteringPoints:
@@ -166,7 +28,7 @@ class TestDatabaseControllerMeteringPoints:
     Tests methods regarding MeteringPoints.
     """
 
-    def test__get_or_create_meteringpoint__meteringpoint_already_exists__should_return(
+    def test__get_or_create_meteringpoint__meteringpoint_already_exists__should_return(  # noqa: E501
             self,
             session: db.Session,
     ):
@@ -192,7 +54,7 @@ class TestDatabaseControllerMeteringPoints:
 
         assert meteringpoint.gsrn == 'gsrn123'
 
-    def test__get_or_create_meteringpoint__meteringpoint_does_not_exists__should_create_and_return_meteringpoint(
+    def test__get_or_create_meteringpoint__meteringpoint_does_not_exists__should_create_and_return_meteringpoint(  # noqa: E501
             self,
             session: db.Session,
     ):
@@ -218,12 +80,12 @@ class TestDatabaseControllerMeteringPoints:
         assert meteringpoint.gsrn == 'gsrn321'
         assert db_meteringpoint.gsrn == 'gsrn321'
 
-    def test__delete_meteringpoint__should_delete_meteringpoint_and_associated_data(
+    def test__delete_meteringpoint__should_delete_meteringpoint_and_associated_data(  # noqa: E501
             self,
             session: db.Session,
     ):
 
-        # -- Arrange -------------------------------------------------------------
+        # -- Arrange ---------------------------------------------------------
 
         session.begin()
 
@@ -239,7 +101,7 @@ class TestDatabaseControllerMeteringPoints:
 
         session.commit()
 
-        # -- Act -----------------------------------------------------------------
+        # -- Act -------------------------------------------------------------
 
         session.begin()
 
@@ -250,7 +112,7 @@ class TestDatabaseControllerMeteringPoints:
 
         session.commit()
 
-        # -- Assert --------------------------------------------------------------
+        # -- Assert ----------------------------------------------------------
 
         # Assert 'gsrn1' and all of its associated data has been deleted
 
@@ -320,7 +182,7 @@ class TestDatabaseControllerMeteringPointAddress:
             location_description='new_location_description2',
         ),
     ))
-    def test__set_meteringpoint_address__address_already_exists__should_update_meteringpoint_address(
+    def test__set_meteringpoint_address__address_already_exists__should_update_meteringpoint_address(  # noqa: E501
             self,
             session: db.Session,
             new_address: Union[Address, DbMeteringPointAddress],
@@ -341,7 +203,7 @@ class TestDatabaseControllerMeteringPointAddress:
             address=new_address,
         )
 
-        # -- Assert --------------------------------------------------------------
+        # -- Assert ----------------------------------------------------------
 
         address = MeteringPointAddressQuery(session) \
             .has_gsrn('gsrn1') \
@@ -355,9 +217,12 @@ class TestDatabaseControllerMeteringPointAddress:
         assert address.room_id == new_address.room_id
         assert address.post_code == new_address.post_code
         assert address.city_name == new_address.city_name
-        assert address.city_sub_division_name == new_address.city_sub_division_name
-        assert address.municipality_code == new_address.municipality_code
-        assert address.location_description == new_address.location_description
+        assert address.city_sub_division_name == \
+               new_address.city_sub_division_name
+        assert address.municipality_code == \
+               new_address.municipality_code
+        assert address.location_description == \
+               new_address.location_description
 
         # Address for gsrn2 should be untouched
 
@@ -403,7 +268,7 @@ class TestDatabaseControllerMeteringPointAddress:
             location_description='new_location_description2',
         ),
     ))
-    def test__set_meteringpoint_address__address_does_not_exists__should_create_meteringpoint_address(
+    def test__set_meteringpoint_address__address_does_not_exists__should_create_meteringpoint_address(  # noqa: E501
             self,
             session: db.Session,
             new_address: Union[Address, DbMeteringPointAddress],
@@ -431,11 +296,14 @@ class TestDatabaseControllerMeteringPointAddress:
         assert address.room_id == new_address.room_id
         assert address.post_code == new_address.post_code
         assert address.city_name == new_address.city_name
-        assert address.city_sub_division_name == new_address.city_sub_division_name
-        assert address.municipality_code == new_address.municipality_code
-        assert address.location_description == new_address.location_description
+        assert address.city_sub_division_name == \
+               new_address.city_sub_division_name
+        assert address.municipality_code == \
+               new_address.municipality_code
+        assert address.location_description == \
+               new_address.location_description
 
-    def test__delete_meteringpoint_address__address_exists__should_delete_correct(
+    def test__delete_meteringpoint_address__address_exists__should_delete_correct(  # noqa: E501
             self,
             session: db.Session,
     ):
@@ -474,7 +342,7 @@ class TestDatabaseControllerMeteringPointDelegate:
     Tests methods regarding MeteringPointDelegates.
     """
 
-    def test__grant_meteringpoint_delegate__delegate_already_exists__should_not_do_anything(
+    def test__grant_meteringpoint_delegate__delegate_already_exists__should_not_do_anything(  # noqa: E501
             self,
             session: db.Session,
     ):
@@ -505,7 +373,7 @@ class TestDatabaseControllerMeteringPointDelegate:
         assert delegate.gsrn == 'gsrn1'
         assert delegate.subject == 'subject1'
 
-    def test__grant_meteringpoint_delegate__delegate_does_not_exists__should_create_delegate(
+    def test__grant_meteringpoint_delegate__delegate_does_not_exists__should_create_delegate(  # noqa: E501
             self,
             session: db.Session,
     ):
@@ -607,7 +475,7 @@ class TestDatabaseControllerMeteringPointTechnology:
             fuel_code='F01010101',
         ),
     ))
-    def test__set_meteringpoint_technology__technology_already_exists__should_update_meteringpoint_technology(
+    def test__set_meteringpoint_technology__technology_already_exists__should_update_meteringpoint_technology(  # noqa: E501
             self,
             session: db.Session,
             new_technology: Union[
@@ -710,7 +578,7 @@ class TestDatabaseControllerMeteringPointTechnology:
         assert technology.tech_code == new_technology.tech_code
         assert technology.fuel_code == new_technology.fuel_code
 
-    def test__delete_meteringpoint_technology__technology_exists__should_delete_correct(
+    def test__delete_meteringpoint_technology__technology_exists__should_delete_correct(  # noqa: E501
             self,
             session: db.Session,
     ):
@@ -749,7 +617,7 @@ class TestDatabaseControllerTechnology:
     Tests methods regarding Technologies.
     """
 
-    def test__get_or_create_technology__technology_already_exists__should_return_existing_technology(
+    def test__get_or_create_technology__technology_already_exists__should_return_existing_technology(  # noqa: E501
             self,
             session: db.Session,
     ):
@@ -763,7 +631,7 @@ class TestDatabaseControllerTechnology:
         ))
         session.commit()
 
-        # -- Act -----------------------------------------------------------------
+        # -- Act -------------------------------------------------------------
 
         technology = controller.get_or_create_technology(
             session=session,
@@ -771,17 +639,17 @@ class TestDatabaseControllerTechnology:
             fuel_code='F01010101',
         )
 
-        # -- Assert --------------------------------------------------------------
+        # -- Assert ----------------------------------------------------------
 
         assert technology.tech_code == 'T010101'
         assert technology.fuel_code == 'F01010101'
 
-    def test__get_or_create_technology__technology_does_not_exists__should_create_and_return_technology(
+    def test__get_or_create_technology__technology_does_not_exists__should_create_and_return_technology(  # noqa: E501
             self,
             session: db.Session,
     ):
 
-        # -- Act -----------------------------------------------------------------
+        # -- Act -------------------------------------------------------------
 
         technology = controller.get_or_create_technology(
             session=session,
@@ -789,7 +657,7 @@ class TestDatabaseControllerTechnology:
             fuel_code='F01010101',
         )
 
-        # -- Assert --------------------------------------------------------------
+        # -- Assert ----------------------------------------------------------
 
         db_technology = TechnologyQuery(session) \
             .has_tech_code('T010101') \
@@ -802,21 +670,21 @@ class TestDatabaseControllerTechnology:
         assert db_technology.tech_code == 'T010101'
         assert db_technology.fuel_code == 'F01010101'
 
-    # -- delete_technology() ------------------------------------------------------
+    # -- delete_technology() -------------------------------------------------
 
     def test__delete_technology__should_delete_technology(
             self,
             session: db.Session,
     ):
 
-        # -- Arrange -------------------------------------------------------------
+        # -- Arrange ---------------------------------------------------------
 
         session.begin()
         session.add(DbTechnology(tech_code='T010101', fuel_code='F01010101'))
         session.add(DbTechnology(tech_code='T020202', fuel_code='F02020202'))
         session.commit()
 
-        # -- Act -----------------------------------------------------------------
+        # -- Act -------------------------------------------------------------
 
         session.begin()
 
@@ -828,7 +696,7 @@ class TestDatabaseControllerTechnology:
 
         session.commit()
 
-        # -- Assert --------------------------------------------------------------
+        # -- Assert ----------------------------------------------------------
 
         assert not TechnologyQuery(session) \
             .has_tech_code('T010101') \

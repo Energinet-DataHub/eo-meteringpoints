@@ -78,7 +78,7 @@ class TestMeteringPointQuery:
         session.commit()
 
     @pytest.mark.parametrize('gsrn', ('gsrn0', 'gsrn1', 'gsrn2'))
-    def test__has_gsrn__meteringpoint_exists__should_return_correct_meteringpoint(
+    def test__has_gsrn__meteringpoint_exists__should_return_correct_meteringpoint(  # noqa: E501
             self,
             session: db.Session,
             gsrn: str,
@@ -99,7 +99,7 @@ class TestMeteringPointQuery:
         assert query.one().gsrn == gsrn
 
     @pytest.mark.parametrize('gsrn', ('unknown_gsrn_1', None))
-    def test__has_gsrn__meteringpoint_does_not_exist__should_return_no_meteringpoints(
+    def test__has_gsrn__meteringpoint_does_not_exist__should_return_no_meteringpoints(  # noqa: E501
             self,
             session: db.Session,
             gsrn: str,
@@ -143,8 +143,8 @@ class TestMeteringPointQuery:
         assert all(mp.gsrn in expected_gsrn_returned for mp in query.all())
 
     @pytest.mark.parametrize('meteringpoint_type', (
-            MeteringPointType.consumption,
-            MeteringPointType.production,
+        MeteringPointType.consumption,
+        MeteringPointType.production,
     ))
     def test__is_type__should_return_correct_meteringpoints(
             self,
@@ -248,7 +248,7 @@ class TestMeteringPointQuery:
         assert len(results) == len(expected_meteringpoints)
         assert all(mp.sector in sectors for mp in results)
 
-    def test__is_accessible_by__should_return_meteringpoints_with_delegated_access(
+    def test__is_accessible_by__should_return_meteringpoints_with_delegated_access(  # noqa: E501
             self,
             session: db.Session,
     ):
@@ -284,7 +284,7 @@ class TestMeteringPointQuery:
             type=MeteringPointType.consumption,
         ),
     ))
-    def test__apply_filters__meteringpoints_exists__should_return_correct_meteringpoints(
+    def test__apply_filters__meteringpoints_exists__should_return_correct_meteringpoints(  # noqa: E501
             self,
             session: db.Session,
             filters: MeteringPointFilters,
@@ -319,7 +319,7 @@ class TestMeteringPointQuery:
         MeteringPointFilters(gsrn=['foobar'], sector=['DK2']),
         MeteringPointFilters(gsrn=['gsrn1'], sector=['foobar']),
     ))
-    def test__query_apply_filters__meteringpoints_does_not_exist__should_return_no_meteringpoints(
+    def test__query_apply_filters__meteringpoints_does_not_exist__should_return_no_meteringpoints(  # noqa: E501
             self,
             session: db.Session,
             filters: MeteringPointFilters,
@@ -334,10 +334,22 @@ class TestMeteringPointQuery:
             .exists()
 
     @pytest.mark.parametrize('ordering', (
-        MeteringPointOrdering(key=MeteringPointOrderingKeys.gsrn, order=Order.asc),
-        MeteringPointOrdering(key=MeteringPointOrderingKeys.gsrn, order=Order.desc),
-        MeteringPointOrdering(key=MeteringPointOrderingKeys.sector, order=Order.asc),
-        MeteringPointOrdering(key=MeteringPointOrderingKeys.sector, order=Order.desc),
+        MeteringPointOrdering(
+            key=MeteringPointOrderingKeys.gsrn,
+            order=Order.asc,
+        ),
+        MeteringPointOrdering(
+            key=MeteringPointOrderingKeys.gsrn,
+            order=Order.desc,
+        ),
+        MeteringPointOrdering(
+            key=MeteringPointOrderingKeys.sector,
+            order=Order.asc,
+        ),
+        MeteringPointOrdering(
+            key=MeteringPointOrderingKeys.sector,
+            order=Order.desc,
+        ),
     ))
     def test__apply_ordering__should_return_correct_meteringpoints(
             self,
@@ -553,7 +565,7 @@ class TestDelegateQuery:
         assert all(delegate.subject == 'subject1' for delegate in delegates)
 
     @pytest.mark.parametrize('subject', ('', None, 'unknown_subject'))
-    def test__has_subject__delegate_does_not_exist__should_not_return_anything(
+    def test__has_subject__delegate_does_not_exist__should_not_return_anything(  # noqa: E501
             self,
             session: db.Session,
             subject: str,
@@ -590,7 +602,7 @@ class TestTechnologyQuery:
         session.add(DbTechnology(tech_code='T020202', fuel_code='F02020202'))
         session.commit()
 
-    def test__has_tech_code__technology_exists__should_return_correct_technologies(
+    def test__has_tech_code__technology_exists__should_return_correct_technologies(  # noqa: E501
             self,
             session: db.Session,
     ):
@@ -610,7 +622,7 @@ class TestTechnologyQuery:
         assert all(tech.tech_code == 'T010101' for tech in results)
 
     @pytest.mark.parametrize('tech_code', ('', None, 'unknown_tech_code'))
-    def test__has_tech_code__technology_does_not_exists__should_not_return_anything(
+    def test__has_tech_code__technology_does_not_exists__should_not_return_anything(  # noqa: E501
             self,
             session: db.Session,
             tech_code: str,
@@ -623,7 +635,7 @@ class TestTechnologyQuery:
             .has_tech_code(tech_code) \
             .exists()
 
-    def test__has_fuel_code__technology_exists__should_return_correct_technologies(
+    def test__has_fuel_code__technology_exists__should_return_correct_technologies(  # noqa: E501
             self,
             session: db.Session,
     ):
@@ -643,7 +655,7 @@ class TestTechnologyQuery:
         assert all(tech.fuel_code == 'F01010101' for tech in results)
 
     @pytest.mark.parametrize('fuel_code', ('', None, 'unknown_fuel_code'))
-    def test__has_fuel_code__technology_does_not_exists__should_not_return_anything(
+    def test__has_fuel_code__technology_does_not_exists__should_not_return_anything(  # noqa: E501
             self,
             session: db.Session,
             fuel_code: str,
