@@ -12,7 +12,7 @@ on:
 
 jobs:
   build:
-    name: build
+    name: Install dependencies
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -22,19 +22,21 @@ jobs:
         with:
           python-version: ${{ env.python-version }}
 
-      - name: Install packages
-        run: pip install --upgrade setuptools wheel
-
       - id: cache-pip
         uses: actions/cache@v1
         with:
-          path: ~/.local/share/virtualenvs
+          path: ./.venv/
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}
+
+      - name: Install packages
+        if: steps.cache-pip.outputs.cache-hit != 'true'
+        run: pip install --upgrade pip setuptools wheel
 
       - name: Install PIP dependencies
         run: pip install -r requirements_test.txt
 
   lint:
+    name: Linting
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -45,13 +47,10 @@ jobs:
       with:
         python-version: ${{ env.python-version }}
 
-    - name: Install packages
-      run: pip install --upgrade setuptools wheel
-
     - id: cache-pip
       uses: actions/cache@v1
       with:
-        path: ~/.local/share/virtualenvs
+        path: ./.venv/
         key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}
 
     - name: Analysing the code with flake8
@@ -70,13 +69,10 @@ jobs:
         with:
           python-version: ${{ env.python-version }}
 
-      - name: Install packages
-        run: pip install --upgrade setuptools wheel
-
       - id: cache-pip
         uses: actions/cache@v1
         with:
-          path: ~/.local/share/virtualenvs
+          path: ./.venv/
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}
 
       - name: Run unittests
@@ -94,13 +90,10 @@ jobs:
         with:
           python-version: ${{ env.python-version }}
 
-      - name: Install packages
-        run: pip install --upgrade setuptools wheel
-
       - id: cache-pip
         uses: actions/cache@v1
         with:
-          path: ~/.local/share/virtualenvs
+          path: ./.venv/
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}
 
       - name: Run integrationtest
