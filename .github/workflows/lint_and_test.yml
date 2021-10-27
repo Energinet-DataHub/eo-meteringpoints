@@ -22,19 +22,19 @@ jobs:
         with:
           python-version: ${{ env.python-version }}
 
-      - id: cache-pip
-        uses: actions/cache@v1
+      - uses: actions/cache@v1
+        id: cache-pip
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-6
 
       - name: Install Python packages
         if: steps.cache-pip.outputs.cache-hit != 'true'
-        run: pip install --upgrade pip setuptools wheel
+        run: pip install --target ~/.cache/pip --upgrade pip setuptools wheel
 
       - name: Install PIP packages
         if: steps.cache-pip.outputs.cache-hit != 'true'
-        run: pip install -r requirements_test.txt
+        run: pip install --target ~/.cache/pip -r requirements_test.txt
 
   lint:
     name: Linting
@@ -53,6 +53,9 @@ jobs:
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-6
+
+    - name: List cache
+      run: ls ~/.cache/pip/
 
     - name: Pip list
       run: pip list
