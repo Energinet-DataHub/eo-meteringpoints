@@ -26,7 +26,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-3
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-4
 
       - name: Install Python packages
         if: steps.cache-pip.outputs.cache-hit != 'true'
@@ -52,7 +52,7 @@ jobs:
       uses: actions/cache@v1
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-3
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-4
 
     - name: Analysing the code with flake8
       run: flake8
@@ -74,7 +74,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-3
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-4
 
       - name: Run unittests
         run: pytest tests/unittest/
@@ -95,7 +95,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-3
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements_test.txt') }}-4
 
       - name: Run integrationtest
         run: pytest tests/integrationstest/
