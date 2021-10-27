@@ -30,11 +30,11 @@ jobs:
 
       - name: Install packages
         if: steps.cache-pip.outputs.cache-hit != 'true'
-        run: pip install --upgrade pip setuptools wheel
+        run: python -m venv ./.venv && . ./.venv/bin/activate && pip install --upgrade pip setuptools wheel
 
       - name: Install PIP dependencies
         if: steps.cache-pip.outputs.cache-hit != 'true'
-        run: pip install -r requirements_test.txt
+        run: python -m venv ./.venv && . ./.venv/bin/activate && pip install -r requirements_test.txt
 
   lint:
     name: Linting
