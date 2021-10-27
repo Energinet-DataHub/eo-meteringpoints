@@ -23,16 +23,16 @@ jobs:
         with:
           python-version: ${{ env.python-version }}
 
-      - name: Install Python packages
-        run: pip install --upgrade pip setuptools wheel pipenv
-
       - uses: actions/cache@v1
         id: cache
         with:
           path: ${{ env.cache-directory }}
           key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-9
 
-      - name: Install Pipenv dependencies
+      - name: Install Pipenv
+        run: pip install --upgrade pipenv
+
+      - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: pipenv update --dev
 
@@ -48,13 +48,19 @@ jobs:
       with:
         python-version: ${{ env.python-version }}
 
-    - name: Install Python packages
-      run: pip install --upgrade pip setuptools wheel pipenv
+    - name: Install Pipenv
+      run: pip install --upgrade pipenv
 
     - uses: actions/cache@v1
       with:
         path: ${{ env.cache-directory }}
         key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-9
+
+#    - name: List cache
+#      run: ls ~/.cache/pip/
+
+    - name: Pip list
+      run: pipenv run pip list
 
     - name: Analysing the code with flake8
       run: pipenv run flake8
@@ -72,8 +78,8 @@ jobs:
         with:
           python-version: ${{ env.python-version }}
 
-      - name: Install Python packages
-        run: pip install --upgrade pip setuptools wheel pipenv
+      - name: Install Pipenv
+        run: pip install --upgrade pipenv
 
       - uses: actions/cache@v1
         with:
@@ -81,7 +87,8 @@ jobs:
           key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-9
 
       - name: Run unittests
-        run: pipenv run pytest tests/unittest/
+        working-directory: ./src
+        run: pipenv run pytest ../tests/unittest/
 
   integrationtest:
     name: Integrationtest
@@ -95,8 +102,8 @@ jobs:
         with:
           python-version: ${{ env.python-version }}
 
-      - name: Install Python packages
-        run: pip install --upgrade pip setuptools wheel pipenv
+      - name: Install Pipenv
+        run: pip install --upgrade pipenv
 
       - uses: actions/cache@v1
         with:
@@ -104,4 +111,5 @@ jobs:
           key: ${{ runner.os }}-pipenv-${{ hashFiles('Pipfile') }}-9
 
       - name: Run integrationtest
-        run: pipenv run pytest tests/integrationstest/
+        working-directory: ./src
+        run: pipenv run pytest ../tests/integrationstest/
