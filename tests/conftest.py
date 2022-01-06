@@ -2,6 +2,8 @@
 conftest.py according to pytest docs:
 https://docs.pytest.org/en/2.7.3/plugins.html?highlight=re#conftest-py-plugins
 """
+import os
+import sys
 import pytest
 from unittest.mock import patch
 from flask.testing import FlaskClient
@@ -11,9 +13,16 @@ from testcontainers.postgres import PostgresContainer
 from energytt_platform.tokens import TokenEncoder
 from energytt_platform.models.auth import InternalToken
 
-from meteringpoints_api.app import create_app
-from meteringpoints_shared.db import db
-from meteringpoints_shared.config import INTERNAL_TOKEN_SECRET
+
+# Adds the src folder to the local path
+test_dir = os.path.dirname(os.path.abspath(__file__))
+src_dir = os.path.join(test_dir, '..', 'src')
+sys.path.append(src_dir)
+
+
+from meteringpoints_api.app import create_app  # noqa: E402
+from meteringpoints_shared.db import db  # noqa: E402
+from meteringpoints_shared.config import INTERNAL_TOKEN_SECRET  # noqa: E402
 
 
 @pytest.fixture(scope='function')
