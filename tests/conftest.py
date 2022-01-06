@@ -15,14 +15,14 @@ from energytt_platform.models.auth import InternalToken
 
 
 # Adds the src folder to the local path
-test_dir = os.path.dirname(os.path.abspath(__file__))  # noqa: E402
-src_dir = os.path.join(test_dir, '..', 'src')  # noqa: E402
-sys.path.append(src_dir)  # noqa: E402
+test_dir = os.path.dirname(os.path.abspath(__file__))
+src_dir = os.path.join(test_dir, '..', 'src')
+sys.path.append(src_dir)
 
 
-from meteringpoints_api.app import create_app
-from meteringpoints_shared.db import db
-from meteringpoints_shared.config import INTERNAL_TOKEN_SECRET
+from meteringpoints_api.app import create_app  # noqa: E402
+from meteringpoints_shared.db import db  # noqa: E402
+from meteringpoints_shared.config import INTERNAL_TOKEN_SECRET  # noqa: E402
 
 
 @pytest.fixture(scope='function')
