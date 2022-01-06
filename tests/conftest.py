@@ -15,9 +15,9 @@ from energytt_platform.models.auth import InternalToken
 
 
 # Adds the src folder to the local path
-test_dir = os.path.dirname(os.path.abspath(__file__))
-src_dir = os.path.join(test_dir, '..', 'src')
-sys.path.append(src_dir)
+test_dir = os.path.dirname(os.path.abspath(__file__))  # noqa: E402
+src_dir = os.path.join(test_dir, '..', 'src')  # noqa: E402
+sys.path.append(src_dir)  # noqa: E402
 
 
 from meteringpoints_api.app import create_app
