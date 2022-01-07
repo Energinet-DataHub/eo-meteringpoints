@@ -1,8 +1,8 @@
 from typing import List
 from sqlalchemy import orm, asc, desc, and_
 
-from energytt_platform.sql import SqlQuery
-from energytt_platform.models.meteringpoints import MeteringPointType
+from origin.sql import SqlQuery
+from origin.models.meteringpoints import MeteringPointType
 
 from .models import (
     MeteringPointFilters,

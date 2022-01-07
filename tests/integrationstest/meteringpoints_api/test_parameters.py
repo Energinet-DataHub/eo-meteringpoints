@@ -3,7 +3,7 @@ from typing import List, Any
 from itertools import product
 from flask.testing import FlaskClient
 
-from energytt_platform.models.meteringpoints import \
+from origin.models.meteringpoints import \
     MeteringPoint, MeteringPointType
 
 from meteringpoints_shared.db import db

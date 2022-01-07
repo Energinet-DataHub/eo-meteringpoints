@@ -2,8 +2,8 @@ from typing import List, Optional
 from dataclasses import dataclass, field
 from serpyco import number_field
 
-from energytt_platform.api import Endpoint, Context
-from energytt_platform.models.meteringpoints import MeteringPoint
+from origin.api import Endpoint, Context
+from origin.models.meteringpoints import MeteringPoint
 
 from meteringpoints_shared.db import db
 from meteringpoints_shared.queries import MeteringPointQuery

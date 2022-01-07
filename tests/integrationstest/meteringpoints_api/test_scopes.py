@@ -1,11 +1,11 @@
 from datetime import datetime, timezone, timedelta
 
 import pytest
-from energytt_platform.models.auth import InternalToken
+from origin.models.auth import InternalToken
 from flask.testing import FlaskClient
 from typing import List, Dict, Any, Tuple, Optional
 
-from energytt_platform.tokens import TokenEncoder
+from origin.tokens import TokenEncoder
 
 from meteringpoints_shared.db import db
 

@@ -2,8 +2,8 @@ import pytest
 from typing import List
 from itertools import product
 
-from energytt_platform.models.common import Order
-from energytt_platform.models.meteringpoints import (
+from origin.models.common import Order
+from origin.models.meteringpoints import (
     MeteringPoint,
     MeteringPointType,
 )

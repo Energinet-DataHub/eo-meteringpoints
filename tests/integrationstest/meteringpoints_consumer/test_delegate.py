@@ -2,10 +2,10 @@ import pytest
 from typing import Dict, Any, List
 from flask.testing import FlaskClient
 
-from energytt_platform.bus import messages as m
-from energytt_platform.serialize import simple_serializer
-from energytt_platform.models.delegates import MeteringPointDelegate
-from energytt_platform.models.meteringpoints import \
+from origin.bus import messages as m
+from origin.serialize import simple_serializer
+from origin.models.delegates import MeteringPointDelegate
+from origin.models.meteringpoints import \
     MeteringPointType, MeteringPoint
 
 from meteringpoints_consumer.handlers import dispatcher

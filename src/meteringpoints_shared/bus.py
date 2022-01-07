@@ -1,4 +1,4 @@
-from energytt_platform.bus import get_default_broker
+from origin.bus import get_default_broker
 
 from meteringpoints_shared.config import MESSAGE_BUS_SERVERS
 
