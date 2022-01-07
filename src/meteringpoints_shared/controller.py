@@ -1,7 +1,7 @@
 from typing import Union
 
-from energytt_platform.models.common import Address
-from energytt_platform.models.tech import Technology, TechnologyCodes
+from origin.models.common import Address
+from origin.models.tech import Technology, TechnologyCodes
 
 from meteringpoints_shared.db import db
 from meteringpoints_shared.models import (

@@ -3,8 +3,8 @@ from flask.testing import FlaskClient
 from datetime import datetime, timedelta, timezone
 from typing import List, Dict, Any, Tuple, Optional
 
-from energytt_platform.tokens import TokenEncoder
-from energytt_platform.models.auth import InternalToken
+from origin.tokens import TokenEncoder
+from origin.models.auth import InternalToken
 
 from meteringpoints_shared.db import db
 

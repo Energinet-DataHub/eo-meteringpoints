@@ -2,8 +2,8 @@ import pytest
 from typing import Union
 
 from meteringpoints_shared.db import db
-from energytt_platform.models.common import Address
-from energytt_platform.models.tech import \
+from origin.models.common import Address
+from origin.models.tech import \
     Technology, TechnologyType, TechnologyCodes
 
 from meteringpoints_shared.controller import controller

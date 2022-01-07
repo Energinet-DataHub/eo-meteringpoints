@@ -1,4 +1,4 @@
-from energytt_platform.api import Application, ScopedGuard
+from origin.api import Application, ScopedGuard
 
 from meteringpoints_shared.config import INTERNAL_TOKEN_SECRET
 

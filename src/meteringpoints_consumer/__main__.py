@@ -1,7 +1,7 @@
 """
 Runs a Message Bus consumer.
 """
-from energytt_platform.bus import topics as t
+from origin.bus import topics as t
 
 from meteringpoints_shared.bus import broker
 

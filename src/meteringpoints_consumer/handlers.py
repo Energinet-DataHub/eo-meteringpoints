@@ -1,4 +1,4 @@
-from energytt_platform.bus import MessageDispatcher, messages as m
+from origin.bus import MessageDispatcher, messages as m
 
 from meteringpoints_shared.db import db
 from meteringpoints_shared.controller import controller

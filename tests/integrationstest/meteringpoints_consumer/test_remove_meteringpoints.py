@@ -2,9 +2,9 @@ import pytest
 from typing import List
 from flask.testing import FlaskClient
 
-from energytt_platform.bus import messages as m
-from energytt_platform.models.meteringpoints import MeteringPoint
-from energytt_platform.models.delegates import MeteringPointDelegate
+from origin.bus import messages as m
+from origin.models.meteringpoints import MeteringPoint
+from origin.models.delegates import MeteringPointDelegate
 
 from meteringpoints_consumer.handlers import dispatcher
 from meteringpoints_shared.db import db

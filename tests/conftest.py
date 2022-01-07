@@ -10,8 +10,8 @@ from flask.testing import FlaskClient
 from datetime import datetime, timedelta, timezone
 from testcontainers.postgres import PostgresContainer
 
-from energytt_platform.tokens import TokenEncoder
-from energytt_platform.models.auth import InternalToken
+from origin.tokens import TokenEncoder
+from origin.models.auth import InternalToken
 
 
 # Adds the src folder to the local path

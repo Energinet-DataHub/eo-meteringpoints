@@ -4,10 +4,10 @@ from typing import List, Optional
 from dataclasses import dataclass, field
 from sqlalchemy.orm import relationship
 
-from energytt_platform.serialize import Serializable
-from energytt_platform.models.tech import TechnologyType
-from energytt_platform.models.common import ResultOrdering
-from energytt_platform.models.meteringpoints import MeteringPointType
+from origin.serialize import Serializable
+from origin.models.tech import TechnologyType
+from origin.models.common import ResultOrdering
+from origin.models.meteringpoints import MeteringPointType
 
 from .db import db
 
