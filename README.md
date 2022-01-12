@@ -1,8 +1,9 @@
 # ett-meteringpoints
 MeteringPoints domain
 
-# Docker
+# Building and running service
+Information about building and running this service can be found [here](doc/running_service.md).
 
-    docker build -t meteringpoints:v1 .
-    docker run --entrypoint /app/entrypoint_api.sh meteringpoints:v1
-    docker run --entrypoint /app/entrypoint_consumer.sh meteringpoints:v1
+
+# Development environment
+Instruction about how to setup a development environment or see the specific requirement go [here](doc/contrib/shared/README.md).
