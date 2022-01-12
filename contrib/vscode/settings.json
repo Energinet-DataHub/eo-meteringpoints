@@ -1,8 +1,0 @@
-{
-    "pythonTestExplorer.testFramework": "pytest",
-    "python.testing.pytestEnabled": true,
-    "python.testing.pytestArgs": [
-        "tests"
-    ],
-    "python.envFile": "${workspaceFolder}/.env.test"
-}
