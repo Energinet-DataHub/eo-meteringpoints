@@ -370,7 +370,7 @@ class TestMeteringPointQuery:
 
         # -- Assert ----------------------------------------------------------
 
-        sort_descending = ordering.order == Order.desc
+        sort_descending = ordering.order == Order.DESC
 
         if ordering.key is MeteringPointOrderingKeys.gsrn:
             f = lambda mp: mp.gsrn  # noqa: E731
