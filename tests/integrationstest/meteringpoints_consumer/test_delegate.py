@@ -17,19 +17,19 @@ from meteringpoints_shared.db import db
 METERINGPOINT_1 = MeteringPoint(
     gsrn='gsrn1',
     sector='DK1',
-    type=MeteringPointType.production,
+    type=MeteringPointType.PRODUCTION,
 )
 
 METERINGPOINT_2 = MeteringPoint(
     gsrn='gsrn2',
     sector='DK1',
-    type=MeteringPointType.production,
+    type=MeteringPointType.PRODUCTION,
 )
 
 METERINGPOINT_3 = MeteringPoint(
     gsrn='gsrn3',
     sector='DK1',
-    type=MeteringPointType.production,
+    type=MeteringPointType.PRODUCTION,
 )
 
 # Representation of MeteringPoints using simple Python data-types:

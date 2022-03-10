@@ -60,21 +60,21 @@ GSRN = 'gsrn1'
 METERINGPOINT = MeteringPoint(
     gsrn=GSRN,
     sector='DK1',
-    type=MeteringPointType.production,
+    type=MeteringPointType.PRODUCTION,
 )
 
 
 METERINGPOINT_WITH_ADDRESS_1 = MeteringPoint(
     gsrn=GSRN,
     sector='DK3',
-    type=MeteringPointType.production,
+    type=MeteringPointType.PRODUCTION,
     address=ADDRESS_1,
 )
 
 METERINGPOINT_WITH_ADDRESS_2 = MeteringPoint(
     gsrn=GSRN,
     sector='DK3',
-    type=MeteringPointType.production,
+    type=MeteringPointType.PRODUCTION,
     address=ADDRESS_2,
 )
 
@@ -179,21 +179,21 @@ class TestOnMeteringPointUpdate:
         meteringpoint_1 = MeteringPoint(
             gsrn='gsrn1',
             sector='DK1',
-            type=MeteringPointType.production,
+            type=MeteringPointType.PRODUCTION,
             address=ADDRESS_1,
         )
 
         meteringpoint_2 = MeteringPoint(
             gsrn='gsrn2',
             sector='DK1',
-            type=MeteringPointType.production,
+            type=MeteringPointType.PRODUCTION,
             address=ADDRESS_2,
         )
 
         meteringpoint_2_updated = MeteringPoint(
             gsrn='gsrn2',
             sector='DK1',
-            type=MeteringPointType.production,
+            type=MeteringPointType.PRODUCTION,
             address=ADDRESS_3,
         )
 
@@ -351,21 +351,21 @@ class TestMeteringPointAddressUpdate:
         meteringpoint_1 = MeteringPoint(
             gsrn='gsrn1',
             sector='DK1',
-            type=MeteringPointType.production,
+            type=MeteringPointType.PRODUCTION,
             address=ADDRESS_1,
         )
 
         meteringpoint_2 = MeteringPoint(
             gsrn='gsrn2',
             sector='DK1',
-            type=MeteringPointType.production,
+            type=MeteringPointType.PRODUCTION,
             address=ADDRESS_2,
         )
 
         meteringpoint_2_updated = MeteringPoint(
             gsrn='gsrn2',
             sector='DK1',
-            type=MeteringPointType.production,
+            type=MeteringPointType.PRODUCTION,
             address=ADDRESS_3,
         )
 

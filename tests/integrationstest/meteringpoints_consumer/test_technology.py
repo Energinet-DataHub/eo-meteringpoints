@@ -17,32 +17,32 @@ from meteringpoints_shared.db import db
 TECHNOLOGY_1 = Technology(
     tech_code="100",
     fuel_code='200',
-    type=TechnologyType.coal,
+    type=TechnologyType.COAL,
 )
 
 TECHNOLOGY_2 = Technology(
     tech_code="300",
     fuel_code='400',
-    type=TechnologyType.nuclear,
+    type=TechnologyType.NUCLEAR,
 )
 
 METERINGPOINT_WITHOUT_TECHNOLOGY = MeteringPoint(
     gsrn='gsrn0',
     sector='DK1',
-    type=MeteringPointType.production,
+    type=MeteringPointType.PRODUCTION,
 )
 
 METERINGPOINT_WITH_TECHNOLOGY_1 = MeteringPoint(
     gsrn='gsrn1',
     sector='DK1',
-    type=MeteringPointType.production,
+    type=MeteringPointType.PRODUCTION,
     technology=TECHNOLOGY_1,
 )
 
 METERINGPOINT_WITH_TECHNOLOGY_2 = MeteringPoint(
     gsrn='gsrn2',
     sector='DK1',
-    type=MeteringPointType.production,
+    type=MeteringPointType.PRODUCTION,
     technology=TECHNOLOGY_2,
 )
 

@@ -39,7 +39,7 @@ class TestMeteringPointQuery:
         Returns a list of MeteringPoints to seed the database with before
         before running tests.
         """
-        types = (MeteringPointType.consumption, MeteringPointType.production)
+        types = (MeteringPointType.CONSUMPTION, MeteringPointType.PRODUCTION)
         sectors = ('DK1', 'DK2')
         combinations = product(types, sectors)
 
@@ -143,8 +143,8 @@ class TestMeteringPointQuery:
         assert all(mp.gsrn in expected_gsrn_returned for mp in query.all())
 
     @pytest.mark.parametrize('meteringpoint_type', (
-        MeteringPointType.consumption,
-        MeteringPointType.production,
+        MeteringPointType.CONSUMPTION,
+        MeteringPointType.PRODUCTION,
     ))
     def test__is_type__should_return_correct_meteringpoints(
             self,
@@ -277,11 +277,11 @@ class TestMeteringPointQuery:
     @pytest.mark.parametrize('filters', (
         MeteringPointFilters(gsrn=['gsrn1', 'gsrn2']),
         MeteringPointFilters(sector=['DK1']),
-        MeteringPointFilters(type=MeteringPointType.production),
+        MeteringPointFilters(type=MeteringPointType.PRODUCTION),
         MeteringPointFilters(
             gsrn=['gsrn1'],
             sector=['DK2'],
-            type=MeteringPointType.consumption,
+            type=MeteringPointType.CONSUMPTION,
         ),
     ))
     def test__apply_filters__meteringpoints_exists__should_return_correct_meteringpoints(  # noqa: E501
@@ -336,19 +336,19 @@ class TestMeteringPointQuery:
     @pytest.mark.parametrize('ordering', (
         MeteringPointOrdering(
             key=MeteringPointOrderingKeys.gsrn,
-            order=Order.asc,
+            order=Order.ASC,
         ),
         MeteringPointOrdering(
             key=MeteringPointOrderingKeys.gsrn,
-            order=Order.desc,
+            order=Order.DESC,
         ),
         MeteringPointOrdering(
             key=MeteringPointOrderingKeys.sector,
-            order=Order.asc,
+            order=Order.ASC,
         ),
         MeteringPointOrdering(
             key=MeteringPointOrderingKeys.sector,
-            order=Order.desc,
+            order=Order.DESC,
         ),
     ))
     def test__apply_ordering__should_return_correct_meteringpoints(

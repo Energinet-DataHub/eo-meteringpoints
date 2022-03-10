@@ -458,7 +458,7 @@ class TestDatabaseControllerMeteringPointTechnology:
         Technology(
             tech_code='T010101',
             fuel_code='F01010101',
-            type=TechnologyType.solar,  # Irrelevant
+            type=TechnologyType.SOLAR,  # Irrelevant
         ),
         TechnologyCodes(
             tech_code='T010101',
@@ -467,7 +467,7 @@ class TestDatabaseControllerMeteringPointTechnology:
         DbTechnology(
             tech_code='T010101',
             fuel_code='F01010101',
-            type=TechnologyType.solar,  # Irrelevant
+            type=TechnologyType.SOLAR,  # Irrelevant
         ),
         DbMeteringPointTechnology(
             gsrn='',  # Irrelevant
@@ -528,7 +528,7 @@ class TestDatabaseControllerMeteringPointTechnology:
         Technology(
             tech_code='T010101',
             fuel_code='F01010101',
-            type=TechnologyType.solar,  # Irrelevant
+            type=TechnologyType.SOLAR,  # Irrelevant
         ),
         TechnologyCodes(
             tech_code='T010101',
@@ -537,7 +537,7 @@ class TestDatabaseControllerMeteringPointTechnology:
         DbTechnology(
             tech_code='T010101',
             fuel_code='F01010101',
-            type=TechnologyType.solar,  # Irrelevant
+            type=TechnologyType.SOLAR,  # Irrelevant
         ),
         DbMeteringPointTechnology(
             gsrn='',  # Irrelevant
