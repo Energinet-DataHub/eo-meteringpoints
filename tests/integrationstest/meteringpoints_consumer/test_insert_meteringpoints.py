@@ -20,7 +20,7 @@ from meteringpoints_shared.db import db
 TECHNOLOGY = Technology(
     tech_code='T010101',
     fuel_code='F01010101',
-    type=TechnologyType.solar,
+    type=TechnologyType.SOLAR,
 )
 
 ADDRESS = Address(
@@ -41,27 +41,27 @@ GSRN = 'gsrn1'
 METERINGPOINT = MeteringPoint(
     gsrn=GSRN,
     sector='DK1',
-    type=MeteringPointType.production,
+    type=MeteringPointType.PRODUCTION,
 )
 
 METERINGPOINT_WITH_TECHNOLOGY = MeteringPoint(
     gsrn=GSRN,
     sector='DK2',
-    type=MeteringPointType.consumption,
+    type=MeteringPointType.CONSUMPTION,
     technology=TECHNOLOGY,
 )
 
 METERINGPOINT_WITH_ADDRESS = MeteringPoint(
     gsrn=GSRN,
     sector='DK3',
-    type=MeteringPointType.production,
+    type=MeteringPointType.CONSUMPTION,
     address=ADDRESS,
 )
 
 METERINGPOINT_WITH_TECHNOLOGY_AND_ADDRESS = MeteringPoint(
     gsrn=GSRN,
     sector='DK4',
-    type=MeteringPointType.consumption,
+    type=MeteringPointType.CONSUMPTION,
     technology=TECHNOLOGY,
     address=ADDRESS,
 )

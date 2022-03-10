@@ -33,16 +33,16 @@ class MeteringPointQuery(SqlQuery):
         """
         Applies provided filters.
         """
-        q = self
+        query = self
 
         if filters.gsrn is not None:
-            q = q.has_any_gsrn(filters.gsrn)
+            query = query.has_any_gsrn(filters.gsrn)
         if filters.type is not None:
-            q = q.is_type(filters.type)
+            query = query.is_type(filters.type)
         if filters.sector is not None:
-            q = q.in_any_sector(filters.sector)
+            query = query.in_any_sector(filters.sector)
 
-        return q
+        return query
 
     def apply_ordering(
             self,
@@ -58,9 +58,9 @@ class MeteringPointQuery(SqlQuery):
         }
 
         if ordering.asc:
-            return self.q.order_by(asc(fields[ordering.key]))
+            return self.query.order_by(asc(fields[ordering.key]))
         elif ordering.desc:
-            return self.q.order_by(desc(fields[ordering.key]))
+            return self.query.order_by(desc(fields[ordering.key]))
         else:
             raise RuntimeError('Should NOT have happened')
 
@@ -105,7 +105,7 @@ class MeteringPointQuery(SqlQuery):
         """
         return self.__class__(
             session=self.session,
-            q=self.q.join(DbMeteringPointDelegate, and_(
+            query=self.query.join(DbMeteringPointDelegate, and_(
                 DbMeteringPointDelegate.gsrn == DbMeteringPoint.gsrn,
                 DbMeteringPointDelegate.subject == subject,
             )),

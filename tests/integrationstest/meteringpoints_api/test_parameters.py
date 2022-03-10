@@ -13,7 +13,7 @@ from meteringpoints_shared.models import (
 )
 
 
-TYPES = (MeteringPointType.consumption, MeteringPointType.production)
+TYPES = (MeteringPointType.CONSUMPTION, MeteringPointType.PRODUCTION)
 SECTORS = ('DK1', 'DK2')
 COMBINATIONS = list(product(TYPES, SECTORS))
 
@@ -155,8 +155,8 @@ class TestGetMeteringPointList:
     # -- Filter by Type ------------------------------------------------------
 
     @pytest.mark.parametrize('type', (
-        MeteringPointType.consumption,
-        MeteringPointType.production,
+        MeteringPointType.CONSUMPTION,
+        MeteringPointType.PRODUCTION,
     ))
     def test__filter_by_valid_type__should_return_correct_meteringpoints(
         self,
