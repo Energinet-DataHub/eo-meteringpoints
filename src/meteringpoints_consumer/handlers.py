@@ -12,9 +12,8 @@ def on_meteringpoint_update(
         msg: m.MeteringPointUpdate,
         session: db.Session,
 ):
-    """
-    TODO
-    """
+    """TODO."""
+
     meteringpoint = controller.get_or_create_meteringpoint(
         session=session,
         gsrn=msg.meteringpoint.gsrn,
@@ -42,9 +41,8 @@ def on_meteringpoint_removed(
         msg: m.MeteringPointRemoved,
         session: db.Session,
 ):
-    """
-    TODO
-    """
+    """TODO."""
+
     controller.delete_meteringpoint(
         session=session,
         gsrn=msg.gsrn,
@@ -59,9 +57,8 @@ def on_meteringpoint_address_update(
         msg: m.MeteringPointAddressUpdate,
         session: db.Session,
 ):
-    """
-    TODO
-    """
+    """TODO."""
+
     if msg.address is None:
         controller.delete_meteringpoint_address(
             session=session,
@@ -83,9 +80,8 @@ def on_meteringpoint_technology_update(
         msg: m.MeteringPointTechnologyUpdate,
         session: db.Session,
 ):
-    """
-    TODO
-    """
+    """TODO."""
+
     if msg.codes is None:
         controller.delete_meteringpoint_technology(
             session=session,
@@ -108,7 +104,7 @@ def on_meteringpoint_delegate_granted(
         session: db.Session,
 ):
     """
-    TODO
+    TODO.
 
     TODO How to handle MeteringPoints being moved between users?
     TODO   Ie. a person moves address, so the [old] MeteringPoint is assigned
@@ -128,7 +124,7 @@ def on_meteringpoint_delegate_revoked(
         session: db.Session,
 ):
     """
-    TODO
+    TODO.
 
     TODO How to handle MeteringPoints being moved between users?
     TODO   Ie. a person moves address, so the [old] MeteringPoint is assigned
@@ -150,9 +146,8 @@ def on_technology_update(
         msg: m.TechnologyUpdate,
         session: db.Session,
 ):
-    """
-    TODO
-    """
+    """TODO."""
+
     technology = controller.get_or_create_technology(
         session=session,
         tech_code=msg.technology.tech_code,
@@ -167,9 +162,8 @@ def on_technology_removed(
         msg: m.TechnologyRemoved,
         session: db.Session,
 ):
-    """
-    TODO
-    """
+    """TODO."""
+
     controller.delete_technology(
         session=session,
         tech_code=msg.codes.tech_code,

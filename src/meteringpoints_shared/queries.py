@@ -20,9 +20,8 @@ from .models import (
 
 
 class MeteringPointQuery(SqlQuery):
-    """
-    Query DbMeteringPoint.
-    """
+    """Query DbMeteringPoint."""
+
     def _get_base_query(self) -> orm.Query:
         return self.session.query(DbMeteringPoint)
 
@@ -30,9 +29,8 @@ class MeteringPointQuery(SqlQuery):
             self,
             filters: MeteringPointFilters,
     ) -> 'MeteringPointQuery':
-        """
-        Applies provided filters.
-        """
+        """Apply provided filters."""
+
         query = self
 
         if filters.gsrn is not None:
@@ -48,9 +46,8 @@ class MeteringPointQuery(SqlQuery):
             self,
             ordering: MeteringPointOrdering,
     ) -> 'MeteringPointQuery':
-        """
-        Applies provided ordering.
-        """
+        """Apply provided ordering."""
+
         fields = {
             MeteringPointOrderingKeys.gsrn: DbMeteringPoint.gsrn,
             MeteringPointOrderingKeys.type: DbMeteringPoint.type,
@@ -66,6 +63,8 @@ class MeteringPointQuery(SqlQuery):
 
     def has_gsrn(self, gsrn: str) -> 'MeteringPointQuery':
         """
+        TODO.
+
         Filters query; only include MeteringPoint with the
         provided GSRN.
         """
@@ -73,6 +72,8 @@ class MeteringPointQuery(SqlQuery):
 
     def has_any_gsrn(self, gsrn: List[str]) -> 'MeteringPointQuery':
         """
+        TODO.
+
         Filters query; only include MeteringPoints with any of
         the provided GSRN.
         """
@@ -80,6 +81,8 @@ class MeteringPointQuery(SqlQuery):
 
     def is_type(self, type: MeteringPointType) -> 'MeteringPointQuery':
         """
+        TODO.
+
         Filters query; only include MeteringPoints with the
         provided type.
         """
@@ -87,6 +90,8 @@ class MeteringPointQuery(SqlQuery):
 
     def in_sector(self, sector: str) -> 'MeteringPointQuery':
         """
+        TODO.
+
         Filters query; only include MeteringPoints within the
         provided sector.
         """
@@ -94,15 +99,16 @@ class MeteringPointQuery(SqlQuery):
 
     def in_any_sector(self, sector: List[str]) -> 'MeteringPointQuery':
         """
-        Filters query; only include MeteringPoints within any
-        of the provided sectors.
+        TODO.
+
+        Filters query; only include MeteringPoints within any of the
+        provided sectors.
         """
         return self.filter(DbMeteringPoint.sector.in_(sector))
 
     def is_accessible_by(self, subject: str) -> 'MeteringPointQuery':
-        """
-        TODO
-        """
+        """TODO."""
+
         return self.__class__(
             session=self.session,
             query=self.query.join(DbMeteringPointDelegate, and_(
@@ -113,38 +119,49 @@ class MeteringPointQuery(SqlQuery):
 
 
 class MeteringPointAddressQuery(SqlQuery):
-    """
-    Query DbMeteringPointAddress.
-    """
+    """Query DbMeteringPointAddress."""
+
     def _get_base_query(self) -> orm.Query:
+        """TODO."""
+
         return self.session.query(DbMeteringPointAddress)
 
     def has_gsrn(self, gsrn: str) -> 'MeteringPointAddressQuery':
+        """TODO."""
+
         return self.filter(DbMeteringPointAddress.gsrn == gsrn)
 
 
 class MeteringPointTechnologyQuery(SqlQuery):
-    """
-    Query DbMeteringPointTechnology.
-    """
+    """Query DbMeteringPointTechnology."""
+
     def _get_base_query(self) -> orm.Query:
+        """TODO."""
+
         return self.session.query(DbMeteringPointTechnology)
 
     def has_gsrn(self, gsrn: str) -> 'MeteringPointTechnologyQuery':
+        """TODO."""
+
         return self.filter(DbMeteringPointTechnology.gsrn == gsrn)
 
 
 class DelegateQuery(SqlQuery):
-    """
-    Query MeteringPointDelegate.
-    """
+    """Query MeteringPointDelegate."""
+
     def _get_base_query(self) -> orm.Query:
+        """TODO."""
+
         return self.session.query(DbMeteringPointDelegate)
 
     def has_gsrn(self, gsrn: str) -> 'DelegateQuery':
+        """TODO."""
+
         return self.filter(DbMeteringPointDelegate.gsrn == gsrn)
 
     def has_subject(self, subject: str) -> 'DelegateQuery':
+        """TODO."""
+
         return self.filter(DbMeteringPointDelegate.subject == subject)
 
 
@@ -152,14 +169,19 @@ class DelegateQuery(SqlQuery):
 
 
 class TechnologyQuery(SqlQuery):
-    """
-    Query Technology.
-    """
+    """Query Technology."""
+
     def _get_base_query(self) -> orm.Query:
+        """TODO."""
+
         return self.session.query(DbTechnology)
 
     def has_tech_code(self, tech_code: str) -> 'TechnologyQuery':
+        """TODO."""
+
         return self.filter(DbTechnology.tech_code == tech_code)
 
     def has_fuel_code(self, fuel_code: str) -> 'TechnologyQuery':
+        """TODO."""
+
         return self.filter(DbTechnology.fuel_code == fuel_code)

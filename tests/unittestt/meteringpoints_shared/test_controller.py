@@ -24,14 +24,13 @@ from meteringpoints_shared.queries import (
 
 
 class TestDatabaseControllerMeteringPoints:
-    """
-    Tests methods regarding MeteringPoints.
-    """
+    """Tests methods regarding MeteringPoints."""
 
     def test__get_or_create_meteringpoint__meteringpoint_already_exists__should_return(  # noqa: E501
             self,
             session: db.Session,
     ):
+        """TODO."""
 
         # -- Arrange ---------------------------------------------------------
 
@@ -58,6 +57,7 @@ class TestDatabaseControllerMeteringPoints:
             self,
             session: db.Session,
     ):
+        """TODO."""
 
         # -- Act -------------------------------------------------------------
 
@@ -84,6 +84,7 @@ class TestDatabaseControllerMeteringPoints:
             self,
             session: db.Session,
     ):
+        """TODO."""
 
         # -- Arrange ---------------------------------------------------------
 
@@ -152,9 +153,7 @@ class TestDatabaseControllerMeteringPoints:
 
 
 class TestDatabaseControllerMeteringPointAddress:
-    """
-    Tests methods regarding MeteringPointAddresses.
-    """
+    """Tests methods regarding MeteringPointAddresses."""
 
     @pytest.mark.parametrize('new_address', (
         Address(
@@ -187,6 +186,7 @@ class TestDatabaseControllerMeteringPointAddress:
             session: db.Session,
             new_address: Union[Address, DbMeteringPointAddress],
     ):
+        """TODO."""
 
         # -- Arrange ---------------------------------------------------------
 
@@ -273,6 +273,7 @@ class TestDatabaseControllerMeteringPointAddress:
             session: db.Session,
             new_address: Union[Address, DbMeteringPointAddress],
     ):
+        """TODO."""
 
         # -- Act -------------------------------------------------------------
 
@@ -307,6 +308,7 @@ class TestDatabaseControllerMeteringPointAddress:
             self,
             session: db.Session,
     ):
+        """TODO."""
 
         # -- Arrange ---------------------------------------------------------
 
@@ -338,14 +340,13 @@ class TestDatabaseControllerMeteringPointAddress:
 
 
 class TestDatabaseControllerMeteringPointDelegate:
-    """
-    Tests methods regarding MeteringPointDelegates.
-    """
+    """Tests methods regarding MeteringPointDelegates."""
 
     def test__grant_meteringpoint_delegate__delegate_already_exists__should_not_do_anything(  # noqa: E501
             self,
             session: db.Session,
     ):
+        """TODO."""
 
         # -- Arrange ---------------------------------------------------------
 
@@ -377,6 +378,7 @@ class TestDatabaseControllerMeteringPointDelegate:
             self,
             session: db.Session,
     ):
+        """TODO."""
 
         # -- Act -------------------------------------------------------------
 
@@ -404,6 +406,7 @@ class TestDatabaseControllerMeteringPointDelegate:
             self,
             session: db.Session,
     ):
+        """TODO."""
 
         # -- Arrange ---------------------------------------------------------
 
@@ -450,9 +453,7 @@ class TestDatabaseControllerMeteringPointDelegate:
 
 
 class TestDatabaseControllerMeteringPointTechnology:
-    """
-    Tests methods regarding MeteringPointTechnologies.
-    """
+    """Tests methods regarding MeteringPointTechnologies."""
 
     @pytest.mark.parametrize('new_technology', (
         Technology(
@@ -485,6 +486,7 @@ class TestDatabaseControllerMeteringPointTechnology:
                 DbMeteringPointTechnology,
             ],
     ):
+        """TODO."""
 
         # -- Arrange ---------------------------------------------------------
 
@@ -555,6 +557,7 @@ class TestDatabaseControllerMeteringPointTechnology:
                 DbMeteringPointTechnology,
             ],
     ):
+        """TODO."""
 
         # -- Act -------------------------------------------------------------
 
@@ -582,6 +585,7 @@ class TestDatabaseControllerMeteringPointTechnology:
             self,
             session: db.Session,
     ):
+        """TODO."""
 
         # -- Arrange ---------------------------------------------------------
 
@@ -613,14 +617,13 @@ class TestDatabaseControllerMeteringPointTechnology:
 
 
 class TestDatabaseControllerTechnology:
-    """
-    Tests methods regarding Technologies.
-    """
+    """Tests methods regarding Technologies."""
 
     def test__get_or_create_technology__technology_already_exists__should_return_existing_technology(  # noqa: E501
             self,
             session: db.Session,
     ):
+        """TODO."""
 
         # -- Arrange ---------------------------------------------------------
 
@@ -648,6 +651,7 @@ class TestDatabaseControllerTechnology:
             self,
             session: db.Session,
     ):
+        """TODO."""
 
         # -- Act -------------------------------------------------------------
 
@@ -676,6 +680,7 @@ class TestDatabaseControllerTechnology:
             self,
             session: db.Session,
     ):
+        """TODO."""
 
         # -- Arrange ---------------------------------------------------------
 

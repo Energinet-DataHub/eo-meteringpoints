@@ -34,9 +34,7 @@ TTechnology = Union[
 
 
 class DatabaseController(object):
-    """
-    Controls business logic for SQL database.
-    """
+    """Controls business logic for SQL database."""
 
     # -- MeteringPoints ------------------------------------------------------
 
@@ -45,9 +43,8 @@ class DatabaseController(object):
             session: db.Session,
             gsrn: str,
     ) -> DbMeteringPoint:
-        """
-        Gets DbMeteringPoint from database, or creates a new if not found.
-        """
+        """Get DbMeteringPoint from database, or create a new if not found."""
+
         meteringpoint = MeteringPointQuery(session) \
             .has_gsrn(gsrn) \
             .one_or_none()
@@ -63,9 +60,8 @@ class DatabaseController(object):
             session: db.Session,
             gsrn: str,
     ):
-        """
-        Delete a DbMeteringPoint and all of its associated data.
-        """
+        """Delete a DbMeteringPoint and all of its associated data."""
+
         MeteringPointQuery(session) \
             .has_gsrn(gsrn) \
             .delete()
@@ -90,9 +86,8 @@ class DatabaseController(object):
             gsrn: str,
             address: TAddress,
     ):
-        """
-        Creates or updates address for a DbMeteringPoint.
-        """
+        """Create or update address for a DbMeteringPoint."""
+
         meteringpoint_address = MeteringPointAddressQuery(session) \
             .has_gsrn(gsrn) \
             .one_or_none()
@@ -120,9 +115,8 @@ class DatabaseController(object):
             session: db.Session,
             gsrn: str,
     ):
-        """
-        TODO
-        """
+        """TODO."""
+
         MeteringPointAddressQuery(session) \
             .has_gsrn(gsrn) \
             .delete()
@@ -135,9 +129,8 @@ class DatabaseController(object):
             gsrn: str,
             subject: str,
     ):
-        """
-        Grant subject access to DbMeteringPoint with gsrn.
-        """
+        """Grant subject access to DbMeteringPoint with gsrn."""
+
         exists = DelegateQuery(session) \
             .has_gsrn(gsrn) \
             .has_subject(subject) \
@@ -155,9 +148,8 @@ class DatabaseController(object):
             gsrn: str,
             subject: str,
     ):
-        """
-        TODO
-        """
+        """TODO."""
+
         DelegateQuery(session) \
             .has_gsrn(gsrn) \
             .has_subject(subject) \
@@ -171,9 +163,8 @@ class DatabaseController(object):
             gsrn: str,
             technology: TTechnology,
     ):
-        """
-        TODO
-        """
+        """TODO."""
+
         meteringpoint_technology = MeteringPointTechnologyQuery(session) \
             .has_gsrn(gsrn) \
             .one_or_none()
@@ -190,9 +181,8 @@ class DatabaseController(object):
             session: db.Session,
             gsrn: str,
     ):
-        """
-        TODO
-        """
+        """TODO."""
+
         MeteringPointTechnologyQuery(session) \
             .has_gsrn(gsrn) \
             .delete()
@@ -205,9 +195,8 @@ class DatabaseController(object):
             tech_code: str,
             fuel_code: str,
     ) -> DbTechnology:
-        """
-        TODO
-        """
+        """TODO."""
+
         technology = TechnologyQuery(session) \
             .has_tech_code(tech_code) \
             .has_fuel_code(fuel_code) \
@@ -225,9 +214,8 @@ class DatabaseController(object):
             tech_code: str,
             fuel_code: str,
     ):
-        """
-        TODO
-        """
+        """TODO."""
+
         TechnologyQuery(session) \
             .has_tech_code(tech_code) \
             .has_fuel_code(fuel_code) \

@@ -3,9 +3,12 @@ import sys
 from logging.config import fileConfig
 from alembic import context
 
-sys.path.append(os.path.join(os.path.abspath(os.path.split(os.path.abspath(__file__))[0]), '..'))
+from meteringpoints_shared.models import *  # noqa F403
 
-from meteringpoints_shared.models import *
+sys.path.append(
+    os.path.join(os.path.abspath(os.path.split(
+        os.path.abspath(__file__))[0]), '..')
+)
 
 
 # this is the Alembic Config object, which provides
@@ -22,10 +25,10 @@ def run_migrations():
     In this scenario we need to create an Engine
     and associate a connection with the context.
     """
-    with db.engine.connect() as connection:
+    with db.engine.connect() as connection:  # noqa F405
         context.configure(
             connection=connection,
-            target_metadata=db.registry.metadata,
+            target_metadata=db.registry.metadata,  # noqa F405
         )
 
         with context.begin_transaction():

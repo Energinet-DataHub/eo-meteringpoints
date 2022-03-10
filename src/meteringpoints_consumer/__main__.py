@@ -1,6 +1,5 @@
-"""
-Runs a Message Bus consumer.
-"""
+"""Runs a Message Bus consumer."""
+
 from origin.bus import topics as t
 
 from meteringpoints_shared.bus import broker

@@ -48,9 +48,7 @@ METERINGPOINTS = [
 # TODO: Remove seedin function, no need for it
 @pytest.fixture(scope='function')
 def seed_meteringpoints(session: db.Session,):
-    """
-    Insert dummy meteringpoints into the database
-    """
+    """Insert dummy meteringpoints into the database."""
 
     for meteringpoint in METERINGPOINTS:
         dispatcher(m.MeteringPointUpdate(
@@ -61,7 +59,10 @@ def seed_meteringpoints(session: db.Session,):
 
 
 class TestMeteringPointDelegateGranted:
+    """TODO."""
+
     # TODO: No need to parametrize (So remove this)
+
     @pytest.mark.parametrize('gsrn, expected_result', (
         (METERINGPOINT_1.gsrn, METERINGPOINT_1_simple),
         (METERINGPOINT_2.gsrn, METERINGPOINT_2_simple),
@@ -76,6 +77,8 @@ class TestMeteringPointDelegateGranted:
         gsrn: str,
         expected_result: Dict[str, Any],
     ):
+        """TODO."""
+
         # -- Act -------------------------------------------------------------
 
         dispatcher(m.MeteringPointDelegateGranted(
@@ -105,6 +108,8 @@ class TestMeteringPointDelegateGranted:
         client: FlaskClient,
         valid_token_encoded: str,
     ):
+        """TODO."""
+
         # -- Act -------------------------------------------------------------
 
         r = client.post(
@@ -123,7 +128,10 @@ class TestMeteringPointDelegateGranted:
 
 
 class TestMeteringPointDelegateRevoked:
+    """TODO."""
+
     # TODO: No need for three tests, move into code
+
     @pytest.mark.parametrize('gsrn, expected_result', (
         (METERINGPOINT_1.gsrn, [METERINGPOINT_2_simple, METERINGPOINT_3_simple]),  # noqa: E501
         (METERINGPOINT_2.gsrn, [METERINGPOINT_1_simple, METERINGPOINT_3_simple]),  # noqa: E501
@@ -138,6 +146,8 @@ class TestMeteringPointDelegateRevoked:
         gsrn: str,
         expected_result: List[Dict[str, Any]],
     ):
+        """TODO."""
+
         # -- Act -------------------------------------------------------------
 
         # Grant access to all

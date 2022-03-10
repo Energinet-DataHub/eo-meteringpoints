@@ -65,9 +65,7 @@ def seed_meteringpoints(
         session: db.Session,
         token_subject: str
 ):
-    """
-    Insert dummy meteringpoints into the database
-    """
+    """Insert dummy meteringpoints into the database."""
 
     for meteringpoint in METERINGPOINTS:
         dispatcher(m.MeteringPointUpdate(
@@ -84,9 +82,7 @@ def seed_meteringpoints(
 
 
 class TestMeteringPointTechnologyUpdate:
-    """
-    TODO
-    """
+    """TODO."""
 
     @pytest.mark.parametrize('meteringpoint, updated_technology', (
         (METERINGPOINT_WITHOUT_TECHNOLOGY, TECHNOLOGY_1),
@@ -101,9 +97,7 @@ class TestMeteringPointTechnologyUpdate:
             meteringpoint: MeteringPoint,
             updated_technology: Optional[Technology],
     ):
-        """
-        TODO
-        """
+        """TODO."""
 
         # -- Act -------------------------------------------------------------
 
@@ -158,9 +152,7 @@ class TestMeteringPointTechnologyUpdate:
             client: FlaskClient,
             valid_token_encoded: str,
     ):
-        """
-        TODO
-        """
+        """TODO."""
 
         # -- Act -------------------------------------------------------------
 
@@ -205,9 +197,7 @@ class TestMeteringPointTechnologyUpdate:
             client: FlaskClient,
             valid_token_encoded: str,
     ):
-        """
-        TODO
-        """
+        """TODO."""
         # -- Act -------------------------------------------------------------
 
         for technology in TECHNOLOGIES:
@@ -254,9 +244,7 @@ class TestMeteringPointTechnologyUpdate:
 
 
 class TestTechnologyUpdate:
-    """
-    TODO
-    """
+    """TODO."""
 
     def test__add_technology__should_return_updated_meteringpoint_technology(
             self,
@@ -264,9 +252,7 @@ class TestTechnologyUpdate:
             client: FlaskClient,
             valid_token_encoded: str,
     ):
-        """
-        TODO
-        """
+        """TODO."""
         # -- Arrange ---------------------------------------------------------
 
         # -- Act -------------------------------------------------------------
@@ -305,9 +291,7 @@ class TestTechnologyUpdate:
             client: FlaskClient,
             valid_token_encoded: str,
     ):
-        """
-        TODO
-        """
+        """TODO."""
         # -- Act -------------------------------------------------------------
 
         r = client.post(
@@ -337,9 +321,7 @@ class TestTechnologyUpdate:
 
 
 class TestTechnologyRemoved:
-    """
-    TODO
-    """
+    """TODO."""
 
     def test__remove_technology__should_return_meteringpoint_technology_equals_none(  # noqa: E501
             self,
@@ -347,9 +329,7 @@ class TestTechnologyRemoved:
             client: FlaskClient,
             valid_token_encoded: str,
     ):
-        """
-        TODO
-        """
+        """TODO."""
         # -- Arrange ---------------------------------------------------------
 
         # -- Act -------------------------------------------------------------
@@ -394,9 +374,7 @@ class TestTechnologyRemoved:
             client: FlaskClient,
             valid_token_encoded: str,
     ):
-        """
-        Test that remove technology removes the correct technology.
-        """
+        """Test that remove technology removes the correct technology."""
 
         # -- Act -------------------------------------------------------------
 
