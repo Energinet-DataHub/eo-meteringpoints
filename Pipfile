@@ -5,7 +5,14 @@ verify_ssl = true
 
 [dev-packages]
 flake8 = "*"
+flake8-docstrings = "*"
+pylint = "*"
+pydocstyle = "*"
+pycodestyle = "*"
 pytest = "*"
+pytest-cov = "*"
+pytest-order = "*"
+pytest-depends = "*"
 testcontainers = "*"
 
 [packages]

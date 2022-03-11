@@ -18,16 +18,13 @@ TEndpoint = Tuple[str, str, List[str], Optional[Dict[str, Any]]]
     ('GET', '/details', ['meteringpoints.read'], {'gsrn': '12345'}),
 ])
 def endpoint(request) -> TEndpoint:
-    """
-    Returns (method, path, required scopes, query string)
-    """
+    """Return (method, path, required scopes, query string)."""
+
     return request.param
 
 
 class TestScopes:
-    """
-    TODO Describe me
-    """
+    """TODO."""
 
     def test__token_has_required_scope__should_return_status_200(
             self,
@@ -36,6 +33,7 @@ class TestScopes:
             client: FlaskClient,
             token_encoder: TokenEncoder,
     ):
+        """TODO."""
 
         # -- Arrange ---------------------------------------------------------
 
@@ -82,6 +80,7 @@ class TestScopes:
             client: FlaskClient,
             token_encoder: TokenEncoder,
     ):
+        """TODO."""
 
         # -- Arrange ---------------------------------------------------------
 

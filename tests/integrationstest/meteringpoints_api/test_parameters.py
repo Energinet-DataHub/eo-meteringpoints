@@ -21,7 +21,7 @@ COMBINATIONS = list(product(TYPES, SECTORS))
 @pytest.fixture(scope='module')
 def seed_meteringpoints() -> List[MeteringPoint]:
     """
-    TODO
+    TODO.
 
     :return:
     """
@@ -45,7 +45,7 @@ def seeded_session(
         token_subject: str,
 ) -> db.Session:
     """
-    TODO
+    TODO.
 
     :param session:
     :param seed_meteringpoints:
@@ -72,6 +72,7 @@ def seeded_session(
 
 
 class TestGetMeteringPointList:
+    """TODO."""
 
     # -- Filter by GSRN ------------------------------------------------------
 
@@ -88,6 +89,7 @@ class TestGetMeteringPointList:
         valid_token_encoded: str,
         seeded_session: db.Session,
     ):
+        """TODO."""
 
         # -- Act -------------------------------------------------------------
 
@@ -128,6 +130,7 @@ class TestGetMeteringPointList:
         valid_token_encoded: str,
         seeded_session: db.Session,
     ):
+        """TODO."""
 
         # -- Act -------------------------------------------------------------
 
@@ -165,6 +168,7 @@ class TestGetMeteringPointList:
         valid_token_encoded: str,
         seeded_session: db.Session,
     ):
+        """TODO."""
 
         # -- Act -------------------------------------------------------------
 
@@ -199,6 +203,7 @@ class TestGetMeteringPointList:
         valid_token_encoded: str,
         seeded_session: db.Session,
     ):
+        """TODO."""
 
         # -- Act -------------------------------------------------------------
 
@@ -233,6 +238,7 @@ class TestGetMeteringPointList:
         valid_token_encoded: str,
         seeded_session: db.Session,
     ):
+        """TODO."""
 
         # -- Act -------------------------------------------------------------
 
@@ -271,6 +277,7 @@ class TestGetMeteringPointList:
         valid_token_encoded: str,
         seeded_session: db.Session,
     ):
+        """TODO."""
 
         # -- Act -------------------------------------------------------------
 
@@ -305,6 +312,7 @@ class TestGetMeteringPointList:
         valid_token_encoded: str,
         seeded_session: db.Session,
     ):
+        """TODO."""
 
         # -- Act -------------------------------------------------------------
 
@@ -328,6 +336,7 @@ class TestGetMeteringPointList:
         valid_token_encoded: str,
         seeded_session: db.Session,
     ):
+        """TODO."""
 
         # -- Act -------------------------------------------------------------
 
@@ -357,6 +366,7 @@ class TestGetMeteringPointList:
         valid_token_encoded: str,
         seeded_session: db.Session,
     ):
+        """TODO."""
 
         # -- Act -------------------------------------------------------------
 
@@ -385,6 +395,7 @@ class TestGetMeteringPointList:
         valid_token_encoded: str,
         seeded_session: db.Session,
     ):
+        """TODO."""
 
         # -- Act -------------------------------------------------------------
 
@@ -408,6 +419,7 @@ class TestGetMeteringPointList:
         valid_token_encoded: str,
         seeded_session: db.Session,
     ):
+        """TODO."""
 
         # -- Act -------------------------------------------------------------
 
@@ -438,6 +450,7 @@ class TestGetMeteringPointList:
         valid_token_encoded: str,
         seeded_session: db.Session,
     ):
+        """TODO."""
 
         # -- Act -------------------------------------------------------------
 
@@ -464,6 +477,7 @@ class TestGetMeteringPointList:
         valid_token_encoded: str,
         seeded_session: db.Session,
     ):
+        """TODO."""
 
         # -- Act -------------------------------------------------------------
 

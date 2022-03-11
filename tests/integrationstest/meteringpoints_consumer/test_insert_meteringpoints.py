@@ -85,6 +85,8 @@ METERINGPOINT_WITH_TECHNOLOGY_AND_ADDRESS_SIMPLE = \
 
 class TestOnMeteringPointUpdate:
     """
+    Test of MeteringPoint.
+
     Testing inserting of MeteringPoint (via message bus) and then invoking
     the API returns expected results.
     """
@@ -116,9 +118,7 @@ class TestOnMeteringPointUpdate:
             valid_token_encoded: str,
             token_subject: str,
     ):
-        """
-        TODO
-        """
+        """TODO."""
 
         # -- Act -------------------------------------------------------------
 
@@ -166,9 +166,7 @@ class TestOnMeteringPointUpdate:
             valid_token_encoded: str,
             token_subject: str,
     ):
-        """
-        TODO
-        """
+        """TODO."""
 
         # -- Arrange ---------------------------------------------------------
 
@@ -223,9 +221,7 @@ class TestOnMeteringPointUpdate:
             valid_token_encoded: str,
             token_subject: str,
     ):
-        """
-        TODO
-        """
+        """TODO."""
 
         all_gsrn = ['gsrn1', 'gsrn2', 'gsrn3']
 

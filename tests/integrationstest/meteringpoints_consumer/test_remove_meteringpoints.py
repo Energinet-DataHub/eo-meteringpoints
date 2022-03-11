@@ -11,9 +11,7 @@ from meteringpoints_shared.db import db
 
 
 class TestOnMeteringPointUpdate:
-    """
-    TODO
-    """
+    """TODO."""
 
     @pytest.mark.parametrize('all_gsrn, delete_gsrn, expected_remaining_gsrn', (  # noqa: E501
         (['gsrn1', 'gsrn2', 'gsrn3'], 'gsrn1', ['gsrn2', 'gsrn3']),
@@ -29,9 +27,7 @@ class TestOnMeteringPointUpdate:
             valid_token_encoded: str,
             token_subject: str,
     ):
-        """
-        TODO
-        """
+        """TODO."""
 
         # -- Act -------------------------------------------------------------
 

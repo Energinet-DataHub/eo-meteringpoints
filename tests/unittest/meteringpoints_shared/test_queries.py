@@ -29,13 +29,13 @@ from meteringpoints_shared.queries import (
 
 
 class TestMeteringPointQuery:
-    """
-    Tests MeteringPointQuery.
-    """
+    """Tests MeteringPointQuery."""
 
     @pytest.fixture(scope='function')
     def seed_meteringpoints(self) -> List[MeteringPoint]:
         """
+        List of MeteringPoints seed the database before tests.
+
         Returns a list of MeteringPoints to seed the database with before
         before running tests.
         """
@@ -84,6 +84,8 @@ class TestMeteringPointQuery:
             gsrn: str,
     ):
         """
+        TODO.
+
         :param session: Database session
         :param gsrn: GSRN to fetch from database (expected to exist)
         """
@@ -105,6 +107,8 @@ class TestMeteringPointQuery:
             gsrn: str,
     ):
         """
+        TODO.
+
         :param session: Database session
         :param gsrn: GSRN to fetch from database (expected NOT to exist)
         """
@@ -127,6 +131,8 @@ class TestMeteringPointQuery:
             expected_gsrn_returned: List[str],
     ):
         """
+        TODO.
+
         :param session: Database session
         :param gsrn: GSRN numbers to fetch from database
         :param expected_gsrn_returned: GSRN number to expect returned
@@ -152,6 +158,8 @@ class TestMeteringPointQuery:
             meteringpoint_type: MeteringPointType,
     ):
         """
+        TODO.
+
         :param session: Database session
         :param meteringpoint_type: MeteringPoint type to select
         """
@@ -175,6 +183,8 @@ class TestMeteringPointQuery:
             sector: str,
     ):
         """
+        TODO.
+
         :param session: Database session
         :param seed_meteringpoints: All seeded MeteringPoints
         :param sector: Sector to select
@@ -203,6 +213,8 @@ class TestMeteringPointQuery:
             sector: str,
     ):
         """
+        TODO.
+
         :param session: Database session
         :param seed_meteringpoints: All seeded MeteringPoints
         :param sector: Sector to select
@@ -229,6 +241,8 @@ class TestMeteringPointQuery:
             sectors: List[str],
     ):
         """
+        TODO.
+
         :param session: Database session
         :param seed_meteringpoints: All seeded MeteringPoints
         :param sectors: Sectors to select
@@ -253,6 +267,8 @@ class TestMeteringPointQuery:
             session: db.Session,
     ):
         """
+        TODO.
+
         :param session: Database session
         """
 
@@ -290,6 +306,8 @@ class TestMeteringPointQuery:
             filters: MeteringPointFilters,
     ):
         """
+        TODO.
+
         :param session: Database session
         :param filters: Filter to apply to query
         """
@@ -325,6 +343,8 @@ class TestMeteringPointQuery:
             filters: MeteringPointFilters,
     ):
         """
+        TODO.
+
         :param session: Database session
         :param filters: Filter to apply to query
         """
@@ -335,19 +355,19 @@ class TestMeteringPointQuery:
 
     @pytest.mark.parametrize('ordering', (
         MeteringPointOrdering(
-            key=MeteringPointOrderingKeys.gsrn,
+            key=MeteringPointOrderingKeys.GSRN,
             order=Order.ASC,
         ),
         MeteringPointOrdering(
-            key=MeteringPointOrderingKeys.gsrn,
+            key=MeteringPointOrderingKeys.GSRN,
             order=Order.DESC,
         ),
         MeteringPointOrdering(
-            key=MeteringPointOrderingKeys.sector,
+            key=MeteringPointOrderingKeys.SECTOR,
             order=Order.ASC,
         ),
         MeteringPointOrdering(
-            key=MeteringPointOrderingKeys.sector,
+            key=MeteringPointOrderingKeys.SECTOR,
             order=Order.DESC,
         ),
     ))
@@ -358,6 +378,8 @@ class TestMeteringPointQuery:
             seed_meteringpoints: List[MeteringPoint],
     ):
         """
+        TODO.
+
         :param session: Database session
         :param ordering: Ordering to apply to query
         """
@@ -372,9 +394,9 @@ class TestMeteringPointQuery:
 
         sort_descending = ordering.order == Order.DESC
 
-        if ordering.key is MeteringPointOrderingKeys.gsrn:
-            f = lambda mp: mp.gsrn  # noqa: E731
-        elif ordering.key is MeteringPointOrderingKeys.sector:
+        if ordering.key is MeteringPointOrderingKeys.GSRN:
+            f = lambda mp: mp.gsrn   # noqa: E731
+        elif ordering.key is MeteringPointOrderingKeys.SECTOR:
             f = lambda mp: mp.sector  # noqa: E731
         else:
             raise RuntimeError('Should not happen')
@@ -387,15 +409,15 @@ class TestMeteringPointQuery:
 
 
 class TestMeteringPointAddressQuery:
-    """
-    Tests MeteringPointAddressQuery.
-    """
+    """Tests MeteringPointAddressQuery."""
 
     def test__has_gsrn__address_exists__should_return_correct_address(
             self,
             session: db.Session,
     ):
         """
+        TODO.
+
         :param session: Database session
         """
 
@@ -423,6 +445,8 @@ class TestMeteringPointAddressQuery:
             gsrn: str,
     ):
         """
+        TODO.
+
         :param session: Database session
         :param gsrn: GSRN to select
         """
@@ -433,15 +457,15 @@ class TestMeteringPointAddressQuery:
 
 
 class TestMeteringPointTechnologyQuery:
-    """
-    Tests MeteringPointTechnologyQuery.
-    """
+    """Tests MeteringPointTechnologyQuery."""
 
     def test__has_gsrn__technology_exists__should_return_correct_technology(
             self,
             session: db.Session,
     ):
         """
+        TODO.
+
         :param session: Database session
         """
 
@@ -480,6 +504,8 @@ class TestMeteringPointTechnologyQuery:
             gsrn: str,
     ):
         """
+        TODO.
+
         :param session: Database session
         :param gsrn: GSRN to select
         """
@@ -491,6 +517,8 @@ class TestMeteringPointTechnologyQuery:
 
 class TestDelegateQuery:
     """
+    TODO.
+
     Tests DelegateQuery.
     """
 
@@ -516,6 +544,8 @@ class TestDelegateQuery:
             session: db.Session,
     ):
         """
+        TODO.
+
         :param session: Database session
         """
 
@@ -537,6 +567,8 @@ class TestDelegateQuery:
             gsrn: str,
     ):
         """
+        TODO.
+
         :param session: Database session
         :param gsrn: GSRN to select
         """
@@ -550,6 +582,8 @@ class TestDelegateQuery:
             session: db.Session,
     ):
         """
+        TODO.
+
         :param session: Database session
         """
 
@@ -571,6 +605,8 @@ class TestDelegateQuery:
             subject: str,
     ):
         """
+        TODO.
+
         :param session: Database session
         :param subject: Subject to select
         """
@@ -581,9 +617,7 @@ class TestDelegateQuery:
 
 
 class TestTechnologyQuery:
-    """
-    Tests TechnologyQuery.
-    """
+    """Tests TechnologyQuery."""
 
     @pytest.fixture(scope='function', autouse=True)
     def setup(
@@ -607,6 +641,8 @@ class TestTechnologyQuery:
             session: db.Session,
     ):
         """
+        TODO.
+
         :param session: Database session
         """
 
@@ -628,6 +664,8 @@ class TestTechnologyQuery:
             tech_code: str,
     ):
         """
+        TODO.
+
         :param session: Database session
         """
 
@@ -640,6 +678,8 @@ class TestTechnologyQuery:
             session: db.Session,
     ):
         """
+        TODO.
+
         :param session: Database session
         """
 
@@ -661,6 +701,8 @@ class TestTechnologyQuery:
             fuel_code: str,
     ):
         """
+        TODO.
+
         :param session: Database session
         """
 

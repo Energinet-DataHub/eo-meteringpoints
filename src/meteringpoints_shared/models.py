@@ -17,21 +17,19 @@ from .db import db
 
 @dataclass
 class MeteringPointFilters(Serializable):
-    """
-    Filters for querying MeteringPoints.
-    """
+    """Filters for querying MeteringPoints."""
+
     gsrn: Optional[List[str]] = field(default=None)
     type: Optional[MeteringPointType] = field(default=None)
     sector: Optional[List[str]] = field(default=None)
 
 
 class MeteringPointOrderingKeys(Enum):
-    """
-    Keys to order MeteringPoints by when querying.
-    """
-    gsrn = 'gsrn'
-    type = 'type'
-    sector = 'sector'
+    """Keys to order MeteringPoints by when querying."""
+
+    GSRN = 'gsrn'
+    TYPE = 'type'
+    SECTOR = 'sector'
 
 
 MeteringPointOrdering = ResultOrdering[MeteringPointOrderingKeys]
@@ -41,9 +39,8 @@ MeteringPointOrdering = ResultOrdering[MeteringPointOrderingKeys]
 
 
 class DbMeteringPoint(db.ModelBase):
-    """
-    SQL representation of a MeteringPoint.
-    """
+    """SQL representation of a MeteringPoint."""
+
     __tablename__ = 'meteringpoint'
     __table_args__ = (
         sa.PrimaryKeyConstraint('gsrn'),
@@ -82,9 +79,8 @@ class DbMeteringPoint(db.ModelBase):
 
 
 class DbMeteringPointAddress(db.ModelBase):
-    """
-    SQL representation of a (physical) address for a MeteringPoint.
-    """
+    """SQL representation of a (physical) address for a MeteringPoint."""
+
     __tablename__ = 'meteringpoint_address'
     __table_args__ = (
         sa.PrimaryKeyConstraint('gsrn'),
@@ -105,9 +101,8 @@ class DbMeteringPointAddress(db.ModelBase):
 
 
 class DbMeteringPointTechnology(db.ModelBase):
-    """
-    SQL representation of technology codes for a MeteringPoint.
-    """
+    """SQL representation of technology codes for a MeteringPoint."""
+
     __tablename__ = 'meteringpoint_technology'
     __table_args__ = (
         sa.PrimaryKeyConstraint('gsrn'),
@@ -120,9 +115,8 @@ class DbMeteringPointTechnology(db.ModelBase):
 
 
 class DbMeteringPointDelegate(db.ModelBase):
-    """
-    TODO
-    """
+    """TODO."""
+
     __tablename__ = 'meteringpoint_delegate'
     __table_args__ = (
         sa.PrimaryKeyConstraint('gsrn', 'subject'),
@@ -133,9 +127,8 @@ class DbMeteringPointDelegate(db.ModelBase):
 
 
 class DbTechnology(db.ModelBase):
-    """
-    SQL representation of a Technology.
-    """
+    """SQL representation of a Technology."""
+
     __tablename__ = 'technology'
     __table_args__ = (
         sa.PrimaryKeyConstraint('tech_code', 'fuel_code'),

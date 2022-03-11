@@ -17,16 +17,13 @@ TEndpoint = Tuple[str, str, List[str], Optional[Dict[str, Any]]]
     ('GET', '/details', ['meteringpoints.read'], {'gsrn': '12345'}),
 ])
 def endpoint(request) -> TEndpoint:
-    """
-    Returns (method, path, required scopes, query string)
-    """
+    """Return (method, path, required scopes, query string)."""
+
     return request.param
 
 
 class TestTokens:
-    """
-    TODO Describe me
-    """
+    """TODO."""
 
     def test__no_authorization_header_provided__should_return_status_401(
             self,
@@ -35,6 +32,7 @@ class TestTokens:
             client: FlaskClient,
             token_encoder: TokenEncoder,
     ):
+        """TODO."""
 
         # -- Arrange ---------------------------------------------------------
 
@@ -67,6 +65,7 @@ class TestTokens:
             client: FlaskClient,
             token_encoder: TokenEncoder,
     ):
+        """TODO."""
 
         # -- Arrange ---------------------------------------------------------
 
@@ -114,6 +113,7 @@ class TestTokens:
             client: FlaskClient,
             token_encoder: TokenEncoder,
     ):
+        """TODO."""
 
         # -- Arrange ---------------------------------------------------------
 
@@ -155,6 +155,7 @@ class TestTokens:
             client: FlaskClient,
             token_encoder: TokenEncoder,
     ):
+        """TODO."""
 
         # -- Arrange ---------------------------------------------------------
 

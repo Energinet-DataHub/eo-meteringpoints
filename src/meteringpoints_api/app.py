@@ -6,9 +6,7 @@ from .endpoints import GetMeteringPointList, GetMeteringPointDetails
 
 
 def create_app() -> Application:
-    """
-    Creates a new instance of the application.
-    """
+    """Create a new instance of the application."""
 
     app = Application.create(
         name='MeteringPoints API',

@@ -12,12 +12,12 @@ from meteringpoints_shared.models import \
 
 
 class GetMeteringPointList(Endpoint):
-    """
-    Looks up many Measurements, optionally filtered and ordered.
-    """
+    """Look up many Measurements, optionally filtered and ordered."""
 
     @dataclass
     class Request:
+        """TODO."""
+
         # TODO Validate offset & limit upper/lower bounds:
         offset: int = number_field(default=0, minimum=0)
         limit: int = number_field(default=50, minimum=1, maximum=100)
@@ -26,6 +26,8 @@ class GetMeteringPointList(Endpoint):
 
     @dataclass
     class Response:
+        """TODO."""
+
         success: bool
         total: int
         meteringpoints: List[MeteringPoint]
@@ -37,9 +39,8 @@ class GetMeteringPointList(Endpoint):
             context: Context,
             session: db.Session,
     ) -> Response:
-        """
-        Handle HTTP request.
-        """
+        """Handle HTTP request."""
+
         subject = context.get_subject(required=True)
 
         query = MeteringPointQuery(session) \
@@ -68,16 +69,18 @@ class GetMeteringPointList(Endpoint):
 
 
 class GetMeteringPointDetails(Endpoint):
-    """
-    Returns details about a single MeteringPoint.
-    """
+    """Returns details about a single MeteringPoint."""
 
     @dataclass
     class Request:
+        """TODO."""
+
         gsrn: str
 
     @dataclass
     class Response:
+        """TODO."""
+
         success: bool
         meteringpoint: Optional[MeteringPoint]
 
@@ -88,9 +91,8 @@ class GetMeteringPointDetails(Endpoint):
             context: Context,
             session: db.Session,
     ) -> Response:
-        """
-        Handle HTTP request.
-        """
+        """Handle HTTP request."""
+
         meteringpoint = MeteringPointQuery(session) \
             .is_accessible_by(context.token.subject) \
             .has_gsrn(request.gsrn) \

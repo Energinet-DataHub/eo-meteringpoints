@@ -93,6 +93,7 @@ METERINGPOINT_WITH_ADDRESS_2_SIMPLE = \
 # -- Tests -------------------------------------------------------------------
 
 class TestOnMeteringPointUpdate:
+    """TODO."""
 
     # -- MeteringPointUpdate handler ----------------------------------
     @pytest.mark.parametrize('meteringpoint, updated_meteringpoint, meteringpoint_expected', (  # noqa: E501
@@ -118,6 +119,8 @@ class TestOnMeteringPointUpdate:
             meteringpoint_expected: Dict[str, Any],
     ):
         """
+        TODO.
+
         Adds a meteringpoint then updates it, then assert the returned
         meteringpoint matches expected result
         """
@@ -172,6 +175,8 @@ class TestOnMeteringPointUpdate:
             token_subject: str,
     ):
         """
+        TODO.
+
         Adds two meteringpoints then updates it, then assert the returned
         meteringpoint matches expected result
         """
@@ -255,6 +260,8 @@ class TestOnMeteringPointUpdate:
 
 
 class TestMeteringPointAddressUpdate:
+    """TODO."""
+
     @pytest.mark.parametrize('meteringpoint, updated_address', (  # noqa: E501
         (
             METERINGPOINT_WITH_ADDRESS_1,
@@ -287,6 +294,8 @@ class TestMeteringPointAddressUpdate:
             updated_address: Address,
     ):
         """
+        TODO.
+
         Adds a meteringpoint then updates it, then assert the returned
         meteringpoint matches expected result
         """
@@ -343,6 +352,8 @@ class TestMeteringPointAddressUpdate:
             token_subject: str,
     ):
         """
+        TODO.
+
         Adds two meteringpoints then updates it, then assert the returned
         meteringpoint matches expected result
         """
