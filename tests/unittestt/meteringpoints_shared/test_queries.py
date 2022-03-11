@@ -395,7 +395,7 @@ class TestMeteringPointQuery:
         sort_descending = ordering.order == Order.DESC
 
         if ordering.key is MeteringPointOrderingKeys.GSRN:
-            f = lambda mp: mp.gsrn  # noqa: E731
+            f = lambda mp: mp.gsrn   # noqa: E731
         elif ordering.key is MeteringPointOrderingKeys.SECTOR:
             f = lambda mp: mp.sector  # noqa: E731
         else:
