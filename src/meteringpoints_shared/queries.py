@@ -49,9 +49,9 @@ class MeteringPointQuery(SqlQuery):
         """Apply provided ordering."""
 
         fields = {
-            MeteringPointOrderingKeys.gsrn: DbMeteringPoint.gsrn,
-            MeteringPointOrderingKeys.type: DbMeteringPoint.type,
-            MeteringPointOrderingKeys.sector: DbMeteringPoint.sector,
+            MeteringPointOrderingKeys.GSRN: DbMeteringPoint.gsrn,
+            MeteringPointOrderingKeys.TYPE: DbMeteringPoint.type,
+            MeteringPointOrderingKeys.SECTOR: DbMeteringPoint.sector,
         }
 
         if ordering.asc:

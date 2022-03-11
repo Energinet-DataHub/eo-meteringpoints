@@ -27,9 +27,9 @@ class MeteringPointFilters(Serializable):
 class MeteringPointOrderingKeys(Enum):
     """Keys to order MeteringPoints by when querying."""
 
-    gsrn = 'gsrn'
-    type = 'type'
-    sector = 'sector'
+    GSRN = 'gsrn'
+    TYPE = 'type'
+    SECTOR = 'sector'
 
 
 MeteringPointOrdering = ResultOrdering[MeteringPointOrderingKeys]

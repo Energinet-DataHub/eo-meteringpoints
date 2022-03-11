@@ -355,19 +355,19 @@ class TestMeteringPointQuery:
 
     @pytest.mark.parametrize('ordering', (
         MeteringPointOrdering(
-            key=MeteringPointOrderingKeys.gsrn,
+            key=MeteringPointOrderingKeys.GSRN,
             order=Order.ASC,
         ),
         MeteringPointOrdering(
-            key=MeteringPointOrderingKeys.gsrn,
+            key=MeteringPointOrderingKeys.GSRN,
             order=Order.DESC,
         ),
         MeteringPointOrdering(
-            key=MeteringPointOrderingKeys.sector,
+            key=MeteringPointOrderingKeys.SECTOR,
             order=Order.ASC,
         ),
         MeteringPointOrdering(
-            key=MeteringPointOrderingKeys.sector,
+            key=MeteringPointOrderingKeys.SECTOR,
             order=Order.DESC,
         ),
     ))
@@ -394,9 +394,9 @@ class TestMeteringPointQuery:
 
         sort_descending = ordering.order == Order.DESC
 
-        if ordering.key is MeteringPointOrderingKeys.gsrn:
+        if ordering.key is MeteringPointOrderingKeys.GSRN:
             f = lambda mp: mp.gsrn  # noqa: E731
-        elif ordering.key is MeteringPointOrderingKeys.sector:
+        elif ordering.key is MeteringPointOrderingKeys.SECTOR:
             f = lambda mp: mp.sector  # noqa: E731
         else:
             raise RuntimeError('Should not happen')
