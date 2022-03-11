@@ -72,7 +72,7 @@ def seeded_session(
 
 
 class TestGetMeteringPointList:
-
+    """TODO"""
     # -- Filter by GSRN ------------------------------------------------------
 
     @pytest.mark.parametrize('gsrn', [
@@ -482,3 +482,5 @@ class TestGetMeteringPointList:
 
         assert r.status_code == 200
         assert len(r.json['meteringpoints']) == 2
+
+    

@@ -78,8 +78,7 @@ class GetMeteringPointDetails(Endpoint):
 
     @dataclass
     class Response:
-        success: bool
-        meteringpoint: Optional[MeteringPoint]
+        meteringpoint: List[MeteringPoint]
 
     @db.session()
     def handle_request(
@@ -95,11 +94,7 @@ class GetMeteringPointDetails(Endpoint):
             .is_accessible_by(context.token.subject) \
             .has_gsrn(request.gsrn) \
             .one_or_none()
-        # meteringpoint = MeteringPointQuery(session) \
-        #     .has_gsrn(request.gsrn) \
-        #     .one_or_none()
 
         return self.Response(
-            success=meteringpoint is not None,
-            meteringpoint=meteringpoint,
+            meteringpoint=meteringpoint
         )
