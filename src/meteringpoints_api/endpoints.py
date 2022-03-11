@@ -28,8 +28,6 @@ class GetMeteringPointList(Endpoint):
     class Response:
         """TODO."""
 
-        success: bool
-        total: int
         meteringpoints: List[MeteringPoint]
 
     @db.session()
@@ -62,8 +60,6 @@ class GetMeteringPointList(Endpoint):
         #     results = results.apply_ordering(request.ordering)
 
         return self.Response(
-            success=True,
-            total=query.count(),
             meteringpoints=results.all(),
         )
 
