@@ -19,7 +19,14 @@ testcontainers = "*"
 origin-platform-utils = "0.6.5"
 
 [scripts]
-update-platform = "pip install --upgrade ./../ett-platform-utils"
+lint-flake8 = "flake8"
+lint-pylint = "pylint ."
+lint-pycodestyle = "pycodestyle ."
+lint-all = "bash -c './scripts/lint.sh'"
+testall= "pytest tests"
+unittest= "pytest tests -m unittest --tb=native"
+integrationtest= "pytest tests -m integrationtest --tb=native"
+update-platform = "pip install --upgrade ./../eo-platform-utils"
 
 [requires]
 python_version = "3.8"
