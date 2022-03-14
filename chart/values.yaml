@@ -1,6 +1,6 @@
 eo-base-helm-chart:
   deployments:
-    - name: api
+    api:
       replicaCount: 1
       command: "/bin/bash"
       args: "entrypoint_api.sh"
