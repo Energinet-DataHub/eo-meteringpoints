@@ -56,9 +56,6 @@ class GetMeteringPointList(Endpoint):
             .offset(request.offset) \
             .limit(request.limit)
 
-        # if request.ordering:
-        #     results = results.apply_ordering(request.ordering)
-
         return self.Response(
             meteringpoints=results.all(),
         )
@@ -93,9 +90,6 @@ class GetMeteringPointDetails(Endpoint):
             .is_accessible_by(context.token.subject) \
             .has_gsrn(request.gsrn) \
             .one_or_none()
-        # meteringpoint = MeteringPointQuery(session) \
-        #     .has_gsrn(request.gsrn) \
-        #     .one_or_none()
 
         return self.Response(
             success=meteringpoint is not None,

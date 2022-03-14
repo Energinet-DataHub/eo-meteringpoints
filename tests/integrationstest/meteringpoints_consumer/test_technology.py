@@ -141,8 +141,6 @@ class TestMeteringPointTechnologyUpdate:
 
         assert r.status_code == 200
         assert r.json == {
-            'success': True,
-            'total': 1,
             'meteringpoints': [expected_meteringpoint_simple],
         }
 
@@ -186,8 +184,6 @@ class TestMeteringPointTechnologyUpdate:
 
         assert r.status_code == 200
         assert r.json == {
-            'success': True,
-            'total': 1,
             'meteringpoints': [expected_meteringpoint_simple],
         }
 
@@ -280,8 +276,6 @@ class TestTechnologyUpdate:
 
         assert r.status_code == 200
         assert r.json == {
-            'success': True,
-            'total': 1,
             'meteringpoints': [expected_meteringpoint_simple],
         }
 
@@ -314,8 +308,6 @@ class TestTechnologyUpdate:
 
         assert r.status_code == 200
         assert r.json == {
-            'success': True,
-            'total': 1,
             'meteringpoints': [expected_meteringpoint_simple],
         }
 
@@ -363,8 +355,6 @@ class TestTechnologyRemoved:
         expected_meteringpoint_simple['technology'] = None
 
         assert r.json == {
-            'success': True,
-            'total': 1,
             'meteringpoints': [expected_meteringpoint_simple],
         }
 
@@ -413,7 +403,5 @@ class TestTechnologyRemoved:
 
         assert r.status_code == 200
         assert r.json == {
-            'success': True,
-            'total': 1,
             'meteringpoints': [expected_meteringpoint_simple],
         }

@@ -57,8 +57,8 @@ class TestOnMeteringPointUpdate:
         # -- Assert ----------------------------------------------------------
 
         assert r.status_code == 200
-        assert r.json['success'] is True
-        assert r.json['total'] == len(expected_remaining_gsrn)
+        #assert r.json['success'] is True
+        #assert r.json['total'] == len(expected_remaining_gsrn)
         assert all(
             mp['gsrn'] in expected_remaining_gsrn
             for mp in r.json['meteringpoints']

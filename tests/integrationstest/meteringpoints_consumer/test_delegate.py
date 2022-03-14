@@ -97,8 +97,6 @@ class TestMeteringPointDelegateGranted:
         # -- Assert ----------------------------------------------------------
         assert r.status_code == 200
         assert r.json == {
-            'success': True,
-            'total': 1,
             'meteringpoints': [expected_result],
         }
 
@@ -121,8 +119,6 @@ class TestMeteringPointDelegateGranted:
         # -- Assert ----------------------------------------------------------
         assert r.status_code == 200
         assert r.json == {
-            'success': True,
-            'total': 0,
             'meteringpoints': [],
         }
 
@@ -176,7 +172,5 @@ class TestMeteringPointDelegateRevoked:
         # -- Assert ----------------------------------------------------------
         assert r.status_code == 200
         assert r.json == {
-            'success': True,
-            'total': len(expected_result),
             'meteringpoints': expected_result,
         }

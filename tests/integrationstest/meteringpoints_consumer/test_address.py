@@ -162,8 +162,6 @@ class TestOnMeteringPointUpdate:
 
         assert r.status_code == 200
         assert r.json == {
-            'success': True,
-            'total': 1,
             'meteringpoints': [meteringpoint_expected],
         }
 
@@ -250,8 +248,6 @@ class TestOnMeteringPointUpdate:
         assert r.status_code == 200
 
         assert r.json == {
-            'success': True,
-            'total': 2,
             'meteringpoints': [
                 meteringpoint_1_simple,
                 meteringpoint_2_expected_simple
@@ -339,8 +335,6 @@ class TestMeteringPointAddressUpdate:
 
         assert r.status_code == 200
         assert r.json == {
-            'success': True,
-            'total': 1,
             'meteringpoints': [expected_meteringpoint],
         }
 
@@ -429,8 +423,6 @@ class TestMeteringPointAddressUpdate:
         assert r.status_code == 200
 
         assert r.json == {
-            'success': True,
-            'total': 2,
             'meteringpoints': [
                 meteringpoint_1_simple,
                 meteringpoint_2_expected_simple

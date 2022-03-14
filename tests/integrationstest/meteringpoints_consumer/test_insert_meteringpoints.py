@@ -154,8 +154,6 @@ class TestOnMeteringPointUpdate:
 
         assert r.status_code == 200
         assert r.json == {
-            'success': True,
-            'total': 1,
             'meteringpoints': [meteringpoint_expected],
         }
 
@@ -209,8 +207,6 @@ class TestOnMeteringPointUpdate:
 
         assert r.status_code == 200
         assert r.json == {
-            'success': True,
-            'total': 1,
             'meteringpoints': [METERINGPOINT_WITH_TECHNOLOGY_AND_ADDRESS_SIMPLE],  # noqa: E501
         }
 
@@ -249,6 +245,6 @@ class TestOnMeteringPointUpdate:
         # -- Assert ----------------------------------------------------------
 
         assert r.status_code == 200
-        assert r.json['success'] is True
-        assert r.json['total'] == 3
+        #assert r.json['success'] is True
+        #assert r.json['total'] == 3
         assert all(mp['gsrn'] in all_gsrn for mp in r.json['meteringpoints'])

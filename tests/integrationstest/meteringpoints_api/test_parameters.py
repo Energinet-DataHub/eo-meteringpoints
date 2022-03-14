@@ -109,8 +109,8 @@ class TestGetMeteringPointList:
 
         # Assert response JSON
         assert r.status_code == 200
-        assert r.json['success'] is True
-        assert r.json['total'] == len(gsrn)
+        #assert r.json['success'] is True
+        #assert r.json['total'] == len(gsrn)
 
         # Assert returned MeteringPoints
         returned_gsrn = [m['gsrn'] for m in r.json['meteringpoints']]
@@ -150,8 +150,6 @@ class TestGetMeteringPointList:
 
         assert r.status_code == 200
         assert r.json == {
-            'success': True,
-            'total': 0,
             'meteringpoints': [],
         }
 
@@ -188,8 +186,8 @@ class TestGetMeteringPointList:
 
         # Assert response JSON
         assert r.status_code == 200
-        assert r.json['success'] is True
-        assert r.json['total'] == 2
+        #assert r.json['success'] is True
+        #assert r.json['total'] == 2
 
         # Assert returned MeteringPoints
         assert len(r.json['meteringpoints']) == 2
@@ -258,8 +256,8 @@ class TestGetMeteringPointList:
 
         # Assert response JSON
         assert r.status_code == 200
-        assert r.json['success'] is True
-        assert r.json['total'] == expected_num_results
+        #assert r.json['success'] is True
+        #assert r.json['total'] == expected_num_results
 
         # Assert returned MeteringPoints
         assert len(r.json['meteringpoints']) == expected_num_results
@@ -297,8 +295,6 @@ class TestGetMeteringPointList:
 
         assert r.status_code == 200
         assert r.json == {
-            'success': True,
-            'total': 0,
             'meteringpoints': [],
         }
 
