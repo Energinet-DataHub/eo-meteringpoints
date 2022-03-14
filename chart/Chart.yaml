@@ -1,11 +1,11 @@
 apiVersion: v2
-name: ett-meteringpoints
+name: eo-meteringpoints
 description: A Helm chart for Kubernetes
 
 type: application
-version: 0.1.1
+version: 0.1.2
 
 dependencies:
-  - name: ett-base-helm-chart
-    version: "v0.1.6"
-    repository: "https://energy-track-and-trace.github.io/helm-charts/"
+  - name: eo-base-helm-chart
+    version: "v0.6.0"
+    repository: "https://energinet-datahub.github.io/helm-charts/"
