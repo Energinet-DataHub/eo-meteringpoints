@@ -30,3 +30,4 @@ jobs:
     with:
       yaml_file: chart/values.yaml
       yaml_path: eo-base-helm-chart.deployments.api.image.tag
+

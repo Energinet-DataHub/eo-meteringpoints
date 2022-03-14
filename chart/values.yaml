@@ -12,20 +12,6 @@ eo-base-helm-chart:
         repository: Energinet-DataHub/eo-meteringpoints
         tag: 0.0.1
         pullPolicy: Always
-    - name: consumer
-      replicaCount: 1
-      command: "/bin/bash"
-      args: "entrypoint_consumer.sh"
-      probes: false
-      env:
-        EVENT_BUS_HOST: my-cluster-kafka-plain-bootstrap.eo-kafka.svc.cluster.local
-        EVENT_BUS_PORT: 9092
-        SQL_URI: postgresql://postgres:1234@eo-postgresql.eo-postgresql.svc.cluster.local:5432/meteringpoints
-        SQL_POOL_SIZE: 1
-      image:
-        repository: Energinet-DataHub/eo-meteringpoints
-        tag: "latest"
-        pullPolicy: Always
 
   service:
     deployment: api
