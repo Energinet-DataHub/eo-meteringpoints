@@ -1,31 +1,29 @@
-from origin.api import Application, ScopedGuard
 
-from meteringpoints_shared.config import INTERNAL_TOKEN_SECRET
 
 from .endpoints import GetMeteringPointList, GetMeteringPointDetails
+from fastapi import FastAPI
 
-
-def create_app() -> Application:
+def create_app() -> FastAPI:
     """Create a new instance of the application."""
 
-    app = Application.create(
-        name='MeteringPoints API',
-        secret=INTERNAL_TOKEN_SECRET,
-        health_check_path='/health',
+    app = FastAPI(
+        title='MeteringPoints API',
     )
 
-    app.add_endpoint(
-        method='POST',
+    app.add_api_route(
         path='/list',
-        endpoint=GetMeteringPointList(),
-        guards=[ScopedGuard('meteringpoints.read')],
+        method='POST',
+        endpoint=GetMeteringPointList.handle_request,
+        # guards=[ScopedGuard('meteringpoints.read')],
+        response_model=GetMeteringPointList.Response
     )
 
-    app.add_endpoint(
-        method='GET',
+    app.add_api_route(
         path='/details',
-        endpoint=GetMeteringPointDetails(),
-        guards=[ScopedGuard('meteringpoints.read')],
+        method='GET',
+        endpoint=GetMeteringPointDetails.handle_request,
+        # guards=[ScopedGuard('meteringpoints.read')],
+        response_model=GetMeteringPointDetails.Response
     )
 
     return app

@@ -17,6 +17,7 @@ testcontainers = "*"
 
 [packages]
 origin-platform-utils = "0.6.5"
+fastapi = "*"
 
 [scripts]
 update-platform = "pip install --upgrade ./../ett-platform-utils"
