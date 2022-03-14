@@ -66,7 +66,7 @@ class MeteringPointQuery(SqlQuery):
         TODO.
 
         Filters query; only include MeteringPoint with the
-        provided GSRN.
+        provided gsrn.
         """
         return self.filter(DbMeteringPoint.gsrn == gsrn)
 
@@ -75,7 +75,7 @@ class MeteringPointQuery(SqlQuery):
         TODO.
 
         Filters query; only include MeteringPoints with any of
-        the provided GSRN.
+        the provided gsrn.
         """
         return self.filter(DbMeteringPoint.gsrn.in_(gsrn))
 

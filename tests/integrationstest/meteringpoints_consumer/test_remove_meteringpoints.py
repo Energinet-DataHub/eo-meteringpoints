@@ -47,7 +47,7 @@ class TestOnMeteringPointUpdate:
             gsrn=delete_gsrn,
         ))
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}',
@@ -56,10 +56,8 @@ class TestOnMeteringPointUpdate:
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 200
-        assert r.json['success'] is True
-        assert r.json['total'] == len(expected_remaining_gsrn)
+        assert res.status_code == 200
         assert all(
             mp['gsrn'] in expected_remaining_gsrn
-            for mp in r.json['meteringpoints']
+            for mp in res.json['meteringpoints']
         )
