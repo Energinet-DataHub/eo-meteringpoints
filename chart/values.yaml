@@ -1,30 +1,16 @@
-ett-base-helm-chart:
+eo-base-helm-chart:
   deployments:
-    - name: api
+    api:
       replicaCount: 1
       command: "/bin/bash"
       args: "entrypoint_api.sh"
       probes: true
       env:
-        SQL_URI: postgresql://postgres:1234@ett-postgresql.ett-postgresql.svc.cluster.local:5432/meteringpoints
+        SQL_URI: postgresql://postgres:1234@eo-postgresql.eo-postgresql.svc.cluster.local:5432/meteringpoints
         SQL_POOL_SIZE: 1
       image:
-        repository: projectorigin/ett-meteringpoints
-        tag: "latest"
-        pullPolicy: Always
-    - name: consumer
-      replicaCount: 1
-      command: "/bin/bash"
-      args: "entrypoint_consumer.sh"
-      probes: false
-      env:
-        EVENT_BUS_HOST: my-cluster-kafka-plain-bootstrap.ett-kafka.svc.cluster.local
-        EVENT_BUS_PORT: 9092
-        SQL_URI: postgresql://postgres:1234@ett-postgresql.ett-postgresql.svc.cluster.local:5432/meteringpoints
-        SQL_POOL_SIZE: 1
-      image:
-        repository: projectorigin/ett-meteringpoints
-        tag: "latest"
+        repository: Energinet-DataHub/eo-meteringpoints
+        tag: 0.1.1
         pullPolicy: Always
 
   service:
@@ -38,7 +24,7 @@ ett-base-helm-chart:
       - /api/meteringpoints
     servicePort: 80
     middlewares:
-      - ett-auth-service
+      - eo-auth-service
       - meteringpoints-stripprefix
 
   middleware:
