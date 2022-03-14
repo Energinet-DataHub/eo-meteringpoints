@@ -19,7 +19,7 @@ testcontainers = "*"
 origin-platform-utils = "0.6.5"
 
 [scripts]
-update-platform = "pip install --upgrade ./../ett-platform-utils"
+update-platform = "pip install --upgrade ./../eo-platform-utils"
 
 [requires]
 python_version = "3.8"
