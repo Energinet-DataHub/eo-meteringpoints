@@ -9,7 +9,7 @@ eo-base-helm-chart:
         SQL_URI: postgresql://postgres:1234@eo-postgresql.eo-postgresql.svc.cluster.local:5432/meteringpoints
         SQL_POOL_SIZE: 1
       image:
-        repository: projectorigin/eo-meteringpoints
+        repository: Energinet-DataHub/eo-meteringpoints
         tag: "latest"
         pullPolicy: Always
     - name: consumer
@@ -23,7 +23,7 @@ eo-base-helm-chart:
         SQL_URI: postgresql://postgres:1234@eo-postgresql.eo-postgresql.svc.cluster.local:5432/meteringpoints
         SQL_POOL_SIZE: 1
       image:
-        repository: projectorigin/eo-meteringpoints
+        repository: Energinet-DataHub/eo-meteringpoints
         tag: "latest"
         pullPolicy: Always
 
