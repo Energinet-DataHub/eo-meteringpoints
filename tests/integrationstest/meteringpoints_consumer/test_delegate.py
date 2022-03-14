@@ -46,10 +46,10 @@ METERINGPOINTS = [
 
 
 # TODO: Remove seedin function, no need for it
+# pylint: disable=unused-argument
 @pytest.fixture(scope='function')
 def seed_meteringpoints(session: db.Session,):
-    """Insert dummy meteringpoints into the database."""
-
+    """Insert dummy meteringpoints into  the database."""
     for meteringpoint in METERINGPOINTS:
         dispatcher(m.MeteringPointUpdate(
             meteringpoint=meteringpoint,
@@ -88,15 +88,15 @@ class TestMeteringPointDelegateGranted:
             ),
         ))
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}'
             },
         )
         # -- Assert ----------------------------------------------------------
-        assert r.status_code == 200
-        assert r.json == {
+        assert res.status_code == 200
+        assert res.json == {
             'meteringpoints': [expected_result],
         }
 
@@ -110,15 +110,15 @@ class TestMeteringPointDelegateGranted:
 
         # -- Act -------------------------------------------------------------
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}'
             },
         )
         # -- Assert ----------------------------------------------------------
-        assert r.status_code == 200
-        assert r.json == {
+        assert res.status_code == 200
+        assert res.json == {
             'meteringpoints': [],
         }
 
@@ -163,14 +163,14 @@ class TestMeteringPointDelegateRevoked:
             )
         ))
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}'
             },
         )
         # -- Assert ----------------------------------------------------------
-        assert r.status_code == 200
-        assert r.json == {
+        assert res.status_code == 200
+        assert res.json == {
             'meteringpoints': expected_result,
         }

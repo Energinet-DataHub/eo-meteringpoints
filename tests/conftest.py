@@ -65,7 +65,6 @@ def token_subject() -> str:
 
 @pytest.fixture(scope='function')
 def valid_token(
-        token_encoder: TokenEncoder[InternalToken],
         token_subject: str,
 ) -> InternalToken:
     """TODO."""

@@ -58,7 +58,7 @@ class TestScopes:
         else:
             raise RuntimeError('Should not have happened!')
 
-        r = func(
+        res = func(
             path=path,
             query_string=query,
             headers={'Authorization': f'Bearer: {token_encoded}'},
@@ -66,7 +66,7 @@ class TestScopes:
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 200
+        assert res.status_code == 200
 
     @pytest.mark.parametrize('scopes', [
         [],
@@ -105,7 +105,7 @@ class TestScopes:
         else:
             raise RuntimeError('Should not have happened!')
 
-        r = func(
+        res = func(
             path=path,
             query_string=query,
             headers={'Authorization': f'Bearer: {token_encoded}'},
@@ -113,4 +113,4 @@ class TestScopes:
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 401
+        assert res.status_code == 401

@@ -28,9 +28,9 @@ def seed_meteringpoints() -> List[MeteringPoint]:
 
     mp_list = []
 
-    for i, (type, sector) in enumerate(COMBINATIONS):
+    for idx, (type, sector) in enumerate(COMBINATIONS):
         mp_list.append(DbMeteringPoint(
-            gsrn=f'gsrn{i}',
+            gsrn=f'gsrn{idx}',
             type=type,
             sector=sector,
         ))
@@ -93,7 +93,7 @@ class TestGetMeteringPointList:
 
         # -- Act -------------------------------------------------------------
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}',
@@ -108,14 +108,12 @@ class TestGetMeteringPointList:
         # -- Assert ----------------------------------------------------------
 
         # Assert response JSON
-        assert r.status_code == 200
-        #assert r.json['success'] is True
-        #assert r.json['total'] == len(gsrn)
+        assert res.status_code == 200
 
         # Assert returned MeteringPoints
-        returned_gsrn = [m['gsrn'] for m in r.json['meteringpoints']]
+        returned_gsrn = [m['gsrn'] for m in res.json['meteringpoints']]
 
-        assert len(r.json['meteringpoints']) == len(gsrn)
+        assert len(res.json['meteringpoints']) == len(gsrn)
         assert all(g in returned_gsrn for g in gsrn)
 
     @pytest.mark.parametrize('gsrn', [
@@ -134,7 +132,7 @@ class TestGetMeteringPointList:
 
         # -- Act -------------------------------------------------------------
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}',
@@ -148,8 +146,8 @@ class TestGetMeteringPointList:
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 200
-        assert r.json == {
+        assert res.status_code == 200
+        assert res.json == {
             'meteringpoints': [],
         }
 
@@ -170,7 +168,7 @@ class TestGetMeteringPointList:
 
         # -- Act -------------------------------------------------------------
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}',
@@ -185,13 +183,11 @@ class TestGetMeteringPointList:
         # -- Assert ----------------------------------------------------------
 
         # Assert response JSON
-        assert r.status_code == 200
-        #assert r.json['success'] is True
-        #assert r.json['total'] == 2
+        assert res.status_code == 200
 
         # Assert returned MeteringPoints
-        assert len(r.json['meteringpoints']) == 2
-        assert all(m['type'] == type.value for m in r.json['meteringpoints'])
+        assert len(res.json['meteringpoints']) == 2
+        assert all(m['type'] == type.value for m in res.json['meteringpoints'])
 
     @pytest.mark.parametrize('type', ('', 'Invalid type'))
     def test__filter_by_invalid_type__should_return_status_400(
@@ -205,7 +201,7 @@ class TestGetMeteringPointList:
 
         # -- Act -------------------------------------------------------------
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}',
@@ -219,7 +215,7 @@ class TestGetMeteringPointList:
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 400
+        assert res.status_code == 400
 
     # -- Filter by Sector ----------------------------------------------------
 
@@ -240,7 +236,7 @@ class TestGetMeteringPointList:
 
         # -- Act -------------------------------------------------------------
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}',
@@ -255,13 +251,11 @@ class TestGetMeteringPointList:
         # -- Assert ----------------------------------------------------------
 
         # Assert response JSON
-        assert r.status_code == 200
-        #assert r.json['success'] is True
-        #assert r.json['total'] == expected_num_results
+        assert res.status_code == 200
 
         # Assert returned MeteringPoints
-        assert len(r.json['meteringpoints']) == expected_num_results
-        assert all(m['sector'] in sectors for m in r.json['meteringpoints'])
+        assert len(res.json['meteringpoints']) == expected_num_results
+        assert all(m['sector'] in sectors for m in res.json['meteringpoints'])
 
     @pytest.mark.parametrize('sectors', [
         ['Foo'],
@@ -279,7 +273,7 @@ class TestGetMeteringPointList:
 
         # -- Act -------------------------------------------------------------
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}',
@@ -293,8 +287,8 @@ class TestGetMeteringPointList:
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 200
-        assert r.json == {
+        assert res.status_code == 200
+        assert res.json == {
             'meteringpoints': [],
         }
 
@@ -312,7 +306,7 @@ class TestGetMeteringPointList:
 
         # -- Act -------------------------------------------------------------
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}',
@@ -324,7 +318,7 @@ class TestGetMeteringPointList:
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 400
+        assert res.status_code == 400
 
     def test__provide_no_offset__should_return_all_meteringpoints(
         self,
@@ -336,7 +330,7 @@ class TestGetMeteringPointList:
 
         # -- Act -------------------------------------------------------------
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}',
@@ -345,8 +339,8 @@ class TestGetMeteringPointList:
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 200
-        assert len(r.json['meteringpoints']) == len(COMBINATIONS)
+        assert res.status_code == 200
+        assert len(res.json['meteringpoints']) == len(COMBINATIONS)
 
     @pytest.mark.parametrize('offset, expected_num_results', (
         (0, 4),
@@ -366,7 +360,7 @@ class TestGetMeteringPointList:
 
         # -- Act -------------------------------------------------------------
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}',
@@ -378,8 +372,8 @@ class TestGetMeteringPointList:
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 200
-        assert len(r.json['meteringpoints']) == expected_num_results
+        assert res.status_code == 200
+        assert len(res.json['meteringpoints']) == expected_num_results
 
     # -- Limit ---------------------------------------------------------------
 
@@ -395,7 +389,7 @@ class TestGetMeteringPointList:
 
         # -- Act -------------------------------------------------------------
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}',
@@ -407,7 +401,7 @@ class TestGetMeteringPointList:
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 400
+        assert res.status_code == 400
 
     def test__provide_no_limit__should_use_default_limit(
         self,
@@ -419,7 +413,7 @@ class TestGetMeteringPointList:
 
         # -- Act -------------------------------------------------------------
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}',
@@ -428,8 +422,8 @@ class TestGetMeteringPointList:
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 200
-        assert len(r.json['meteringpoints']) == 4
+        assert res.status_code == 200
+        assert len(res.json['meteringpoints']) == 4
 
     @pytest.mark.parametrize('limit, expected_num_results', (
         (1, 1),
@@ -450,7 +444,7 @@ class TestGetMeteringPointList:
 
         # -- Act -------------------------------------------------------------
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}',
@@ -462,8 +456,8 @@ class TestGetMeteringPointList:
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 200
-        assert len(r.json['meteringpoints']) == expected_num_results
+        assert res.status_code == 200
+        assert len(res.json['meteringpoints']) == expected_num_results
 
     # -- Offset + Limit ------------------------------------------------------
 
@@ -477,7 +471,7 @@ class TestGetMeteringPointList:
 
         # -- Act -------------------------------------------------------------
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}',
@@ -490,5 +484,5 @@ class TestGetMeteringPointList:
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 200
-        assert len(r.json['meteringpoints']) == 2
+        assert res.status_code == 200
+        assert len(res.json['meteringpoints']) == 2

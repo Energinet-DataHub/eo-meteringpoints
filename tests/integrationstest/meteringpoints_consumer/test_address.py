@@ -146,7 +146,7 @@ class TestOnMeteringPointUpdate:
 
         # -- Act -------------------------------------------------------------
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}'
@@ -160,8 +160,8 @@ class TestOnMeteringPointUpdate:
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 200
-        assert r.json == {
+        assert res.status_code == 200
+        assert res.json == {
             'meteringpoints': [meteringpoint_expected],
         }
 
@@ -231,7 +231,7 @@ class TestOnMeteringPointUpdate:
             meteringpoint=meteringpoint_2_updated
         ))
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}'
@@ -245,9 +245,9 @@ class TestOnMeteringPointUpdate:
         )
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 200
+        assert res.status_code == 200
 
-        assert r.json == {
+        assert res.json == {
             'meteringpoints': [
                 meteringpoint_1_simple,
                 meteringpoint_2_expected_simple
@@ -316,7 +316,7 @@ class TestMeteringPointAddressUpdate:
             address=updated_address,
         ))
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}'
@@ -333,8 +333,8 @@ class TestMeteringPointAddressUpdate:
         meteringpoint.address = updated_address
         expected_meteringpoint = simple_serializer.serialize(meteringpoint)
 
-        assert r.status_code == 200
-        assert r.json == {
+        assert res.status_code == 200
+        assert res.json == {
             'meteringpoints': [expected_meteringpoint],
         }
 
@@ -406,7 +406,7 @@ class TestMeteringPointAddressUpdate:
             address=meteringpoint_2_updated.address
         ))
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}'
@@ -420,9 +420,9 @@ class TestMeteringPointAddressUpdate:
         )
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 200
+        assert res.status_code == 200
 
-        assert r.json == {
+        assert res.json == {
             'meteringpoints': [
                 meteringpoint_1_simple,
                 meteringpoint_2_expected_simple

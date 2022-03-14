@@ -120,7 +120,7 @@ class TestMeteringPointTechnologyUpdate:
                 ),
             ))
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}'
@@ -139,8 +139,8 @@ class TestMeteringPointTechnologyUpdate:
         expected_meteringpoint_simple['technology'] = \
             simple_serializer.serialize(updated_technology)
 
-        assert r.status_code == 200
-        assert r.json == {
+        assert res.status_code == 200
+        assert res.json == {
             'meteringpoints': [expected_meteringpoint_simple],
         }
 
@@ -164,7 +164,7 @@ class TestMeteringPointTechnologyUpdate:
             codes=None,
         ))
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}'
@@ -182,8 +182,8 @@ class TestMeteringPointTechnologyUpdate:
             simple_serializer.serialize(METERINGPOINT_WITH_TECHNOLOGY_1)
         expected_meteringpoint_simple['technology'] = None
 
-        assert r.status_code == 200
-        assert r.json == {
+        assert res.status_code == 200
+        assert res.json == {
             'meteringpoints': [expected_meteringpoint_simple],
         }
 
@@ -209,7 +209,7 @@ class TestMeteringPointTechnologyUpdate:
             ),
         ))
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}',
@@ -218,12 +218,12 @@ class TestMeteringPointTechnologyUpdate:
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 200
+        assert res.status_code == 200
 
         # Make dictionary from fetched meteringpoint
         result_dict = {
             mp['gsrn']: mp['technology']
-            for mp in r.json['meteringpoints']
+            for mp in res.json['meteringpoints']
         }
 
         # Updated meteringpoint expected to be updated
@@ -257,7 +257,7 @@ class TestTechnologyUpdate:
             technology=TECHNOLOGY_1
         ))
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}'
@@ -274,8 +274,8 @@ class TestTechnologyUpdate:
         expected_meteringpoint_simple = \
             simple_serializer.serialize(METERINGPOINT_WITH_TECHNOLOGY_1)
 
-        assert r.status_code == 200
-        assert r.json == {
+        assert res.status_code == 200
+        assert res.json == {
             'meteringpoints': [expected_meteringpoint_simple],
         }
 
@@ -288,7 +288,7 @@ class TestTechnologyUpdate:
         """TODO."""
         # -- Act -------------------------------------------------------------
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}'
@@ -306,8 +306,8 @@ class TestTechnologyUpdate:
             simple_serializer.serialize(METERINGPOINT_WITH_TECHNOLOGY_1)
         expected_meteringpoint_simple['technology'] = None
 
-        assert r.status_code == 200
-        assert r.json == {
+        assert res.status_code == 200
+        assert res.json == {
             'meteringpoints': [expected_meteringpoint_simple],
         }
 
@@ -336,7 +336,7 @@ class TestTechnologyRemoved:
             )
         ))
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}'
@@ -348,13 +348,13 @@ class TestTechnologyRemoved:
             },
         )
 
-        assert r.status_code == 200
+        assert res.status_code == 200
 
         expected_meteringpoint_simple = \
             simple_serializer.serialize(METERINGPOINT_WITH_TECHNOLOGY_1)
         expected_meteringpoint_simple['technology'] = None
 
-        assert r.json == {
+        assert res.json == {
             'meteringpoints': [expected_meteringpoint_simple],
         }
 
@@ -384,7 +384,7 @@ class TestTechnologyRemoved:
             )
         ))
 
-        r = client.post(
+        res = client.post(
             path='/list',
             json={
                 'filters': {
@@ -401,7 +401,7 @@ class TestTechnologyRemoved:
         expected_meteringpoint_simple = \
             simple_serializer.serialize(METERINGPOINT_WITH_TECHNOLOGY_1)
 
-        assert r.status_code == 200
-        assert r.json == {
+        assert res.status_code == 200
+        assert res.json == {
             'meteringpoints': [expected_meteringpoint_simple],
         }

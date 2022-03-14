@@ -138,7 +138,7 @@ class TestOnMeteringPointUpdate:
                 technology=meteringpoint.technology,
             ))
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}'
@@ -152,8 +152,8 @@ class TestOnMeteringPointUpdate:
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 200
-        assert r.json == {
+        assert res.status_code == 200
+        assert res.json == {
             'meteringpoints': [meteringpoint_expected],
         }
 
@@ -191,7 +191,7 @@ class TestOnMeteringPointUpdate:
 
         # -- Act -------------------------------------------------------------
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}'
@@ -205,8 +205,8 @@ class TestOnMeteringPointUpdate:
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 200
-        assert r.json == {
+        assert res.status_code == 200
+        assert res.json == {
             'meteringpoints': [METERINGPOINT_WITH_TECHNOLOGY_AND_ADDRESS_SIMPLE],  # noqa: E501
         }
 
@@ -235,7 +235,7 @@ class TestOnMeteringPointUpdate:
                 ),
             ))
 
-        r = client.post(
+        res = client.post(
             path='/list',
             headers={
                 'Authorization': f'Bearer: {valid_token_encoded}'
@@ -244,7 +244,5 @@ class TestOnMeteringPointUpdate:
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 200
-        #assert r.json['success'] is True
-        #assert r.json['total'] == 3
-        assert all(mp['gsrn'] in all_gsrn for mp in r.json['meteringpoints'])
+        assert res.status_code == 200
+        assert all(mp['gsrn'] in all_gsrn for mp in res.json['meteringpoints'])
