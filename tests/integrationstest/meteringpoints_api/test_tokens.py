@@ -47,14 +47,14 @@ class TestTokens:
 
         # -- Act -------------------------------------------------------------
 
-        r = func(
+        res = func(
             path=path,
             query_string=query,
         )
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 401
+        assert res.status_code == 401
 
     @pytest.mark.parametrize('token', ['', 'This is an invalid token'])
     def test__invalid_token_provided__should_return_status_401(
@@ -80,7 +80,7 @@ class TestTokens:
         else:
             raise RuntimeError('Should not have happened!')
 
-        r = func(
+        res = func(
             path=path,
             query_string=query,
             headers={
@@ -90,7 +90,7 @@ class TestTokens:
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 401
+        assert res.status_code == 401
 
     @pytest.mark.parametrize('issued, expires', [
         (
@@ -136,7 +136,7 @@ class TestTokens:
 
         # -- Act -------------------------------------------------------------
 
-        r = func(
+        res = func(
             path=path,
             query_string=query,
             headers={
@@ -146,7 +146,7 @@ class TestTokens:
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 401
+        assert res.status_code == 401
 
     def test__token_is_valid__should_return_status_200(
             self,
@@ -178,7 +178,7 @@ class TestTokens:
 
         # -- Act -------------------------------------------------------------
 
-        r = func(
+        res = func(
             path=path,
             query_string=query,
             headers={
@@ -188,4 +188,4 @@ class TestTokens:
 
         # -- Assert ----------------------------------------------------------
 
-        assert r.status_code == 200
+        assert res.status_code == 200

@@ -45,9 +45,9 @@ class TestMeteringPointQuery:
 
         meteringpoints = []
 
-        for i, (type, sector) in enumerate(combinations):
+        for idx, (type, sector) in enumerate(combinations):
             meteringpoints.append(DbMeteringPoint(
-                gsrn=f'gsrn{i}',
+                gsrn=f'gsrn{idx}',
                 type=type,
                 sector=sector,
             ))
@@ -395,14 +395,14 @@ class TestMeteringPointQuery:
         sort_descending = ordering.order == Order.DESC
 
         if ordering.key is MeteringPointOrderingKeys.GSRN:
-            f = lambda mp: mp.gsrn   # noqa: E731
+            func = lambda mp: mp.gsrn   # noqa: E731
         elif ordering.key is MeteringPointOrderingKeys.SECTOR:
-            f = lambda mp: mp.sector  # noqa: E731
+            func = lambda mp: mp.sector  # noqa: E731
         else:
             raise RuntimeError('Should not happen')
 
         gsrn_expected = [mp.gsrn for mp in sorted(
-            seed_meteringpoints, key=f, reverse=sort_descending)]
+            seed_meteringpoints, key=func, reverse=sort_descending)]
 
         assert len(results) == len(seed_meteringpoints)
         assert [mp.gsrn for mp in results] == gsrn_expected
