@@ -36,5 +36,3 @@ class FakeGetMeteringPointList(Endpoint):
         return self.Response(
             meteringpoints=fake_meteringpoint_list,
         )
-
-
