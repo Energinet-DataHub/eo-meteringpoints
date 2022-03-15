@@ -7,7 +7,7 @@ from origin.api import Endpoint
 
 
 @dataclass
-class MeteringPoint(Serializable):
+class FakeMeteringPoint(Serializable):
     """Class to store the parameters for the metering point."""
 
     gsrn: str
@@ -20,7 +20,7 @@ class FakeGetMeteringPointList(Endpoint):
     class Response:
         """TODO."""
 
-        meteringpoints: List[MeteringPoint]
+        meteringpoints: List[FakeMeteringPoint]
 
     def handle_request(
             self,
@@ -28,9 +28,9 @@ class FakeGetMeteringPointList(Endpoint):
         """Handle HTTP request."""
 
         fake_meteringpoint_list = [
-            MeteringPoint(gsrn=str(uuid.uuid1())[:18]),
-            MeteringPoint(gsrn=str(uuid.uuid1())[:18]),
-            MeteringPoint(gsrn=str(uuid.uuid1())[:18]),
+            FakeMeteringPoint(gsrn=str(uuid.uuid1())[:18]),
+            FakeMeteringPoint(gsrn=str(uuid.uuid1())[:18]),
+            FakeMeteringPoint(gsrn=str(uuid.uuid1())[:18]),
         ]
 
         return self.Response(
