@@ -1,5 +1,5 @@
 import pytest
-from typing import List, Any
+from typing import List
 from itertools import product
 from flask.testing import FlaskClient
 
@@ -107,7 +107,6 @@ class TestGetMeteringPointList:
 
         # Assert number of returned MeteringPoints
         assert len(res.json['meteringpoints']) == len(gsrn)
-
 
     @pytest.mark.parametrize('gsrn', [
         ['Foo'],
