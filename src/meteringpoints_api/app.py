@@ -2,7 +2,8 @@ from origin.api import Application, ScopedGuard
 
 from meteringpoints_shared.config import INTERNAL_TOKEN_SECRET
 
-from .endpoints import GetMeteringPointList, GetMeteringPointDetails
+from .endpoints import GetMeteringPointDetails
+from .fake_data import FakeGetMeteringPointList
 
 
 def create_app() -> Application:
@@ -15,9 +16,9 @@ def create_app() -> Application:
     )
 
     app.add_endpoint(
-        method='POST',
+        method='GET',
         path='/list',
-        endpoint=GetMeteringPointList(),
+        endpoint=FakeGetMeteringPointList(),
         guards=[ScopedGuard('meteringpoints.read')],
     )
 
