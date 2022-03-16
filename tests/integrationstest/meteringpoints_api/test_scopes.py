@@ -14,7 +14,7 @@ TEndpoint = Tuple[str, str, List[str], Optional[Dict[str, Any]]]
 
 
 @pytest.fixture(params=[
-    ('POST', '/list', ['meteringpoints.read'], None),
+    ('GET', '/list', ['meteringpoints.read'], None),
     ('GET', '/details', ['meteringpoints.read'], {'gsrn': '12345'}),
 ])
 def endpoint(request) -> TEndpoint:
@@ -67,50 +67,3 @@ class TestScopes:
         # -- Assert ----------------------------------------------------------
 
         assert res.status_code == 200
-
-    @pytest.mark.parametrize('scopes', [
-        [],
-        ['something'],
-    ])
-    def test__token_missing_required_scope__should_return_status_401(
-            self,
-            endpoint: TEndpoint,
-            scopes: List[str],
-            session: db.Session,
-            client: FlaskClient,
-            token_encoder: TokenEncoder,
-    ):
-        """TODO."""
-
-        # -- Arrange ---------------------------------------------------------
-
-        method, path, _, query = endpoint
-
-        token = InternalToken(
-            issued=datetime.now(tz=timezone.utc),
-            expires=datetime.now(timezone.utc) + timedelta(hours=1),
-            actor='foo',
-            subject='bar',
-            scope=scopes,
-        )
-
-        token_encoded = token_encoder.encode(token)
-
-        # -- Act -------------------------------------------------------------
-
-        if method == 'GET':
-            func = client.get
-        elif method == 'POST':
-            func = client.post
-        else:
-            raise RuntimeError('Should not have happened!')
-
-        res = func(
-            path=path,
-            query_string=query,
-            headers={'Authorization': f'Bearer: {token_encoded}'},
-        )
-
-        # -- Assert ----------------------------------------------------------
-
-        assert res.status_code == 401
