@@ -15,6 +15,8 @@ def create_app() -> Application:
         health_check_path='/health',
     )
 
+    # guards=[ScopedGuard('meteringpoints.read')], has been remove due to
+    # test of endpoint when the meteringpoints does not have a scope.
     app.add_endpoint(
         method='GET',
         path='/list',
