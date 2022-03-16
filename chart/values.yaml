@@ -9,8 +9,8 @@ eo-base-helm-chart:
         SQL_URI: postgresql://postgres:1234@eo-postgresql.eo-postgresql.svc.cluster.local:5432/meteringpoints
         SQL_POOL_SIZE: 1
       image:
-        repository: Energinet-DataHub/eo-meteringpoints
-        tag: 0.1.2
+        repository: ghcr.io/energinet-datahub/eo-meteringpoints-api
+        tag: 0.1.3
         pullPolicy: Always
 
   service:
@@ -24,8 +24,9 @@ eo-base-helm-chart:
       - /api/meteringpoints
     servicePort: 80
     middlewares:
-      - eo-auth-service
-      - meteringpoints-stripprefix
+      - name: eo-auth-service
+        namespace:
+      - name: meteringpoints-stripprefix
 
   middleware:
     stripPrefix:
