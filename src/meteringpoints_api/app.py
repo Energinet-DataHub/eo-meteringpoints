@@ -19,7 +19,6 @@ def create_app() -> Application:
         method='GET',
         path='/list',
         endpoint=FakeGetMeteringPointList(),
-        guards=[ScopedGuard('meteringpoints.read')],
     )
 
     app.add_endpoint(

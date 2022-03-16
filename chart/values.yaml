@@ -25,6 +25,7 @@ eo-base-helm-chart:
     servicePort: 80
     middlewares:
       - name: eo-auth-service
+        namespace:
       - name: meteringpoints-stripprefix
 
   middleware:
