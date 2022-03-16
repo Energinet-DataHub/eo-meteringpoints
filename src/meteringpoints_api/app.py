@@ -1,7 +1,8 @@
 
 
+from meteringpoints_api.dependencies import token
 from .endpoints import GetMeteringPointList, GetMeteringPointDetails
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 
 def create_app() -> FastAPI:
     """Create a new instance of the application."""
@@ -12,18 +13,18 @@ def create_app() -> FastAPI:
 
     app.add_api_route(
         path='/list',
-        method='POST',
         endpoint=GetMeteringPointList.handle_request,
         # guards=[ScopedGuard('meteringpoints.read')],
-        response_model=GetMeteringPointList.Response
+        response_model=GetMeteringPointList.Response,
+        dependencies=[Depends(token('meteringpoints.read'))]
     )
 
-    app.add_api_route(
-        path='/details',
-        method='GET',
-        endpoint=GetMeteringPointDetails.handle_request,
-        # guards=[ScopedGuard('meteringpoints.read')],
-        response_model=GetMeteringPointDetails.Response
-    )
+    # app.add_api_route(
+    #     path='/details',
+    #     method='GET',
+    #     endpoint=GetMeteringPointDetails.handle_request,
+    #     # guards=[ScopedGuard('meteringpoints.read')],
+    #     response_model=GetMeteringPointDetails.Response
+    # )
 
     return app
