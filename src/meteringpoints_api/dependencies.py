@@ -23,22 +23,43 @@ token_encoder = TokenEncoder(
     secret='123',
 )
 
-class InternalTokenProviderFactory:
-    def __init__(self, token_encoder: TokenEncoder[InternalToken]) -> None:
+
+# async def internal_token_provider(token: str) -> InternalToken:
+#     """Decompose token into an OpaqueToken."""
+#     try:
+#         internal_token = token_encoder.decode(token)
+#     except token_encoder.DecodeError:
+#         raise HTTPException(status_code=500)
+
+#     if not internal_token.is_valid:
+#         raise HTTPException(status_code=403, detail="invalid token")
+
+#     return internal_token
+class InternalTokenProvider:
+
+    def __init__(self, token_encoder: TokenEncoder[InternalToken]):
         self.token_encoder = token_encoder
 
-    def get_internal_token_provider(self):
-        async def internal_token_provider(token: str) -> InternalToken:
-            """Decompose token into an OpaqueToken."""
-            try:
-                internal_token = self.token_encoder.decode(token)
-            except self.token_encoder.DecodeError:
-                raise HTTPException(status_code=500)
+    async def __call__(self, token: str) -> InternalToken:
+        """Decompose token into an OpaqueToken."""
+        try:
+            internal_token = token_encoder.decode(token)
+        except token_encoder.DecodeError:
+            raise HTTPException(status_code=500)
 
-            if not internal_token.is_valid:
-                raise HTTPException(status_code=403, detail="invalid token")
+        if not internal_token.is_valid:
+            raise HTTPException(status_code=403, detail="invalid token")
 
-            return internal_token
+        return internal_token
+
+class RequiresScope:
+    """Only Allows requests with specific scopes granted."""
+    def __init__(self, scope: str):
+        self.scope = scope
+
+    def __call__(self, token: InternalToken = Depends(InternalTokenProvider(token_encoder))) -> InternalToken:
+        if self.scope not in token.scope:
+            raise HTTPException(status_code=404, detail="Item not found")
 
 async def opaque_token_provider(token: str = Query(None, alias=TOKEN_COOKIE_NAME)) -> Optional[str]:
     """
@@ -47,13 +68,3 @@ async def opaque_token_provider(token: str = Query(None, alias=TOKEN_COOKIE_NAME
     :returns: Opaque token or None
     """
     return token
-
-
-class RequiresScope:
-    """Only Allows requests with specific scopes granted."""
-    def __init__(self, scope: str):
-        self.scope = scope
-
-    def __call__(self, token: InternalToken = Depends(internal_token_provider)) -> InternalToken:
-        if self.scope not in token.scope:
-            raise HTTPException(status_code=404, detail="Item not found")

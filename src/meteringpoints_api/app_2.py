@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 
-from meteringpoints_api import endpoints
+from origin.api.endpoint import Endpoint
 from .dependencies import RequiresScope
 from fastapi import Depends, FastAPI
 
 
-class TestEndpoint(endpoints):
+class TestEndpoint(Endpoint):
     """Look up many Measurements, optionally filtered and ordered."""
 
     @dataclass
@@ -28,6 +28,9 @@ def create_app() -> FastAPI:
 
     app = FastAPI(
         title='MeteringPoints API',
+        dependencies=[
+
+        ]
     )
 
     app.add_api_route(
