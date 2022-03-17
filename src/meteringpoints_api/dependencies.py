@@ -1,98 +1,59 @@
-from functools import cached_property
-from typing import List, Optional
+from datetime import datetime, timedelta, timezone
+from typing import Optional
 from origin.tokens import TokenEncoder
 from origin.models.auth import InternalToken
-from fastapi import Depends, FastAPI, HTTPException, Request
-from pydantic import BaseModel
-from fastapi.security.http import HTTPBearer
+from fastapi import Depends, HTTPException, Query
 from origin.auth import TOKEN_COOKIE_NAME
 
-class TokenContext:
-    def __init__(self, request: Request, token: Optional[str] = None):
-        self.token_encoder = TokenEncoder(
-            schema=InternalToken,
-            secret='123',
-        )
-        self.internal_token_encoded_2 = token
-        self.request = request
 
-    @property
-    def opaque_token(self) -> Optional[str]:
-        """
-        Extract value for the opaque token provided by the client in a cookie.
-
-        :returns: Opaque token or None
-        """
-
-        return self.request.cookies.get(TOKEN_COOKIE_NAME)
-
-    @property
-    def token(self) -> Optional[InternalToken]:
-        """Decompose token into an OpaqueToken."""
-
-        if self.internal_token_encoded_2 is None:
-            return None
-
-        try:
-            internal_token = self.token_encoder.decode(
-                self.internal_token_encoded_2,
-            )
-        except self.token_encoder.DecodeError:
-            # TODO Raise exception if in debug mode?
-            return None
-
-        if not internal_token.is_valid:
-            # TODO Raise exception if in debug mode?
-            return None
-
-        return internal_token
-
-    @property
-    def is_authorized(self) -> bool:
-        """Check whether or not the client provided a valid token."""
-        return self.token is not None
-
-    def has_scope(self, scope: str) -> bool:
-        """Extract the scope from the token."""
-
-        if self.token:
-            print('token:', self.token)
-            return scope in self.token.scope
-        return False
-
-    def get_token(self) -> Optional[InternalToken]:
-        """Check if token exists."""
-
-        if self.token:
-            return self.token
-
-        return None
-
-    def get_subject(self) -> Optional[str]:
-        """Extract subject name from the token."""
-
-        if self.token:
-            return self.token.subject
-
-        return None
+# token = InternalToken(
+#     issued=datetime.now(tz=timezone.utc),
+#     expires=datetime.now(timezone.utc) + timedelta(hours=24),
+#     actor='foo',
+#     subject='bar',
+#     scope=['meteringpoints.read'],
+# )
 
 
-class ScopedGuard:
+# opaque_token = token_encoder.encode(token)
+# print(opaque_token)
+
+token_encoder = TokenEncoder(
+    schema=InternalToken,
+    secret='123',
+)
+
+class InternalTokenProviderFactory:
+    def __init__(self, token_encoder: TokenEncoder[InternalToken]) -> None:
+        self.token_encoder = token_encoder
+
+    def get_internal_token_provider(self):
+        async def internal_token_provider(token: str) -> InternalToken:
+            """Decompose token into an OpaqueToken."""
+            try:
+                internal_token = self.token_encoder.decode(token)
+            except self.token_encoder.DecodeError:
+                raise HTTPException(status_code=500)
+
+            if not internal_token.is_valid:
+                raise HTTPException(status_code=403, detail="invalid token")
+
+            return internal_token
+
+async def opaque_token_provider(token: str = Query(None, alias=TOKEN_COOKIE_NAME)) -> Optional[str]:
+    """
+    Extract value for the opaque token provided by the client in a cookie.
+
+    :returns: Opaque token or None
+    """
+    return token
+
+
+class RequiresScope:
     """Only Allows requests with specific scopes granted."""
+    def __init__(self, scope: str):
+        self.scope = scope
 
-    def __init__(self, scopes: List[str]):
-        self.scopes = scopes
-
-    def __call__(self, token_context: TokenContext = Depends(TokenContext)) -> bool:
-        print(token_context.opaque_token)
-        if not token_context.is_authorized:
-            return HTTPException(status_code=403)
-
-
-        for scope in self.scopes:
-            if scope not in token_context.token.scope:
-                # TODO Write proper message
-                return HTTPException(status_code=403)
-
-
-        return True
+    def __call__(self, token: InternalToken = Depends(internal_token_provider)) -> InternalToken:
+        if self.scope not in token.scope:
+            raise HTTPException(status_code=404, detail="Item not found")

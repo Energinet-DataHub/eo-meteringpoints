@@ -10,10 +10,11 @@
             "request": "launch",
             "module": "uvicorn",
             "args": [
-                "src.meteringpoints_api.app_2:myapp"
+                "src.meteringpoints_api.app_2:myapp",
+                "--reload"
             ],
             "jinja": true,
-            "justMyCode": false
+            "justMyCode": true
         }
     ]
 }
