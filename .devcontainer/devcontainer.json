@@ -20,8 +20,8 @@
     },
     // Set *default* container specific settings.json values on container create.
     "settings": {
-        "python.pythonPath": "/home/vscode/.local/share/virtualenvs/po-meteringpoints-78duXn74/bin/python",
-        "python.defaultInterpreterPath": "/home/vscode/.local/share/virtualenvs/po-meteringpoints-78duXn74/bin/python",
+        "python.pythonPath": "/home/vscode/.local/share/virtualenvs/eo-meteringpoints-I6LSsWp_/bin/python",
+        "python.defaultInterpreterPath": "/home/vscode/.local/share/virtualenvs/eo-meteringpoints-I6LSsWp_/bin/python",
         "python.languageServer": "Pylance",
         "python.linting.enabled": true,
         "python.linting.pylintEnabled": true,
