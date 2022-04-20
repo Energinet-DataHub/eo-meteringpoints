@@ -57,7 +57,7 @@ class GetMeteringPointList(Endpoint):
             .limit(request.limit)
 
         return self.Response(
-            meteringpoints=results.all(),
+            meteringPoints=results.all(),
         )
 
 
