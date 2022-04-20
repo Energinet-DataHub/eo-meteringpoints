@@ -93,5 +93,5 @@ class GetMeteringPointDetails(Endpoint):
 
         return self.Response(
             success=meteringpoint is not None,
-            meteringpoint=meteringpoint,
+            meteringPoint=meteringpoint,
         )
