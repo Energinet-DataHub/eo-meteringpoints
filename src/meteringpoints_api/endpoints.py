@@ -92,6 +92,6 @@ class GetMeteringPointDetails(Endpoint):
             .one_or_none()
 
         return self.Response(
-            success=meteringPoint is not None,
+            success=meteringpoint is not None,
             meteringPoint=meteringpoint,
         )
