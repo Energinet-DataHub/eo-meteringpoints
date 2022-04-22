@@ -1,6 +1,5 @@
 from typing import List, Optional
-from dataclasses import dataclass, field
-from serpyco import number_field
+from dataclasses import dataclass
 import requests
 
 from origin.api import Endpoint, Context
@@ -8,12 +7,11 @@ from origin.models.meteringpoints import MeteringPoint
 
 from meteringpoints_shared.db import db
 from meteringpoints_shared.queries import MeteringPointQuery
-from meteringpoints_shared.models import \
-    MeteringPointFilters, MeteringPointOrdering
+from meteringpoints_shared.models import MeteringPointOrdering
 
 
 class GetMeteringPointList(Endpoint):
-    """Look up metering points from the data sync domain"""
+    """Look up metering points from the data sync domain."""
 
     @dataclass
     class Response:
@@ -27,8 +25,10 @@ class GetMeteringPointList(Endpoint):
         """Handle HTTP request."""
 
         tin = 1
-        response = requests.get(f'http://localhost:8080/MeteringPoint/GetByTin/{tin}')
-    
+        response = requests.get(
+            f'http://localhost:8080/MeteringPoint/GetByTin/{tin}'
+            )
+
         meteringpoint_list = response
 
         return self.Response(
