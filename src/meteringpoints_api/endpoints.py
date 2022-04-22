@@ -7,7 +7,6 @@ from origin.models.meteringpoints import MeteringPoint
 
 from meteringpoints_shared.db import db
 from meteringpoints_shared.queries import MeteringPointQuery
-from meteringpoints_shared.models import MeteringPointOrdering
 
 
 class GetMeteringPointList(Endpoint):
@@ -26,8 +25,7 @@ class GetMeteringPointList(Endpoint):
 
         tin = 1
         response = requests.get(
-            f'http://localhost:8080/MeteringPoint/GetByTin/{tin}'
-            )
+            f'http://localhost:8080/MeteringPoint/GetByTin/{tin}')
 
         meteringpoint_list = response
 
