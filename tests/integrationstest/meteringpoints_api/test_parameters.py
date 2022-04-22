@@ -1,142 +1,142 @@
-import pytest
-from typing import List
-from itertools import product
-from flask.testing import FlaskClient
+# import pytest
+# from typing import List
+# from itertools import product
+# from flask.testing import FlaskClient
 
-from origin.models.meteringpoints import MeteringPointType
-
-
-from meteringpoints_shared.db import db
-from meteringpoints_shared.models import (
-    DbMeteringPoint,
-    DbMeteringPointDelegate,
-)
-from src.meteringpoints_api.fake_data import FakeMeteringPoint
-
-TYPES = (MeteringPointType.CONSUMPTION, MeteringPointType.PRODUCTION)
-SECTORS = ('DK1', 'DK2')
-COMBINATIONS = list(product(TYPES, SECTORS))
+# from origin.models.meteringpoints import MeteringPointType
 
 
-@pytest.fixture(scope='module')
-def seed_meteringpoints() -> List[FakeMeteringPoint]:
-    """
-    TODO.
+# from meteringpoints_shared.db import db
+# from meteringpoints_shared.models import (
+#     DbMeteringPoint,
+#     DbMeteringPointDelegate,
+# )
+# from src.meteringpoints_api.fake_data import FakeMeteringPoint
 
-    :return:
-    """
-
-    mp_list = []
-
-    for idx in enumerate(COMBINATIONS):
-        mp_list.append(DbMeteringPoint(
-            gsrn=f'gsrn{idx}',
-        ))
-
-    return mp_list
+# TYPES = (MeteringPointType.CONSUMPTION, MeteringPointType.PRODUCTION)
+# SECTORS = ('DK1', 'DK2')
+# COMBINATIONS = list(product(TYPES, SECTORS))
 
 
-@pytest.fixture(scope='function')
-def seeded_session(
-        session: db.Session,
-        seed_meteringpoints: List[FakeMeteringPoint],
-        token_subject: str,
-) -> db.Session:
-    """
-    TODO.
+# @pytest.fixture(scope='module')
+# def seed_meteringpoints() -> List[FakeMeteringPoint]:
+#     """
+#     TODO.
 
-    :param session:
-    :param seed_meteringpoints:
-    :param token_subject:
-    :return:
-    """
-    session.begin()
+#     :return:
+#     """
 
-    for meteringpoint in seed_meteringpoints:
-        session.add(DbMeteringPoint(
-            gsrn=meteringpoint.gsrn,
-            type=meteringpoint.type,
-            sector=meteringpoint.sector,
-        ))
+#     mp_list = []
 
-        session.add(DbMeteringPointDelegate(
-            gsrn=meteringpoint.gsrn,
-            subject=token_subject,
-        ))
+#     for idx in enumerate(COMBINATIONS):
+#         mp_list.append(DbMeteringPoint(
+#             gsrn=f'gsrn{idx}',
+#         ))
 
-    session.commit()
-
-    yield session
+#     return mp_list
 
 
-class TestGetMeteringPointList:
-    """TODO."""
+# @pytest.fixture(scope='function')
+# def seeded_session(
+#         session: db.Session,
+#         seed_meteringpoints: List[FakeMeteringPoint],
+#         token_subject: str,
+# ) -> db.Session:
+#     """
+#     TODO.
 
-    # -- Filter by GSRN ------------------------------------------------------
+#     :param session:
+#     :param seed_meteringpoints:
+#     :param token_subject:
+#     :return:
+#     """
+#     session.begin()
 
-    @pytest.mark.parametrize('gsrn', [
-        ['gsrn1', 'gsrn2', 'gsrn3'],
-    ])
-    def test__filter_by_known_gsrn__should_return_correct_meteringpoints(
-        self,
-        gsrn: List[str],
-        client: FlaskClient,
-        valid_token_encoded: str,
-        seeded_session: db.Session,
-    ):
-        """TODO."""
+#     for meteringpoint in seed_meteringpoints:
+#         session.add(DbMeteringPoint(
+#             gsrn=meteringpoint.gsrn,
+#             type=meteringpoint.type,
+#             sector=meteringpoint.sector,
+#         ))
 
-        # -- Act -------------------------------------------------------------
+#         session.add(DbMeteringPointDelegate(
+#             gsrn=meteringpoint.gsrn,
+#             subject=token_subject,
+#         ))
 
-        res = client.get(
-            path='/list',
-            headers={
-                'Authorization': f'Bearer: {valid_token_encoded}',
-            },
-            json={
-                'filters': {
-                    'gsrn': gsrn,
-                },
-            },
-        )
+#     session.commit()
 
-        # -- Assert ----------------------------------------------------------
+#     yield session
 
-        # Assert response JSON
-        assert res.status_code == 200
 
-        # Assert number of returned MeteringPoints
-        assert len(res.json['meteringpoints']) == len(gsrn)
+# class TestGetMeteringPointList:
+#     """TODO."""
 
-    @pytest.mark.parametrize('gsrn', [
-        ['Foo'],
-    ])
-    def test__filter_by_unknown_gsrn__should_return_no_meteringpoints(
-        self,
-        gsrn: List[str],
-        client: FlaskClient,
-        valid_token_encoded: str,
-        seeded_session: db.Session,
-    ):
-        """TODO."""
+#     # -- Filter by GSRN ------------------------------------------------------
 
-        # -- Act -------------------------------------------------------------
+#     @pytest.mark.parametrize('gsrn', [
+#         ['gsrn1', 'gsrn2', 'gsrn3'],
+#     ])
+#     def test__filter_by_known_gsrn__should_return_correct_meteringpoints(
+#         self,
+#         gsrn: List[str],
+#         client: FlaskClient,
+#         valid_token_encoded: str,
+#         seeded_session: db.Session,
+#     ):
+#         """TODO."""
 
-        res = client.get(
-            path='/list',
-            headers={
-                'Authorization': f'Bearer: {valid_token_encoded}',
-            },
-            json={
-                'filters': {
-                    'gsrn': gsrn,
-                },
-            },
-        )
+#         # -- Act -------------------------------------------------------------
 
-        # -- Assert ----------------------------------------------------------
+#         res = client.get(
+#             path='/list',
+#             headers={
+#                 'Authorization': f'Bearer: {valid_token_encoded}',
+#             },
+#             json={
+#                 'filters': {
+#                     'gsrn': gsrn,
+#                 },
+#             },
+#         )
 
-        assert res.status_code == 200
-        assert res.json != {
-            'meteringpoints': [],
-        }
+#         # -- Assert ----------------------------------------------------------
+
+#         # Assert response JSON
+#         assert res.status_code == 200
+
+#         # Assert number of returned MeteringPoints
+#         assert len(res.json['meteringpoints']) == len(gsrn)
+
+#     @pytest.mark.parametrize('gsrn', [
+#         ['Foo'],
+#     ])
+#     def test__filter_by_unknown_gsrn__should_return_no_meteringpoints(
+#         self,
+#         gsrn: List[str],
+#         client: FlaskClient,
+#         valid_token_encoded: str,
+#         seeded_session: db.Session,
+#     ):
+#         """TODO."""
+
+#         # -- Act -------------------------------------------------------------
+
+#         res = client.get(
+#             path='/list',
+#             headers={
+#                 'Authorization': f'Bearer: {valid_token_encoded}',
+#             },
+#             json={
+#                 'filters': {
+#                     'gsrn': gsrn,
+#                 },
+#             },
+#         )
+
+#         # -- Assert ----------------------------------------------------------
+
+#         assert res.status_code == 200
+#         assert res.json != {
+#             'meteringpoints': [],
+#         }
