@@ -23,9 +23,10 @@ class GetMeteringPointList(Endpoint):
     ) -> Response:
         """Handle HTTP request."""
 
+        data_sync_url = 'http://10.27.27.103:8080/MeteringPoint/GetByTin/'
         tin = 1
-        response = requests.get(
-            f'http://localhost:8080/MeteringPoint/GetByTin/{tin}')
+
+        response = requests.get(f'{data_sync_url}{tin}')
 
         meteringpoint_list = response
 
