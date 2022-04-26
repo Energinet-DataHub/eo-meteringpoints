@@ -23,15 +23,14 @@ class GetMeteringPointList(Endpoint):
     ) -> Response:
         """Handle HTTP request."""
 
-        # http://20.103.105.196:8081/
         data_sync_url = 'http://eo-data-sync/MeteringPoint/GetByTin/2'
         token = {"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3RvciI6IkpvaG4ifQ.jOJaJ-TwqnF9JtFanuD2k07F1AMGhTjZiVUDov_WSlA"}  # noqa: E501
 
-        print(f"Data url: {data_sync_url}")
+        print("Data url: ", data_sync_url)
 
         response = requests.get(data_sync_url, headers=token)
 
-        print(f"Data response: {response}")
+        print("Data response", response)
 
         meteringpoint_list = response
 
