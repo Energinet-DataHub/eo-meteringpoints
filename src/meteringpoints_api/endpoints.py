@@ -1,28 +1,16 @@
 from typing import List, Optional
-from dataclasses import dataclass, field
-from serpyco import number_field
+from dataclasses import dataclass
+import requests
 
 from origin.api import Endpoint, Context
 from origin.models.meteringpoints import MeteringPoint
 
 from meteringpoints_shared.db import db
 from meteringpoints_shared.queries import MeteringPointQuery
-from meteringpoints_shared.models import \
-    MeteringPointFilters, MeteringPointOrdering
 
 
 class GetMeteringPointList(Endpoint):
-    """Look up many Measurements, optionally filtered and ordered."""
-
-    @dataclass
-    class Request:
-        """TODO."""
-
-        # TODO Validate offset & limit upper/lower bounds:
-        offset: int = number_field(default=0, minimum=0)
-        limit: int = number_field(default=50, minimum=1, maximum=100)
-        filters: Optional[MeteringPointFilters] = field(default=None)
-        ordering: Optional[MeteringPointOrdering] = field(default=None)
+    """Look up metering points from the data sync domain."""
 
     @dataclass
     class Response:
@@ -30,34 +18,25 @@ class GetMeteringPointList(Endpoint):
 
         meteringpoints: List[MeteringPoint]
 
-    @db.session()
     def handle_request(
             self,
-            request: Request,
-            context: Context,
-            session: db.Session,
     ) -> Response:
         """Handle HTTP request."""
 
-        subject = context.get_subject(required=True)
+        # http://20.103.105.196:8081/
+        data_sync_url = 'http://eo-data-sync/MeteringPoint/GetByTin/2'
+        token = {"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3RvciI6IkpvaG4ifQ.jOJaJ-TwqnF9JtFanuD2k07F1AMGhTjZiVUDov_WSlA"}  # noqa: E501
 
-        query = MeteringPointQuery(session) \
-            .is_accessible_by(subject)
+        print(f"Data url: {data_sync_url}")
 
-        if request.filters:
-            query = query.apply_filters(request.filters)
+        response = requests.get(data_sync_url, headers=token)
 
-        if request.ordering:
-            results = query.apply_ordering(request.ordering)
-        else:
-            results = query
+        print(f"Data response: {response}")
 
-        results = results \
-            .offset(request.offset) \
-            .limit(request.limit)
+        meteringpoint_list = response
 
         return self.Response(
-            meteringpoints=results.all(),
+            meteringpoints=meteringpoint_list,
         )
 
 
