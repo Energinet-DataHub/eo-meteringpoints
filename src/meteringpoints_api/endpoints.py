@@ -11,7 +11,7 @@ from meteringpoints_shared.queries import MeteringPointQuery
 import uuid
 import sys
 
-from fake_data import FakeMeteringPoint
+from .fake_data import FakeMeteringPoint
 
 
 class GetMeteringPointList(Endpoint):
