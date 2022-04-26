@@ -8,6 +8,9 @@ from origin.models.meteringpoints import MeteringPoint
 from meteringpoints_shared.db import db
 from meteringpoints_shared.queries import MeteringPointQuery
 
+import uuid
+
+from fake_data import FakeMeteringPoint
 
 class GetMeteringPointList(Endpoint):
     """Look up metering points from the data sync domain."""
@@ -16,7 +19,7 @@ class GetMeteringPointList(Endpoint):
     class Response:
         """TODO."""
 
-        meteringpoints: List[MeteringPoint]
+        meteringpoints: List[FakeMeteringPoint]
 
     def handle_request(
             self,
