@@ -25,7 +25,7 @@ class GetMeteringPointList(Endpoint):
 
         data_sync_url = 'http://20.103.105.196:8081/MeteringPoint/GetByTin/'
         tin = 2
-        token = {"Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3RvciI6IjEyMzQ1Njc4OTAiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE1MTYyMzkwMjJ9.FsLJcptXErZuog8cHNlVUfDJNWGxQS5Cf1ACTg0kmzY"} # noqa: E501
+        token = {"Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3RvciI6IjEyMzQ1Njc4OTAiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE1MTYyMzkwMjJ9.FsLJcptXErZuog8cHNlVUfDJNWGxQS5Cf1ACTg0kmzY"}  # noqa: E501
 
         response = requests.get(f'{data_sync_url}{tin}', headers=token)
 
