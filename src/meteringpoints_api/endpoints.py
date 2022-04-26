@@ -23,6 +23,8 @@ class GetMeteringPointList(Endpoint):
     ) -> Response:
         """Handle HTTP request."""
 
+        print("Prepare list")
+
         data_sync_url = 'http://eo-data-sync/MeteringPoint/GetByTin/2'
         token = {"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3RvciI6IkpvaG4ifQ.jOJaJ-TwqnF9JtFanuD2k07F1AMGhTjZiVUDov_WSlA"}  # noqa: E501
 
