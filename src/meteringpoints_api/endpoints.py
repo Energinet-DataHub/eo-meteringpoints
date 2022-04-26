@@ -24,6 +24,7 @@ class GetMeteringPointList(Endpoint):
         """Handle HTTP request."""
 
         print("Prepare list")
+        print("I am here!", file = sys.stderr)
 
         data_sync_url = 'http://eo-data-sync/MeteringPoint/GetByTin/2'
         token = {"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3RvciI6IkpvaG4ifQ.jOJaJ-TwqnF9JtFanuD2k07F1AMGhTjZiVUDov_WSlA"}  # noqa: E501
@@ -34,10 +35,10 @@ class GetMeteringPointList(Endpoint):
 
         print("Data response", response)
 
-        meteringpoint_list = response
-
         return self.Response(
-            meteringpoints=meteringpoint_list,
+            meteringpoints=[
+                FakeMeteringPoint(gsrn=str(uuid.uuid1())[:18]),
+            ],
         )
 
 
