@@ -24,9 +24,36 @@ from meteringpoints_api.app import create_app  # noqa: E402
 from meteringpoints_shared.db import db  # noqa: E402
 from meteringpoints_shared.config import INTERNAL_TOKEN_SECRET  # noqa: E402
 
+import contextlib
+import os
 
-@pytest.fixture(scope='function')
-def session():
+import filelock
+
+
+@pytest.fixture(scope='session')
+def lock(tmp_path_factory):
+    base_temp = tmp_path_factory.getbasetemp()
+    lock_file = base_temp.parent / 'serial.lock'
+    yield filelock.FileLock(lock_file=str(lock_file))
+    with contextlib.suppress(OSError):
+        os.remove(path=lock_file)
+
+
+@pytest.fixture()
+def serial(lock):
+    with lock.acquire(poll_intervall=0.1):
+        yield
+
+                
+@pytest.fixture(scope='class')
+def session(db: SqlEngine):
+    """TODO."""
+    # Create session
+    with db.session_class() as session:
+        yield session
+
+@pytest.fixture(scope='class')
+def engine():
     """TODO."""
 
     with PostgresContainer('postgres:13.4') as psql:
@@ -35,9 +62,7 @@ def session():
             # Apply migrations
             db.ModelBase.metadata.create_all(db.engine)
 
-            # Create session
-            with db.session_class() as session:
-                yield session
+            db
 
 
 @pytest.fixture(scope='module')

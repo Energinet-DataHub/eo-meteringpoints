@@ -14,6 +14,7 @@ pytest-cov = "*"
 pytest-order = "*"
 pytest-depends = "*"
 testcontainers = "*"
+filelock = "*"
 
 [packages]
 origin-platform-utils = "0.6.5"
