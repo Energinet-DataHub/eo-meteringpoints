@@ -54,25 +54,28 @@ class TestMeteringPointQuery:
 
         return meteringpoints
 
-
-    @pytest.fixture(scope= 'function', autouse=True)
-    def setup(     
-        db: SqlEngine,      
-        serial: None,
-        seed_meteringpoints: List[MeteringPoint]
+    @pytest.fixture(scope='function', autouse=True)
+    def setup(
+            self,
+            session: db.Session,
+            seed_meteringpoints: List[MeteringPoint],
     ):
-        db.ModelBase.metadata.drop_all(db.engine)
-        db.ModelBase.metadata.create_all(db.engine)
+        """
+        Seeds the database with MeteringPoints before running tests.
 
-        with db.session_class() as session:
+        :param session: Database session
+        :param seed_meteringpoints: MeteringPoints to seed database with
+        """
+        session.begin()
 
-            for meteringpoint in seed_meteringpoints:
-                session.add(DbMeteringPoint(
-                    gsrn=meteringpoint.gsrn,
-                    type=meteringpoint.type,
-                    sector=meteringpoint.sector,
-                ))
-            yield
+        for meteringpoint in seed_meteringpoints:
+            session.add(DbMeteringPoint(
+                gsrn=meteringpoint.gsrn,
+                type=meteringpoint.type,
+                sector=meteringpoint.sector,
+            ))
+
+        session.commit()
 
     @pytest.mark.parametrize('gsrn', ('gsrn0', 'gsrn1', 'gsrn2'))
     def test__has_gsrn__meteringpoint_exists__should_return_correct_meteringpoint(  # noqa: E501
@@ -519,20 +522,22 @@ class TestDelegateQuery:
     Tests DelegateQuery.
     """
 
-    @pytest.fixture(scope= 'function', autouse=True)
-    def setup(     
-        db: SqlEngine,      
-        serial: None,
+    @pytest.fixture(scope='function', autouse=True)
+    def setup(
+            self,
+            session: db.session
     ):
-        db.ModelBase.metadata.drop_all(db.engine)
-        db.ModelBase.metadata.create_all(db.engine)
+        """
+        Seeds the database with MeteringPointDelegates before running tests.
 
-        with db.session_class() as session:
-            session.add(DbMeteringPointDelegate(gsrn='gsrn1', subject='subject1'))
-            session.add(DbMeteringPointDelegate(gsrn='gsrn1', subject='subject2'))
-            session.add(DbMeteringPointDelegate(gsrn='gsrn2', subject='subject1'))
-            session.add(DbMeteringPointDelegate(gsrn='gsrn2', subject='subject2'))
-            yield
+        :param session: Database session
+        """
+        session.begin()
+        session.add(DbMeteringPointDelegate(gsrn='gsrn1', subject='subject1'))
+        session.add(DbMeteringPointDelegate(gsrn='gsrn1', subject='subject2'))
+        session.add(DbMeteringPointDelegate(gsrn='gsrn2', subject='subject1'))
+        session.add(DbMeteringPointDelegate(gsrn='gsrn2', subject='subject2'))
+        session.commit()
 
     def test__has_gsrn__delegates_exists__should_return_correct_delegates(
             self,
@@ -614,20 +619,22 @@ class TestDelegateQuery:
 class TestTechnologyQuery:
     """Tests TechnologyQuery."""
 
-    @pytest.fixture(scope= 'function', autouse=True)
-    def setup(     
-        db: SqlEngine,      
-        serial: None,
+    @pytest.fixture(scope='function', autouse=True)
+    def setup(
+            self,
+            session: db.session
     ):
-        db.ModelBase.metadata.drop_all(db.engine)
-        db.ModelBase.metadata.create_all(db.engine)
+        """
+        Seeds the database with Technologies before running tests.
 
-        with db.session_class() as session:
-            session.add(DbTechnology(tech_code='T010101', fuel_code='F01010101'))
-            session.add(DbTechnology(tech_code='T010101', fuel_code='F02020202'))
-            session.add(DbTechnology(tech_code='T020202', fuel_code='F01010101'))
-            session.add(DbTechnology(tech_code='T020202', fuel_code='F02020202'))
-            yield
+        :param session: Database session
+        """
+        session.begin()
+        session.add(DbTechnology(tech_code='T010101', fuel_code='F01010101'))
+        session.add(DbTechnology(tech_code='T010101', fuel_code='F02020202'))
+        session.add(DbTechnology(tech_code='T020202', fuel_code='F01010101'))
+        session.add(DbTechnology(tech_code='T020202', fuel_code='F02020202'))
+        session.commit()
 
     def test__has_tech_code__technology_exists__should_return_correct_technologies(  # noqa: E501
             self,
