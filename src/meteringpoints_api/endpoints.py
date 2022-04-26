@@ -13,6 +13,7 @@ import sys
 
 from fake_data import FakeMeteringPoint
 
+
 class GetMeteringPointList(Endpoint):
     """Look up metering points from the data sync domain."""
 
@@ -28,7 +29,7 @@ class GetMeteringPointList(Endpoint):
         """Handle HTTP request."""
 
         print("Prepare list")
-        print("I am here!", file = sys.stderr)
+        print("I am here!", file=sys.stderr)
 
         data_sync_url = 'http://eo-data-sync/MeteringPoint/GetByTin/2'
         token = {"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3RvciI6IkpvaG4ifQ.jOJaJ-TwqnF9JtFanuD2k07F1AMGhTjZiVUDov_WSlA"}  # noqa: E501
