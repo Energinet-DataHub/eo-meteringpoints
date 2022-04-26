@@ -9,6 +9,7 @@ from meteringpoints_shared.db import db
 from meteringpoints_shared.queries import MeteringPointQuery
 
 import uuid
+import sys
 
 from fake_data import FakeMeteringPoint
 
