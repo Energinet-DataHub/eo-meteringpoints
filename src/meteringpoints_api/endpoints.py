@@ -22,10 +22,10 @@ class GetMeteringPointList(Endpoint):
             self,
     ) -> Response:
         """Handle HTTP request."""
-        
+
         # http://20.103.105.196:8081/
-        data_sync_url = '/MeteringPoint/GetByTin/2'
-        token = {"Authorization": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3RvciI6IjIiLCJuYW1lIjoiSm9obiBEb2UiLCJpYXQiOjE1MTYyMzkwMjJ9.NEsnCfitRhAbDPRI4uM0PIjjMhXn3W-e4ncUOIx1Cmw"}  # noqa: E501
+        data_sync_url = 'http://eo-data-sync/MeteringPoint/GetByTin/2'
+        token = {"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3RvciI6IkpvaG4ifQ.jOJaJ-TwqnF9JtFanuD2k07F1AMGhTjZiVUDov_WSlA"}  # noqa: E501
 
         response = requests.get(data_sync_url, headers=token)
 
