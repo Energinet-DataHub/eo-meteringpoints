@@ -40,10 +40,8 @@ class GetMeteringPointList(Endpoint):
         print("Will print response")
         print("Data response", response.json())
 
-        
-
         return self.Response(
-            meteringpoints=response.json(),
+            meteringpoints=[MeteringPoint(gsrn=mp['gsrn']) for mp in response.json())], # TODO: do something better
         )
 
 
