@@ -1,6 +1,7 @@
 from typing import List, Optional
 from dataclasses import dataclass
 import requests
+# from .fake_data import FakeMeteringPoint
 
 from origin.api import Endpoint, Context
 from origin.models.meteringpoints import MeteringPoint
@@ -8,10 +9,8 @@ from origin.models.meteringpoints import MeteringPoint
 from meteringpoints_shared.db import db
 from meteringpoints_shared.queries import MeteringPointQuery
 
-import uuid
+# import uuid
 import sys
-
-from .fake_data import FakeMeteringPoint
 
 
 class GetMeteringPointList(Endpoint):
@@ -21,7 +20,7 @@ class GetMeteringPointList(Endpoint):
     class Response:
         """TODO."""
 
-        meteringpoints: List[FakeMeteringPoint]
+        meteringpoints: List[MeteringPoint]
 
     def handle_request(
             self,
@@ -32,18 +31,17 @@ class GetMeteringPointList(Endpoint):
         print("I am here!", file=sys.stderr)
 
         data_sync_url = 'http://eo-data-sync/MeteringPoint/GetByTin/2'
-        # token = {"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3RvciI6IkpvaG4ifQ.jOJaJ-TwqnF9JtFanuD2k07F1AMGhTjZiVUDov_WSlA"}  # noqa: E501
+        token = {"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3RvciI6IkpvaG4ifQ.jOJaJ-TwqnF9JtFanuD2k07F1AMGhTjZiVUDov_WSlA"}  # noqa: E501
 
         print("Data url: ", data_sync_url)
 
-        response = requests.get(data_sync_url)
+        response = requests.get(data_sync_url, headers=token)
 
+        print("Will print response")
         print("Data response", response)
 
         return self.Response(
-            meteringpoints=[
-                FakeMeteringPoint(gsrn=str(uuid.uuid1())[:18]),
-            ],
+            meteringpoints=response.meteringpoints,
         )
 
 
