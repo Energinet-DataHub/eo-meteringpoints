@@ -1,6 +1,6 @@
 from typing import List, Optional
 from dataclasses import dataclass
-import requests
+# import requests
 
 from origin.api import Endpoint, Context
 from origin.models.meteringpoints import MeteringPoint
