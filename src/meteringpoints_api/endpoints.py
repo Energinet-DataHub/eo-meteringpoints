@@ -1,6 +1,6 @@
 from typing import List, Optional
 from dataclasses import dataclass
-# import requests
+import requests
 
 from origin.api import Endpoint, Context
 from origin.models.meteringpoints import MeteringPoint
@@ -36,9 +36,9 @@ class GetMeteringPointList(Endpoint):
 
         print("Data url: ", data_sync_url)
 
-        # response = requests.get(data_sync_url, headers=token)
+        response = requests.get(data_sync_url)
 
-        # print("Data response", response)
+        print("Data response", response)
 
         return self.Response(
             meteringpoints=[
