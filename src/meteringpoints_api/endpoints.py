@@ -9,7 +9,7 @@ from origin.models.meteringpoints import MeteringPoint
 from meteringpoints_shared.db import db
 from meteringpoints_shared.queries import MeteringPointQuery
 
-import uuid
+# import uuid
 import sys
 
 
