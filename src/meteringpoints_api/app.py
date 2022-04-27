@@ -1,4 +1,4 @@
-from origin.api import Application, ScopedGuard, TokenGuard
+from origin.api import Application, ScopedGuard
 
 from meteringpoints_shared.config import INTERNAL_TOKEN_SECRET
 
@@ -18,7 +18,6 @@ def create_app() -> Application:
         method='GET',
         path='/list',
         endpoint=GetMeteringPointList(),
-        guards=[TokenGuard()],
     )
 
     app.add_endpoint(
