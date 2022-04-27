@@ -38,10 +38,12 @@ class GetMeteringPointList(Endpoint):
         response = requests.get(data_sync_url, headers=token)
 
         print("Will print response")
-        print("Data response", response)
+        print("Data response", response.json())
+
+        
 
         return self.Response(
-            meteringpoints=response.meteringpoints,
+            meteringpoints=response.json(),
         )
 
 
