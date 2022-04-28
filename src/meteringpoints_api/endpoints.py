@@ -27,9 +27,13 @@ class GetMeteringPointList(Endpoint):
     ) -> Response:
         """Handle HTTP request."""
 
-        token = {"Authorization": context.internal_token_encoded}
+        token = {"Authorization": f'Bearer {context.internal_token_encoded}'}
+
+        print("token", token)
 
         response = requests.get('http://eo-auth/user/info', headers=token)
+
+        print("user response string", response)
 
         print("user response", response.json())
 
