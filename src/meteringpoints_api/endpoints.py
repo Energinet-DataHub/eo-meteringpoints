@@ -29,7 +29,7 @@ class GetMeteringPointList(Endpoint):
         print("I am here!", file=sys.stderr)
 
         data_sync_url = 'http://eo-data-sync/MeteringPoint/GetByTin/2'
-        token = {"Authorization":context.headers['Authorization']}  # noqa: E501
+        token = {"Authorization": context.headers['Authorization']}  # noqa: E501
 
         print("Data url: ", data_sync_url)
 
@@ -44,7 +44,15 @@ class GetMeteringPointList(Endpoint):
 
         print("internal_token_encoded", context.internal_token_encoded)
         print("token_encoder", context.token_encoder)
-        
+
+        try:
+            internal_token = context.token_encoder.decode(
+                context.internal_token_encoded)
+            print("internal_token", internal_token.is_valid)    
+
+        except context.token_encoder.DecodeError as e:
+            print("e",e)
+
         return self.Response(
             meteringpoints=[MeteringPoint(gsrn=mp['gsrn']) for mp in response.json()],  # TODO: do something better as https://www.geeksforgeeks.org/encoding-and-decoding-custom-objects-in-python-json/  # noqa: E501
         )
