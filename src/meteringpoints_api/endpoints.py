@@ -27,7 +27,7 @@ class GetMeteringPointList(Endpoint):
     ) -> Response:
         """Handle HTTP request."""
 
-        token = {"Authorization": f'Bearer {context.internal_token_encoded}'}
+        token = {"Authorization": f'Bearer: {context.internal_token_encoded}'}
 
         print("token", token)
 
