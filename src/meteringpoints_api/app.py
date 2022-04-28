@@ -17,7 +17,7 @@ def create_app() -> Application:
     app.add_endpoint(
         method='GET',
         path='/list',
-        endpoint=GetMeteringPointList(),   
+        endpoint=GetMeteringPointList(),
     )
 
     app.add_endpoint(

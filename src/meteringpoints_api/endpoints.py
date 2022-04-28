@@ -19,6 +19,7 @@ class GetMeteringPointList(Endpoint):
 
         meteringpoints: List[MeteringPoint]
 
+
     def handle_request(
             self,
             context: Context,
@@ -38,10 +39,14 @@ class GetMeteringPointList(Endpoint):
         print("Will print response")
         print("Data response", response.json())
 
+        print("context", context)
         print("context.token", context.token)
+        print("headers", context.headers)
+        print("vars headers", vars(context.headers))
+        print("vars", vars(context))
 
         return self.Response(
-            meteringpoints=[MeteringPoint(gsrn=mp['gsrn']) for mp in response.json()], # TODO: do something better as https://www.geeksforgeeks.org/encoding-and-decoding-custom-objects-in-python-json/  # noqa: E501
+            meteringpoints=[MeteringPoint(gsrn=mp['gsrn']) for mp in response.json()],  # TODO: do something better as https://www.geeksforgeeks.org/encoding-and-decoding-custom-objects-in-python-json/  # noqa: E501
         )
 
 
