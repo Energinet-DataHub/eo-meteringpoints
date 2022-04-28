@@ -13,6 +13,11 @@ eo-base-helm-chart:
         tag: 0.1.6
         pullPolicy: Always
 
+  envSecrets:
+    INTERNAL_TOKEN_SECRET:
+      secretName: auth-random-secret
+      key: eo-token-secret
+
   service:
     deployment: api
     type: ClusterIP
