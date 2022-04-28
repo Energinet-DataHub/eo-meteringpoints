@@ -1,7 +1,9 @@
 from typing import List, Optional
 from dataclasses import dataclass
+from types import SimpleNamespace
 import requests
 import sys
+import json
 
 from origin.api import Endpoint, Context
 from origin.models.meteringpoints import MeteringPoint
@@ -53,8 +55,9 @@ class GetMeteringPointList(Endpoint):
         except context.token_encoder.DecodeError as e:
             print("e",e)
 
+
         return self.Response(
-            meteringpoints=[MeteringPoint(gsrn=mp['gsrn']) for mp in response.json()],  # TODO: do something better as https://www.geeksforgeeks.org/encoding-and-decoding-custom-objects-in-python-json/  # noqa: E501
+            meteringpoints=json.loads(response.json, object_hook=lambda d: SimpleNamespace(**d))
         )
 
 
