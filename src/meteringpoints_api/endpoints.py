@@ -27,34 +27,17 @@ class GetMeteringPointList(Endpoint):
     ) -> Response:
         """Handle HTTP request."""
 
-        print("Prepare list")
-        print("I am here!", file=sys.stderr)
+        token = {"Authorization": context.token}
 
-        data_sync_url = 'http://eo-data-sync/MeteringPoint/GetByTin/2'
-        token = {"Authorization": context.headers['Authorization']}  # noqa: E501
+        response = requests.get('http://eo-auth/user/info', headers=token)
 
-        print("Data url: ", data_sync_url)
+        print("user response", response.json())
+
+        data_sync_url = f'http://eo-data-sync/MeteringPoint/GetByTin/{response.tin}'
 
         response = requests.get(data_sync_url, headers=token)
 
-        print("Will print response")
-        print("Data response", response.json())
-
-        print("context", context)
-        print("context.token", context.token)
-        print("headers", context.headers)
-
-        print("internal_token_encoded", context.internal_token_encoded)
-        print("token_encoder", context.token_encoder)
-
-        try:
-            internal_token = context.token_encoder.decode(
-                context.internal_token_encoded)
-            print("internal_token", internal_token.is_valid)    
-
-        except context.token_encoder.DecodeError as e:
-            print("e",e)
-
+        print("data response", response.json())
 
         return self.Response(
             meteringpoints=json.dumps(json.loads(response.json, object_hook=lambda d: SimpleNamespace(**d)))
