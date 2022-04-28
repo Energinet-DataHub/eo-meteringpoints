@@ -1,16 +1,13 @@
 from typing import List, Optional
 from dataclasses import dataclass
 import requests
-# from .fake_data import FakeMeteringPoint
+import sys
 
 from origin.api import Endpoint, Context
 from origin.models.meteringpoints import MeteringPoint
 
 from meteringpoints_shared.db import db
 from meteringpoints_shared.queries import MeteringPointQuery
-
-# import uuid
-import sys
 
 
 class GetMeteringPointList(Endpoint):
@@ -24,6 +21,7 @@ class GetMeteringPointList(Endpoint):
 
     def handle_request(
             self,
+            context: Context,
     ) -> Response:
         """Handle HTTP request."""
 
@@ -40,8 +38,10 @@ class GetMeteringPointList(Endpoint):
         print("Will print response")
         print("Data response", response.json())
 
+        print("context.token", context.token)
+
         return self.Response(
-            meteringpoints=[MeteringPoint(gsrn=mp['gsrn']) for mp in response.json()], # TODO: do something better
+            meteringpoints=[MeteringPoint(gsrn=mp['gsrn']) for mp in response.json()], # TODO: do something better as https://www.geeksforgeeks.org/encoding-and-decoding-custom-objects-in-python-json/  # noqa: E501
         )
 
 
