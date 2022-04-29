@@ -10,8 +10,13 @@ eo-base-helm-chart:
         SQL_POOL_SIZE: 1
       image:
         repository: ghcr.io/energinet-datahub/eo-meteringpoints-api
-        tag: 0.1.5
+        tag: 0.1.6
         pullPolicy: Always
+
+  envSecrets:
+    INTERNAL_TOKEN_SECRET:
+      secretName: auth-random-secret
+      key: eo-token-secret
 
   service:
     deployment: api
