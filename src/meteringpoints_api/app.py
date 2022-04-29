@@ -1,9 +1,8 @@
-from origin.api import Application, ScopedGuard
+from origin.api import Application, ScopedGuard, TokenGuard
 
 from meteringpoints_shared.config import INTERNAL_TOKEN_SECRET
 
-from .endpoints import GetMeteringPointDetails
-from .fake_data import FakeGetMeteringPointList
+from .endpoints import GetMeteringPointDetails, GetMeteringPointList
 
 
 def create_app() -> Application:
@@ -15,12 +14,11 @@ def create_app() -> Application:
         health_check_path='/health',
     )
 
-    # guards=[ScopedGuard('meteringpoints.read')], has been remove due to
-    # test of endpoint when the meteringpoints does not have a scope.
     app.add_endpoint(
         method='GET',
         path='/list',
-        endpoint=FakeGetMeteringPointList(),
+        endpoint=GetMeteringPointList(),
+        guards=[ScopedGuard('meteringpoints.read')]
     )
 
     app.add_endpoint(
