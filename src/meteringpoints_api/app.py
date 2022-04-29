@@ -18,19 +18,6 @@ def create_app() -> Application:
         method='GET',
         path='/list',
         endpoint=GetMeteringPointList(),
-    )
-
-    app.add_endpoint(
-        method='GET',
-        path='/list2',
-        endpoint=GetMeteringPointList(),
-        guards=[TokenGuard()]
-    )
-
-    app.add_endpoint(
-        method='GET',
-        path='/list3',
-        endpoint=GetMeteringPointList(),
         guards=[ScopedGuard('meteringpoints.read')]
     )
 
