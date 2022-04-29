@@ -29,21 +29,13 @@ class GetMeteringPointList(Endpoint):
 
         token = {"Authorization": f'Bearer: {context.internal_token_encoded}'}
 
-        print("token", token)
-
         response = requests.get('http://eo-auth/user/info', headers=token)
 
-        print("user response string", response)
+        user_info = response.json()
 
-        data = response.json()
-
-        print("user response", data)
-
-        data_sync_url = f'http://eo-data-sync/MeteringPoint/GetByTin/{data["tin"]}'
+        data_sync_url = f'http://eo-data-sync/MeteringPoint/GetByTin/{user_info["tin"]}'
 
         response = requests.get(data_sync_url, headers=token)
-
-        print("data response", response.json())
 
         return self.Response(
             meteringpoints=[MeteringPoint(gsrn=mp['gsrn']) for mp in response.json()], 
