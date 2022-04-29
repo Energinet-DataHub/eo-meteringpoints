@@ -12,9 +12,9 @@ from meteringpoints_shared.queries import MeteringPointQuery
 class GetMeteringPointList(Endpoint):
     """
     Look up metering points from the data sync domain.
-    
-    Given the users token, their tin can be requested 
-    and used to receive their metering point IDs. 
+
+    Given the users token, their tin can be requested
+    and used to receive their metering point IDs.
     """
 
     @dataclass
