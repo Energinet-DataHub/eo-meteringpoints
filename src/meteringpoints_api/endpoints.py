@@ -45,7 +45,7 @@ class GetMeteringPointList(Endpoint):
 
         print("data response", response.json())
 
-        return json.loads(response.json(), object_hook=lambda d: SimpleNamespace(**d))
+        return json.dumps(json.loads(response.json(), object_hook=lambda d: SimpleNamespace(**d)))
 
 
 class GetMeteringPointDetails(Endpoint):
