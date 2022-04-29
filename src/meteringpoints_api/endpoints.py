@@ -35,11 +35,11 @@ class GetMeteringPointList(Endpoint):
 
         print("user response string", response)
 
-        json = response.json()
+        data = response.json()
 
-        print("user response", json)
+        print("user response", data)
 
-        data_sync_url = f'http://eo-data-sync/MeteringPoint/GetByTin/{json["tin"]}'
+        data_sync_url = f'http://eo-data-sync/MeteringPoint/GetByTin/{data["tin"]}'
 
         response = requests.get(data_sync_url, headers=token)
 
