@@ -1,4 +1,4 @@
-from origin.api import Application, ScopedGuard, TokenGuard
+from origin.api import Application, ScopedGuard
 
 from meteringpoints_shared.config import INTERNAL_TOKEN_SECRET
 

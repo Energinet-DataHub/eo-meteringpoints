@@ -1,9 +1,6 @@
 from typing import List, Optional
 from dataclasses import dataclass
-from types import SimpleNamespace
 import requests
-import sys
-import json
 
 from origin.api import Endpoint, Context
 from origin.models.meteringpoints import MeteringPoint
@@ -13,7 +10,12 @@ from meteringpoints_shared.queries import MeteringPointQuery
 
 
 class GetMeteringPointList(Endpoint):
-    """Look up metering points from the data sync domain."""
+    """
+    Look up metering points from the data sync domain.
+    
+    Given the users token, their tin can be requested 
+    and used to receive their metering point IDs. 
+    """
 
     @dataclass
     class Response:
@@ -29,16 +31,16 @@ class GetMeteringPointList(Endpoint):
 
         token = {"Authorization": f'Bearer: {context.internal_token_encoded}'}
 
-        response = requests.get('http://eo-auth/user/info', headers=token)
+        response = requests.get('http://eo-auth/user/info', headers=token)  # noqa: E501
 
         user_info = response.json()
 
-        data_sync_url = f'http://eo-data-sync/MeteringPoint/GetByTin/{user_info["tin"]}'
+        data_sync_url = f'http://eo-data-sync/MeteringPoint/GetByTin/{user_info["tin"]}'  # noqa: E501
 
         response = requests.get(data_sync_url, headers=token)
 
         return self.Response(
-            meteringpoints=[MeteringPoint(gsrn=mp['gsrn']) for mp in response.json()], 
+            meteringpoints=[MeteringPoint(gsrn=mp['gsrn']) for mp in response.json()],  # noqa: E501
         )
 
 
