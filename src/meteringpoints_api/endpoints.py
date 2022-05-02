@@ -1,21 +1,28 @@
 from typing import List, Optional
-from dataclasses import dataclass
-import requests
+from dataclasses import dataclass, field
+from serpyco import number_field
 
 from origin.api import Endpoint, Context
 from origin.models.meteringpoints import MeteringPoint
 
 from meteringpoints_shared.db import db
 from meteringpoints_shared.queries import MeteringPointQuery
+from meteringpoints_shared.models import \
+    MeteringPointFilters, MeteringPointOrdering
 
 
 class GetMeteringPointList(Endpoint):
-    """
-    Look up metering points from the data sync domain.
+    """Look up many Measurements, optionally filtered and ordered."""
 
-    Given the users token, their tin can be requested
-    and used to receive their metering point IDs.
-    """
+    @dataclass
+    class Request:
+        """TODO."""
+
+        # TODO Validate offset & limit upper/lower bounds:
+        offset: int = number_field(default=0, minimum=0)
+        limit: int = number_field(default=50, minimum=1, maximum=100)
+        filters: Optional[MeteringPointFilters] = field(default=None)
+        ordering: Optional[MeteringPointOrdering] = field(default=None)
 
     @dataclass
     class Response:
@@ -23,24 +30,34 @@ class GetMeteringPointList(Endpoint):
 
         meteringpoints: List[MeteringPoint]
 
+    @db.session()
     def handle_request(
             self,
+            request: Request,
             context: Context,
+            session: db.Session,
     ) -> Response:
         """Handle HTTP request."""
 
-        token = {"Authorization": f'Bearer: {context.internal_token_encoded}'}
+        subject = context.get_subject(required=True)
 
-        response = requests.get('http://eo-auth/user/info', headers=token)  # noqa: E501
+        query = MeteringPointQuery(session) \
+            .is_accessible_by(subject)
 
-        user_info = response.json()
+        if request.filters:
+            query = query.apply_filters(request.filters)
 
-        data_sync_url = f'http://eo-data-sync/MeteringPoint/GetByTin/{user_info["tin"]}'  # noqa: E501
+        if request.ordering:
+            results = query.apply_ordering(request.ordering)
+        else:
+            results = query
 
-        response = requests.get(data_sync_url, headers=token)
+        results = results \
+            .offset(request.offset) \
+            .limit(request.limit)
 
         return self.Response(
-            meteringpoints=[MeteringPoint(gsrn=mp['gsrn']) for mp in response.json()],  # noqa: E501
+            meteringpoints=results.all(),
         )
 
 
