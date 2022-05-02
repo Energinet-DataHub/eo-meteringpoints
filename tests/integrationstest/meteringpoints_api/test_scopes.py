@@ -14,7 +14,6 @@ TEndpoint = Tuple[str, str, List[str], Optional[Dict[str, Any]]]
 
 
 @pytest.fixture(params=[
-    ('GET', '/list', ['meteringpoints.read'], None),
     ('GET', '/details', ['meteringpoints.read'], {'gsrn': '12345'}),
 ])
 def endpoint(request) -> TEndpoint:
