@@ -1,17 +1,20 @@
-from typing import List, Optional
+from typing import List
 from origin.serialize import simple_serializer
 from origin.models.meteringpoints import MeteringPoint
 import requests
+
 
 class DataSyncHttpClient:
     """
     A httpclient for communicating with the data-sync service.
 
-    Each HttpClient should use the internal_token provided by the individual user.
+    Each HttpClient should use the internal_token provided by the
+    individual user.
 
     :param base_url: base url of the datasync class.
         :type base_url: str
-        :param internal_token: The bearer internal_token used for authentication.
+        :param internal_token: The bearer internal_token used
+               for authentication.
         :type internal_token: str
     """
 
@@ -24,7 +27,6 @@ class DataSyncHttpClient:
 
             super().__init__(self.message)
 
-
     class DecodeError(Exception):
         """Raised when http requests fails."""
 
@@ -34,7 +36,9 @@ class DataSyncHttpClient:
         self.base_url = base_url
         self.internal_token = internal_token
 
-    def get_meteringpoints_by_tin(self, tin: str) ->  List[MeteringPoint]:
+    def get_meteringpoints_by_tin(self, tin: str) -> List[MeteringPoint]:
+        """Return meteringpoints with relations to given tin."""
+
         uri = f'{self.base_url}/MeteringPoint/GetByTin/{tin}'
 
         response = requests.get(uri, headers=self._getHeaders())
@@ -47,7 +51,7 @@ class DataSyncHttpClient:
         elif response.status_code != 200:
             raise DataSyncHttpClient.HttpError(
                 status_code=response.status_code,
-                message=f"Failed to fetch meteringpoints by tin."
+                message="Failed to fetch meteringpoints by tin."
             )
 
         data = response.json()
@@ -58,9 +62,9 @@ class DataSyncHttpClient:
                 List[MeteringPoint],
                 True,
             )
-        except:
+        except:   # noqa: E722
             raise DataSyncHttpClient.DecodeError(
-                f"Failed to decode meteringpoints."
+                "Failed to decode meteringpoints."
             )
 
         return meteringpoints

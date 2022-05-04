@@ -4,7 +4,6 @@ import requests
 
 from origin.api import Endpoint, Context
 from origin.models.meteringpoints import MeteringPoint
-from sqlalchemy import false
 from meteringpoints_shared.config import DATASYNC_BASE_URL
 from meteringpoints_shared.datasync_httpclient import DataSyncHttpClient
 
@@ -48,7 +47,7 @@ class GetMeteringPointList(Endpoint):
         )
 
         if user_info["tin"]:
-            meteringpoints = http_client.get_meteringpoints_by_tin(user_info["tin"])
+            meteringpoints = http_client.get_meteringpoints_by_tin(user_info["tin"])  # noqa: E501
         elif user_info["ssn"]:
             # IMPLEMENT THIS
             print("httpClient.get_meteringpoints_by_ssn() not implemented")
@@ -96,6 +95,7 @@ class GetMeteringPointDetails(Endpoint):
             meteringpoint=meteringpoint,
         )
 
+
 class CreateMeteringPointRelations(Endpoint):
     """Returns details about a single MeteringPoint."""
 
@@ -142,4 +142,3 @@ class CreateMeteringPointRelations(Endpoint):
         return self.Response(
             success=meteringpoint_ids is not None,
         )
-
