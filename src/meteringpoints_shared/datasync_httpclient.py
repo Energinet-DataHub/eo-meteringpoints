@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import List
 from origin.serialize import simple_serializer
 from origin.models.meteringpoints import MeteringPoint
@@ -56,6 +57,8 @@ class DataSyncHttpClient:
             )
 
         data = response.json()
+        print(data)
+
 
         try:
             meteringpoints = simple_serializer.deserialize(
