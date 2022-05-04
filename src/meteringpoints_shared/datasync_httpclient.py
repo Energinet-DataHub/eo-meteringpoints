@@ -59,11 +59,16 @@ class DataSyncHttpClient:
         data = response.json()
         print(data)
 
+        #[{'gsrn': 'GSRN#1'}, {'gsrn': 'GSRN#2'}, {'gsrn': 'GSRN#3'}]
+
+        @dataclass
+        class ExpectedResponse:
+            meteringpoints: List[MeteringPoint]
 
         try:
             meteringpoints = simple_serializer.deserialize(
-                data,
-                List[MeteringPoint],
+                {"meteringpoints": data},
+                ExpectedResponse,
                 True,
             )
         except:   # noqa: E722
