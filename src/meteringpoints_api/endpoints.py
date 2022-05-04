@@ -4,7 +4,6 @@ import requests
 
 from origin.api import Endpoint, Context
 from origin.models.meteringpoints import MeteringPoint
-from origin.api.responses import InternalServerError
 from meteringpoints_shared.config import DATASYNC_BASE_URL
 from meteringpoints_shared.datasync_httpclient import DataSyncHttpClient
 
@@ -23,6 +22,7 @@ class GetMeteringPointList(Endpoint):
     @dataclass
     class Response:
         """TODO."""
+
         meteringpoints: List[MeteringPoint]
 
     def handle_request(
@@ -42,8 +42,6 @@ class GetMeteringPointList(Endpoint):
 
         if not user_info["tin"]:
             print("user_info['tin'] were none")
-
-
 
         # data_sync_url = f'http://eo-data-sync/MeteringPoint/GetByTin/{user_info["tin"]}'  # noqa: E501
 

@@ -42,6 +42,7 @@ class DataSyncHttpClient:
         uri = f'{self.base_url}/MeteringPoint/GetByTin/{tin}'
 
         response = requests.get(uri, headers=self._getHeaders())
+        print(uri)
 
         if response.status_code == 404:
             raise DataSyncHttpClient.HttpError(
