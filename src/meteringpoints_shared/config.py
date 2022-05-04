@@ -28,4 +28,4 @@ SQL_URI = os.environ.get('SQL_URI', '')
 SQL_POOL_SIZE = int(os.getenv('SQL_POOL_SIZE', 1))
 
 # -- eo-datasync -------------------------------------------------------------
-DATASYNC_BASE_URL = os.environ.get('DATASYNC_BASE_URL', 'http://eo-data-sync/')
+DATASYNC_BASE_URL = os.environ.get('DATASYNC_BASE_URL', 'http://eo-data-sync')
