@@ -38,6 +38,9 @@ class GetMeteringPointList(Endpoint):
         if response.status_code != 200:
             print("failed to get tin from auth service")
 
+        if not user_info["tin"]:
+            print("user_info['tin'] were none")
+
         user_info = response.json()
 
         # data_sync_url = f'http://eo-data-sync/MeteringPoint/GetByTin/{user_info["tin"]}'  # noqa: E501
