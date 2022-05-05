@@ -57,9 +57,9 @@ class GetMeteringPointList(Endpoint):
         elif user_info["ssn"]:
             # IMPLEMENT THIS
             print("httpClient.get_meteringpoints_by_ssn() not implemented")
-            return self.Response(success=False)
         else:
-            return self.Response(success=False)
+            # Return error http response
+            print("User must have either a TIN or SSN")
 
         return self.Response(
             meteringpoints=meteringpoints,  # noqa: E501

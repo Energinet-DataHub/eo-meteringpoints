@@ -57,7 +57,6 @@ class DataSyncHttpClient:
             )
 
         data = response.json()
-        print(data)
 
         #[{'gsrn': 'GSRN#1'}, {'gsrn': 'GSRN#2'}, {'gsrn': 'GSRN#3'}]
 
@@ -66,7 +65,7 @@ class DataSyncHttpClient:
             meteringpoints: List[MeteringPoint]
 
         try:
-            meteringpoints = simple_serializer.deserialize(
+            decoded = simple_serializer.deserialize(
                 {"meteringpoints": data},
                 ExpectedResponse,
                 True,
@@ -76,7 +75,7 @@ class DataSyncHttpClient:
                 "Failed to decode meteringpoints."
             )
 
-        return meteringpoints
+        return decoded.meteringpoints
 
     def _getHeaders(self):
         headers = {
