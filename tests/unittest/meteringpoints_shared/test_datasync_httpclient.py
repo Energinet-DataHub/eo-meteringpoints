@@ -67,7 +67,7 @@ class TestDataSyncHttpClient:
     ):
         # -- Arrange ---------------------------------------------------------
 
-        uut = DataSyncHttpClient("http://foo.com", "very token")
+        uut =   ("http://foo.com", "very token")
 
         # -- Act -------------------------------------------------------------
 
