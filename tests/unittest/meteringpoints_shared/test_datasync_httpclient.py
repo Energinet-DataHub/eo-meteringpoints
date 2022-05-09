@@ -1,35 +1,12 @@
 from unittest import mock
-from unittest.mock import MagicMock
-from urllib.request import Request
 import pytest
-from typing import List
-from itertools import product
+import requests_mock
 
-from origin.models.common import Order
 from origin.models.meteringpoints import (
     MeteringPoint,
-    MeteringPointType,
 )
 from meteringpoints_shared.datasync_httpclient import DataSyncHttpClient
 
-from meteringpoints_shared.db import db
-from meteringpoints_shared.models import (
-    DbMeteringPoint,
-    DbMeteringPointAddress,
-    DbMeteringPointTechnology,
-    DbMeteringPointDelegate,
-    DbTechnology,
-    MeteringPointFilters,
-    MeteringPointOrdering,
-    MeteringPointOrderingKeys,
-)
-from meteringpoints_shared.queries import (
-    MeteringPointQuery,
-    MeteringPointAddressQuery,
-    MeteringPointTechnologyQuery,
-    DelegateQuery,
-    TechnologyQuery,
-)
 
 METERINGPOINTS = [
     MeteringPoint(gsrn='GSRN#1'),
@@ -37,60 +14,122 @@ METERINGPOINTS = [
     MeteringPoint(gsrn='GSRN#3'),
 ]
 
-def mocked_requests_get_success(*args, **kwargs):
+METERINGPOINTS_JSON = [{'gsrn': mp.gsrn} for mp in METERINGPOINTS]
 
-    class CustomResponse:
-        status_code = 200
 
-        def json():
-            array = [{'gsrn': mp.gsrn} for mp in METERINGPOINTS]
-            return array
+# -- Requests ---------------------------------------------------------------
 
-    return CustomResponse
 
-def mocked_requests_get_404(*args, **kwargs):
-    class CustomResponse:
-        status_code = 404
+@pytest.fixture(scope='function')
+def request_mocker() -> requests_mock:
+    """
+    Provide a request mocker.
 
-        def json():
-            return []
+    Can be used to mock requests responses made to eg.
+    OpenID Connect api endpoints.
+    """
 
-    return CustomResponse
+    with requests_mock.Mocker() as mock:
+        yield mock
+
 
 class TestDataSyncHttpClient:
     """Tests TestDatasyncHttpClient."""
 
-    @mock.patch('requests.get', side_effect=mocked_requests_get_success)
     def test__get_meteringpoints_by_tin__should_return_correct_meteringpoints(
             self,
-            mocked_request_get
+            request_mocker: requests_mock,
     ):
         # -- Arrange ---------------------------------------------------------
+        base_url = "http://foo.com"
+        tin = "test"
 
-        uut =   ("http://foo.com", "very token")
+        uut = DataSyncHttpClient(base_url, "very token")
+
+        request_mocker.get(
+            f'{base_url}/MeteringPoint/GetByTin/{tin}',
+            json=METERINGPOINTS_JSON,
+            status_code=200,
+        )
+
+        uut = DataSyncHttpClient(base_url, "very token")
 
         # -- Act -------------------------------------------------------------
 
-        meteringpoints = uut.get_meteringpoints_by_tin('test')
+        meteringpoints = uut.get_meteringpoints_by_tin(tin)
 
         # -- Assert ----------------------------------------------------------
 
         assert all(mp in METERINGPOINTS for mp in meteringpoints)
 
-    @mock.patch('requests.get', side_effect=mocked_requests_get_404)
-    def test__get_meteringpoints_by_tin__gets_404__should_raise_httperror(
+    def test__get_meteringpoints_by_tin__return_404_should_return_correct_status_code(
             self,
-            mocked_request_get
+            request_mocker: requests_mock,
     ):
         # -- Arrange ---------------------------------------------------------
+        base_url = "http://foo.com"
+        tin = "test"
 
-        uut = DataSyncHttpClient("http://foo.com", "very token")
+        uut = DataSyncHttpClient(base_url, "very token")
 
-        # -- Act -------------------------------------------------------------
+        request_mocker.get(
+            f'{base_url}/MeteringPoint/GetByTin/{tin}',
+            json={},
+            status_code=404,
+        )
+
+        # -- Assert/Act ------------------------------------------------------
+
         with pytest.raises(DataSyncHttpClient.HttpError) as error:
-            meteringpoints = uut.get_meteringpoints_by_tin('test')
+            uut.get_meteringpoints_by_tin(tin)
             assert error.status_code == 404
 
-        # -- Assert ----------------------------------------------------------
+    def test__get_meteringpoints_by_tin__return_500_should_return_correct_status_code(
+            self,
+            request_mocker: requests_mock,
+    ):
+        # -- Arrange ---------------------------------------------------------
+        base_url = "http://foo.com"
+        tin = "test"
+        status_code = 500
 
+        uut = DataSyncHttpClient(base_url, "very token")
 
+        request_mocker.get(
+            f'{base_url}/MeteringPoint/GetByTin/{tin}',
+            json={},
+            status_code=status_code,
+        )
+
+        # -- Assert/Act ------------------------------------------------------
+        with pytest.raises(
+            DataSyncHttpClient.HttpError,
+            match="Failed to fetch meteringpoints by tin."
+        ) as error:
+            uut.get_meteringpoints_by_tin(tin)
+            assert error.status_code == status_code
+
+    def test__get_meteringpoints_by_tin__invalid_json__should_return_correct_status_code(
+            self,
+            request_mocker: requests_mock,
+    ):
+        # -- Arrange ---------------------------------------------------------
+        base_url = "http://foo.com"
+        tin = "test"
+        status_code = 200
+
+        uut = DataSyncHttpClient(base_url, "very token")
+
+        request_mocker.get(
+            f'{base_url}/MeteringPoint/GetByTin/{tin}',
+            json=[{'INVALID_GSRN_ID': mp.gsrn} for mp in METERINGPOINTS],
+            status_code=status_code,
+        )
+
+        # -- Assert/Act ------------------------------------------------------
+        with pytest.raises(
+            DataSyncHttpClient.DecodeError,
+            match="Failed to decode meteringpoints."
+        ) as error:
+            uut.get_meteringpoints_by_tin(tin)
+            assert error.status_code == status_code
