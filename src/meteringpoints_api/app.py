@@ -1,8 +1,15 @@
+# First party
+from meteringpoints_shared.config import (
+    INTERNAL_TOKEN_SECRET,
+)
 from origin.api import Application, ScopedGuard
 
-from meteringpoints_shared.config import INTERNAL_TOKEN_SECRET
-
-from .endpoints import GetMeteringPointDetails, GetMeteringPointList
+# Local
+from .endpoints import (
+    CreateMeteringPointRelations,
+    GetMeteringPointDetails,
+    GetMeteringPointList,
+)
 
 
 def create_app() -> Application:
@@ -25,6 +32,14 @@ def create_app() -> Application:
         method='GET',
         path='/details',
         endpoint=GetMeteringPointDetails(),
+        guards=[ScopedGuard('meteringpoints.read')],
+    )
+
+    app.add_endpoint(
+        method='POST',
+        path='/createrelations',
+        endpoint=CreateMeteringPointRelations(),
+        # Should require write too in the future
         guards=[ScopedGuard('meteringpoints.read')],
     )
 

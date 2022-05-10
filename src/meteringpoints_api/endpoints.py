@@ -43,10 +43,6 @@ class GetMeteringPointList(Endpoint):
         if not user_info["tin"]:
             print("user_info['tin'] were none")
 
-        # data_sync_url = f'http://eo-data-sync/MeteringPoint/GetByTin/{user_info["tin"]}'  # noqa: E501
-
-        # response = requests.get(data_sync_url, headers=token)
-
         http_client = DataSyncHttpClient(
             base_url=DATASYNC_BASE_URL,
             internal_token=context.internal_token_encoded,
@@ -110,7 +106,7 @@ class CreateMeteringPointRelations(Endpoint):
         """TODO."""
 
         tin: Optional[str]
-        ssn: Optional[str]
+        ssn: Optional[str] = None
 
     @dataclass
     class Response:
@@ -118,12 +114,10 @@ class CreateMeteringPointRelations(Endpoint):
 
         success: bool
 
-    @db.session()
     def handle_request(
             self,
             request: Request,
             context: Context,
-            session: db.Session,
     ) -> Response:
         """Handle HTTP request."""
 
@@ -132,9 +126,13 @@ class CreateMeteringPointRelations(Endpoint):
             internal_token=context.internal_token_encoded,
         )
 
+        meteringpoints: List[MeteringPoint] = []
+
         if request.tin:
             meteringpoints = http_client.get_meteringpoints_by_tin(request.tin)
+            name_id = request.tin
         elif request.ssn:
+            name_id = request.ssn
             # IMPLEMENT THIS
             print("httpClient.get_meteringpoints_by_ssn() not implemented")
             pass
@@ -143,8 +141,17 @@ class CreateMeteringPointRelations(Endpoint):
 
         meteringpoint_ids = [MeteringPoint(gsrn=mp) for mp in meteringpoints]
 
-        print(meteringpoint_ids)
+        if not meteringpoints:
+            print("No meteringpoints found ")
+            return self.Response(
+                success=False,
+            )
+
+        success = http_client.create_relationship(
+            name_id=name_id,
+            meteringpoint_ids=meteringpoint_ids,
+        )
 
         return self.Response(
-            success=meteringpoint_ids is not None,
+            success=success,
         )

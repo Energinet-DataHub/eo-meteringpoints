@@ -1,8 +1,23 @@
+# Standard Library
 from dataclasses import dataclass
 from typing import List
-from origin.serialize import simple_serializer
-from origin.models.meteringpoints import MeteringPoint
+
+# Third party
 import requests
+
+# First party
+from origin.models.meteringpoints import (
+    MeteringPoint,
+)
+from origin.serialize import simple_serializer
+
+
+@dataclass
+class CreateMeteringpointRelationshipResults:
+    """Result when creating a meteringpoint relationship."""
+
+    failed_relationships: List[str]
+    successful_relationships: List[str]
 
 
 class DataSyncHttpClient:
@@ -43,7 +58,6 @@ class DataSyncHttpClient:
         uri = f'{self.base_url}/MeteringPoint/GetByTin/{tin}'
 
         response = requests.get(uri, headers=self._getHeaders())
-        print(uri)
 
         if response.status_code == 404:
             raise DataSyncHttpClient.HttpError(
@@ -58,10 +72,10 @@ class DataSyncHttpClient:
 
         data = response.json()
 
-        #[{'gsrn': 'GSRN#1'}, {'gsrn': 'GSRN#2'}, {'gsrn': 'GSRN#3'}]
-
         @dataclass
         class ExpectedResponse:
+            """Expected result from http request."""
+
             meteringpoints: List[MeteringPoint]
 
         try:
@@ -76,6 +90,85 @@ class DataSyncHttpClient:
             )
 
         return decoded.meteringpoints
+
+    def create_meteringpoint_relationships(
+        self,
+        name_id: str,
+        meteringpoint_ids: List[str]
+    ) -> CreateMeteringpointRelationshipResults:
+        """
+        Create relationship between name_id and list of meteringpoints.
+
+        :param name_id: Either a tin or ssn
+        :type name_id: str
+        :param meteringpoint_ids: List of meteringpoint ids / GSRN
+        :type meteringpoint_ids: List[str]
+        :raises DataSyncHttpClient.HttpError: Raised when faced http error
+        :raises DataSyncHttpClient.DecodeError: Raised when failing to
+            deserialize responsebody
+        :return: Returns an object with lists of relationships
+            which failed and succeeded
+        :rtype: CreateMeteringpointRelationshipResults
+        """
+        # TODO: CHECK CORRECT PATH
+        uri = f'{self.base_url}/MeteringPoint/createRelation'
+
+        @dataclass
+        class CreateMeteringpointRelationshipResult:
+            """Result when creating a meteringpoint relationship."""
+
+            meteringpointId: str
+            relationshipCreated: bool
+
+        @dataclass
+        class ExpectedResponse:
+            """Expected result from http request."""
+
+            result: List[CreateMeteringpointRelationshipResult]
+
+        response = requests.post(
+            url=uri,
+            headers=self._getHeaders(),
+            data={
+                "name_id": name_id,
+                "meteringpoint_ids": meteringpoint_ids,
+            }
+        )
+
+        if response.status_code != 200:
+            raise DataSyncHttpClient.HttpError(
+                status_code=response.status_code,
+                message="Failed to create meteringpoint relationship."
+            )
+
+        data = response.json()
+
+        try:
+            decoded: ExpectedResponse = simple_serializer.deserialize(
+                {"result": data},
+                ExpectedResponse,
+                True,
+            )
+        except:   # noqa: E722
+            raise DataSyncHttpClient.DecodeError(
+                "Failed to decode response body."
+            )
+
+        create_mp_relationship_results = CreateMeteringpointRelationshipResults(  # noqa E501
+            successful_relationships=[],
+            failed_relationships=[],
+        )
+
+        for meteringpoint_relation_result in decoded.result:
+            gsrn = meteringpoint_relation_result.meteringpointId
+            if meteringpoint_relation_result.relationshipCreated:
+                create_mp_relationship_results.successful_relationships.append(
+                    gsrn)
+            else:
+                create_mp_relationship_results.failed_relationships.append(
+                    gsrn)
+
+        return create_mp_relationship_results
 
     def _getHeaders(self):
         headers = {
