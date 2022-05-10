@@ -156,7 +156,7 @@ class TestGetMeteringpointsByTin:
         # -- Assert/Act ------------------------------------------------------
         with pytest.raises(
             DataSyncHttpClient.DecodeError,
-            match="Failed to decode meteringpoints."
+            match="Failed to decode response body."
         ) as error:
             uut.get_meteringpoints_by_tin(tin)
             assert error.status_code == status_code
@@ -184,7 +184,7 @@ class TestCreateMeteringpointRelationships:
 
         # The HTTP Body returned by datasync
         data_sync_response = [
-            {"meteringpoint_id": mp.gsrn, "relationship_created": True}
+            {"meteringpointId": mp.gsrn, "relationshipCreated": True}
             for mp in METERINGPOINTS
         ]
 
@@ -230,7 +230,7 @@ class TestCreateMeteringpointRelationships:
 
         # The HTTP Body returned by datasync
         data_sync_response = [
-            {"meteringpoint_id": mp.gsrn, "relationship_created": True}
+            {"meteringpointId": mp.gsrn, "relationshipCreated": True}
             for mp in METERINGPOINTS
         ]
 

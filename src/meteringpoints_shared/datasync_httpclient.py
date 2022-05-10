@@ -1,15 +1,18 @@
 # Standard Library
 from dataclasses import dataclass
-from typing import List
+from typing import List, TypeVar
 
 # Third party
 import requests
+from requests import Response
 
 # First party
 from origin.models.meteringpoints import (
     MeteringPoint,
 )
 from origin.serialize import simple_serializer
+
+from meteringpoints_shared.generic_httpclient import GenericHttpClient
 
 
 @dataclass
@@ -20,7 +23,7 @@ class CreateMeteringpointRelationshipResults:
     successful_relationships: List[str]
 
 
-class DataSyncHttpClient:
+class DataSyncHttpClient(GenericHttpClient) :
     """
     A httpclient for communicating with the data-sync service.
 
@@ -34,24 +37,6 @@ class DataSyncHttpClient:
         :type internal_token: str
     """
 
-    class HttpError(Exception):
-        """Raised when http requests fails."""
-
-        def __init__(self, status_code: int, message: str) -> None:
-            self.message = message
-            self.status_code = status_code
-
-            super().__init__(self.message)
-
-    class DecodeError(Exception):
-        """Raised when http requests fails."""
-
-        pass
-
-    def __init__(self, base_url: str, internal_token: str):
-        self.base_url = base_url
-        self.internal_token = internal_token
-
     def get_meteringpoints_by_tin(self, tin: str) -> List[MeteringPoint]:
         """Return meteringpoints with relations to given tin."""
 
@@ -59,37 +44,15 @@ class DataSyncHttpClient:
 
         response = requests.get(uri, headers=self._getHeaders())
 
-        if response.status_code == 404:
-            raise DataSyncHttpClient.HttpError(
-                status_code=response.status_code,
-                message="User with tin not found."
-            )
-        elif response.status_code != 200:
-            raise DataSyncHttpClient.HttpError(
-                status_code=response.status_code,
-                message="Failed to fetch meteringpoints by tin."
-            )
+        self._raiseHttpErrorIf(response, 404, "User with tin not found.")
+        self._raiseHttpErrorIfNot(response, 200, "Failed to fetch meteringpoints by tin.")
 
-        data = response.json()
+        meteringpoints = self._decode_list_response(
+            response=response,
+            schema=MeteringPoint,
+        )
 
-        @dataclass
-        class ExpectedResponse:
-            """Expected result from http request."""
-
-            meteringpoints: List[MeteringPoint]
-
-        try:
-            decoded = simple_serializer.deserialize(
-                {"meteringpoints": data},
-                ExpectedResponse,
-                True,
-            )
-        except:   # noqa: E722
-            raise DataSyncHttpClient.DecodeError(
-                "Failed to decode meteringpoints."
-            )
-
-        return decoded.meteringpoints
+        return meteringpoints
 
     def create_meteringpoint_relationships(
         self,
@@ -113,19 +76,6 @@ class DataSyncHttpClient:
         # TODO: CHECK CORRECT PATH
         uri = f'{self.base_url}/MeteringPoint/createRelation'
 
-        @dataclass
-        class CreateMeteringpointRelationshipResult:
-            """Result when creating a meteringpoint relationship."""
-
-            meteringpointId: str
-            relationshipCreated: bool
-
-        @dataclass
-        class ExpectedResponse:
-            """Expected result from http request."""
-
-            result: List[CreateMeteringpointRelationshipResult]
-
         response = requests.post(
             url=uri,
             headers=self._getHeaders(),
@@ -135,31 +85,34 @@ class DataSyncHttpClient:
             }
         )
 
-        if response.status_code != 200:
-            raise DataSyncHttpClient.HttpError(
-                status_code=response.status_code,
-                message="Failed to create meteringpoint relationship."
-            )
+        self._raiseHttpErrorIfNot(response, 200, "Failed to create meteringpoint relationship.")
 
-        data = response.json()
+        mapped = self._map_create_meteringpoint_relationships(response)
 
-        try:
-            decoded: ExpectedResponse = simple_serializer.deserialize(
-                {"result": data},
-                ExpectedResponse,
-                True,
-            )
-        except:   # noqa: E722
-            raise DataSyncHttpClient.DecodeError(
-                "Failed to decode response body."
-            )
+        return mapped
+
+    # ------------------ private methods ------------------
+
+    def _map_create_meteringpoint_relationships(self, response: Response) -> CreateMeteringpointRelationshipResults:
+
+        @dataclass
+        class CreateMeteringpointRelationshipResult:
+            """Result when creating a meteringpoint relationship."""
+
+            meteringpointId: str
+            relationshipCreated: bool
+
+        created_relationships = self._decode_list_response(
+            response=response,
+            schema=CreateMeteringpointRelationshipResult,
+        )
 
         create_mp_relationship_results = CreateMeteringpointRelationshipResults(  # noqa E501
             successful_relationships=[],
             failed_relationships=[],
         )
 
-        for meteringpoint_relation_result in decoded.result:
+        for meteringpoint_relation_result in created_relationships:
             gsrn = meteringpoint_relation_result.meteringpointId
             if meteringpoint_relation_result.relationshipCreated:
                 create_mp_relationship_results.successful_relationships.append(
@@ -169,10 +122,3 @@ class DataSyncHttpClient:
                     gsrn)
 
         return create_mp_relationship_results
-
-    def _getHeaders(self):
-        headers = {
-            "Authorization": f'Bearer: {self.internal_token}'
-        }
-
-        return headers

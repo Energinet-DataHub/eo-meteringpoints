@@ -147,11 +147,20 @@ class CreateMeteringPointRelations(Endpoint):
                 success=False,
             )
 
-        success = http_client.create_relationship(
+        meteringpoint_relationship_results = http_client.create_relationship(
             name_id=name_id,
             meteringpoint_ids=meteringpoint_ids,
         )
 
+        if len(meteringpoint_relationship_results.failed_relationships) == 0:
+            fail_count = len(meteringpoint_relationship_results.failed_relationships)
+            print(f'Failed to create relationship for {fail_count} meteringspoints')
+            return self.Response(
+                success=False,
+            )
+
         return self.Response(
-            success=success,
+            success=True,
         )
+
+
