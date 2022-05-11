@@ -41,6 +41,11 @@ class CreateMeteringPointRelations(Endpoint):
                 request=request,
             )
 
+            if not meteringpoint_ids:
+                return self.Response(
+                    success=True,
+                )
+
             create_meteringpoint_relationships(
                 datasync_http_client=http_client,
                 request=request,
@@ -76,7 +81,7 @@ def get_meteringpoint_ids(
     :return: List of meteringpoint ids
     :rtype: List[str]
     """
-    meteringpoints: List[str] = []
+    meteringpoints: List[MeteringPoint] = []
 
     if request.tin:
         meteringpoints = datasync_http_client.get_meteringpoints_by_tin(
@@ -91,10 +96,7 @@ def get_meteringpoint_ids(
             "Either request.tin or request.ssn needs to be defined"
         )
 
-    meteringpoint_ids = [MeteringPoint(gsrn=mp) for mp in meteringpoints]
-
-    if not meteringpoint_ids:
-        raise Exception("No meteringpoints found for user")
+    meteringpoint_ids = [mp.gsrn for mp in meteringpoints]
 
     return meteringpoint_ids
 
@@ -135,14 +137,19 @@ def create_meteringpoint_relationships(
             meteringpoint_ids=meteringpoint_ids,
         )
 
-    if len(meteringpoint_relationship_results.failed_relationships) != 0:
-        fail_count = len(
-            meteringpoint_relationship_results.failed_relationships
-        )
-        mp_count = len(meteringpoint_ids)
+    meteringpoint_count = len(meteringpoint_ids)
 
+    fail_count = len(
+        meteringpoint_relationship_results.failed_relationships
+    )
+
+    success_count = len(
+        meteringpoint_relationship_results.successful_relationships
+    )
+
+    if fail_count != 0 or success_count != meteringpoint_count:
         raise Exception(
-            f'Failed to create {fail_count}/{mp_count} relationships'
+            f'Failed to create {fail_count}/{meteringpoint_count} relationships'  # noqa E501
         )
 
     return True
