@@ -48,9 +48,6 @@ class GetMeteringPointList(Endpoint):
 
         user_info = response.json()
 
-        if not user_info["tin"]:
-            print("user_info['tin'] were none")
-
         http_client = DataSyncHttpClient(
             base_url=DATASYNC_BASE_URL,
             internal_token=context.internal_token_encoded,
