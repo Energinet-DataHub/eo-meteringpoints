@@ -2,17 +2,23 @@
 conftest.py according to pytest docs:.
 https://docs.pytest.org/en/2.7.3/plugins.html?highlight=re#conftest-py-plugins
 """
+# Standard Library
 import os
 import sys
-import pytest
-from unittest.mock import patch
-from flask.testing import FlaskClient
 from datetime import datetime, timedelta, timezone
-from testcontainers.postgres import PostgresContainer
+from unittest.mock import patch
 
-from origin.tokens import TokenEncoder
+# Third party
+import pytest
+import requests_mock
+from flask.testing import FlaskClient
+from testcontainers.postgres import (
+    PostgresContainer,
+)
+
+# First party
 from origin.models.auth import InternalToken
-
+from origin.tokens import TokenEncoder
 
 # Adds the src folder to the local path
 test_dir = os.path.dirname(os.path.abspath(__file__))
@@ -20,9 +26,16 @@ src_dir = os.path.join(test_dir, '..', 'src')
 sys.path.append(src_dir)
 
 
-from meteringpoints_api.app import create_app  # noqa: E402
-from meteringpoints_shared.db import db  # noqa: E402
-from meteringpoints_shared.config import INTERNAL_TOKEN_SECRET  # noqa: E402
+# First party
+from meteringpoints_api.app import (  # noqa: E402
+    create_app,
+)
+from meteringpoints_shared.config import (  # noqa: E402
+    INTERNAL_TOKEN_SECRET,
+)
+from meteringpoints_shared.db import (  # noqa: E402
+    db,
+)
 
 
 @pytest.fixture(scope='function')
@@ -86,3 +99,16 @@ def valid_token_encoded(
     """TODO."""
 
     yield token_encoder.encode(valid_token)
+
+
+@pytest.fixture(scope='function')
+def request_mocker() -> requests_mock:
+    """
+    Provide a request mocker.
+
+    Can be used to mock requests responses made to eg.
+    OpenID Connect api endpoints.
+    """
+
+    with requests_mock.Mocker() as mock:
+        yield mock
