@@ -20,7 +20,6 @@ def client() -> FlaskClient:
 
     return create_app().test_client
 
-
 @pytest.fixture(scope='function')
 def internal_token_encoder() -> TokenEncoder[InternalToken]:
     """Return InternalToken encoder with correct secret embedded."""

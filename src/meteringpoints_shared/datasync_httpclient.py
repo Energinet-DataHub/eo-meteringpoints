@@ -28,12 +28,6 @@ class DataSyncHttpClient(GenericHttpClient):
 
     Each HttpClient should use the internal_token provided by the
     individual user.
-
-    :param base_url: base url of the datasync class.
-        :type base_url: str
-        :param internal_token: The bearer internal_token used
-               for authentication.
-        :type internal_token: str
     """
 
     def get_meteringpoints_by_tin(self, tin: str) -> List[MeteringPoint]:
@@ -41,10 +35,10 @@ class DataSyncHttpClient(GenericHttpClient):
 
         uri = f'{self.base_url}/MeteringPoint/GetByTin/{tin}'
 
-        response = requests.get(uri, headers=self._getHeaders())
+        response = requests.get(uri, headers=self._get_headers())
 
-        self._raiseHttpErrorIf(response, 404, "User with tin not found.")
-        self._raiseHttpErrorIfNot(
+        self._raise_http_hrror_if(response, 404, "User with tin not found.")
+        self._raise_http_error_if_not(
             response, 200, "Failed to fetch meteringpoints by tin.")
 
         meteringpoints = self._decode_list_response(
@@ -78,14 +72,14 @@ class DataSyncHttpClient(GenericHttpClient):
 
         response = requests.post(
             url=uri,
-            headers=self._getHeaders(),
+            headers=self._get_headers(),
             data={
-                "name_id": name_id,
-                "meteringpoint_ids": meteringpoint_ids,
+                "nameId": name_id,
+                "meteringpointIds": meteringpoint_ids,
             }
         )
 
-        self._raiseHttpErrorIfNot(
+        self._raise_http_error_if_not(
             response, 200, "Failed to create meteringpoint relationship.")
 
         mapped = self._map_create_meteringpoint_relationships(response)
@@ -128,9 +122,11 @@ class DataSyncHttpClient(GenericHttpClient):
             gsrn = meteringpoint_relation_result.meteringpointId
             if meteringpoint_relation_result.relationshipCreated:
                 create_mp_relationship_results.successful_relationships.append(
-                    gsrn)
+                    gsrn
+                )
             else:
                 create_mp_relationship_results.failed_relationships.append(
-                    gsrn)
+                    gsrn
+                )
 
         return create_mp_relationship_results

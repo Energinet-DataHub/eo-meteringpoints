@@ -17,11 +17,15 @@ class GenericHttpClient:
     individual user.
 
     :param base_url: base url of the datasync class.
-        :type base_url: str
-        :param internal_token: The bearer internal_token used
-               for authentication.
-        :type internal_token: str
+    :type base_url: str
+    :param internal_token: The bearer internal_token used
+            for authentication.
+    :type internal_token: str
     """
+
+    def __init__(self, base_url: str, internal_token: str):
+        self.base_url = base_url
+        self.internal_token = internal_token
 
     class HttpError(Exception):
         """Raised when http requests fails."""
@@ -36,10 +40,6 @@ class GenericHttpClient:
         """Raised when http requests fails."""
 
         pass
-
-    def __init__(self, base_url: str, internal_token: str):
-        self.base_url = base_url
-        self.internal_token = internal_token
 
     T = TypeVar('T')
 
@@ -103,7 +103,7 @@ class GenericHttpClient:
 
         return decoded.result
 
-    def _raiseHttpErrorIf(self, response: Response, code: int, message: str):
+    def _raise_http_hrror_if(self, response: Response, code: int, message: str):
         """
         Raise HttpError if response.status_code == code.
 
@@ -124,7 +124,7 @@ class GenericHttpClient:
                 message=message
             )
 
-    def _raiseHttpErrorIfNot(
+    def _raise_http_error_if_not(
         self,
         response: Response,
         code: int,
@@ -150,7 +150,7 @@ class GenericHttpClient:
                 message=message
             )
 
-    def _getHeaders(self) -> Dict[str, str]:
+    def _get_headers(self) -> Dict[str, str]:
         """
         Create headers used for authorization.
 

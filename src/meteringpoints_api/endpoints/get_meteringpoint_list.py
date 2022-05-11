@@ -17,6 +17,7 @@ from origin.models.meteringpoints import (
     MeteringPoint,
 )
 
+from origin.api.responses import BadRequest, InternalServerError
 
 class GetMeteringPointList(Endpoint):
     """
@@ -55,14 +56,20 @@ class GetMeteringPointList(Endpoint):
             internal_token=context.internal_token_encoded,
         )
 
+        meteringpoints: List[MeteringPoint] = []
+
         if user_info["tin"]:
             meteringpoints = http_client.get_meteringpoints_by_tin(user_info["tin"])  # noqa: E501
         elif user_info["ssn"]:
-            # IMPLEMENT THIS
+            # TODO: IMPLEMENT THIS
             print("httpClient.get_meteringpoints_by_ssn() not implemented")
+            raise InternalServerError()
         else:
-            # Return error http response
-            print("User must have either a TIN or SSN")
+            raise BadRequest(
+                body="User must have either a TIN or SSN"
+            )
+
+
 
         return self.Response(
             meteringpoints=meteringpoints,  # noqa: E501
