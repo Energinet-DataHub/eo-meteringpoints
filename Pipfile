@@ -14,6 +14,7 @@ pytest-cov = "*"
 pytest-order = "*"
 pytest-depends = "*"
 testcontainers = "*"
+requests-mock = "*"
 
 [packages]
 origin-platform-utils = "0.6.5"
