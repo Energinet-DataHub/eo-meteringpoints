@@ -80,7 +80,8 @@ def get_meteringpoint_ids(
 
     if request.tin:
         meteringpoints = datasync_http_client.get_meteringpoints_by_tin(
-            request.tin)
+            request.tin
+        )
     elif request.ssn:
         # IMPLEMENT THIS
         print("httpClient.get_meteringpoints_by_ssn() not implemented")
