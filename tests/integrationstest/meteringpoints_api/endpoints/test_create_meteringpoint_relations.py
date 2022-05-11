@@ -23,6 +23,11 @@ METERINGPOINTS = [
 # Dummy data in json format
 METERINGPOINTS_JSON = [{'gsrn': mp.gsrn} for mp in METERINGPOINTS]
 
+DATA_SYNC_CREATE_RELATIONSHIP_RESPONSE = [
+    {"meteringpointId": mp.gsrn, "relationshipCreated": True}
+    for mp in METERINGPOINTS
+]
+
 
 class TestCreateMeteringPointRelations:
     """Tests specifically for OIDC login endpoint."""
@@ -38,9 +43,17 @@ class TestCreateMeteringPointRelations:
         # -- Arrange ---------------------------------------------------------
         tin = "test"
 
+        # Allow to fetch meteringpoints
         request_mocker.get(
             f'{DATASYNC_BASE_URL}/MeteringPoint/GetByTin/{tin}',
             json=METERINGPOINTS_JSON,
+            status_code=200,
+        )
+
+        # Allow to create relationships
+        request_mocker.post(
+            f'{DATASYNC_BASE_URL}/MeteringPoint/createRelation',
+            json=DATA_SYNC_CREATE_RELATIONSHIP_RESPONSE,
             status_code=200,
         )
 

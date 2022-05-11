@@ -1,6 +1,6 @@
 # Standard Library
 from dataclasses import dataclass
-from typing import List, TypeVar
+from typing import List
 
 # Third party
 import requests
@@ -10,7 +10,6 @@ from requests import Response
 from origin.models.meteringpoints import (
     MeteringPoint,
 )
-from origin.serialize import simple_serializer
 
 from meteringpoints_shared.generic_httpclient import GenericHttpClient
 
@@ -95,9 +94,12 @@ class DataSyncHttpClient(GenericHttpClient):
 
     # ------------------ private methods ------------------
 
-    def _map_create_meteringpoint_relationships(self, response: Response) -> CreateMeteringpointRelationshipResults:
+    def _map_create_meteringpoint_relationships(
+        self,
+        response: Response
+    ) -> CreateMeteringpointRelationshipResults:
         """
-        Maps the datasync response to own custom response.
+        Map the datasync response to own custom response.
 
         :param response: requests Http response
         :type response: Response

@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from typing import Dict, List, TypeVar
 
 # Third party
-import requests
 from requests import Response
 
 # First party
@@ -74,7 +73,7 @@ class GenericHttpClient:
 
     def _decode_list_response(self, response: any, schema: T) -> List[T]:
         """
-        Decodes a list response, and return new object of type "schema".
+        Decode a list response, and return new object of type "schema".
 
         Takes a response with with a .json() which returns list of objects,
         and decodes the data and return new object of type "schema".
@@ -125,7 +124,12 @@ class GenericHttpClient:
                 message=message
             )
 
-    def _raiseHttpErrorIfNot(self, response: Response, code: int, message: str):
+    def _raiseHttpErrorIfNot(
+        self,
+        response: Response,
+        code: int,
+        message: str
+    ):
         """
         Raise HttpError if response.status_code != code.
 
