@@ -235,8 +235,8 @@ class TestCreateMeteringpointRelationships:
         ]
 
         # Let the first meteringpoint relation fail
-        data_sync_response[0]["relationship_created"] = False
-        failed_meteringpoint_id = data_sync_response[0]["meteringpoint_id"]
+        data_sync_response[0]["relationshipCreated"] = False
+        failed_meteringpoint_id = data_sync_response[0]["meteringpointId"]
 
         # Mock datasync HTTP Response
         request_mocker.post(

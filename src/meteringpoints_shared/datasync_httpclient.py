@@ -23,7 +23,7 @@ class CreateMeteringpointRelationshipResults:
     successful_relationships: List[str]
 
 
-class DataSyncHttpClient(GenericHttpClient) :
+class DataSyncHttpClient(GenericHttpClient):
     """
     A httpclient for communicating with the data-sync service.
 
@@ -45,7 +45,8 @@ class DataSyncHttpClient(GenericHttpClient) :
         response = requests.get(uri, headers=self._getHeaders())
 
         self._raiseHttpErrorIf(response, 404, "User with tin not found.")
-        self._raiseHttpErrorIfNot(response, 200, "Failed to fetch meteringpoints by tin.")
+        self._raiseHttpErrorIfNot(
+            response, 200, "Failed to fetch meteringpoints by tin.")
 
         meteringpoints = self._decode_list_response(
             response=response,
@@ -85,7 +86,8 @@ class DataSyncHttpClient(GenericHttpClient) :
             }
         )
 
-        self._raiseHttpErrorIfNot(response, 200, "Failed to create meteringpoint relationship.")
+        self._raiseHttpErrorIfNot(
+            response, 200, "Failed to create meteringpoint relationship.")
 
         mapped = self._map_create_meteringpoint_relationships(response)
 
@@ -94,6 +96,14 @@ class DataSyncHttpClient(GenericHttpClient) :
     # ------------------ private methods ------------------
 
     def _map_create_meteringpoint_relationships(self, response: Response) -> CreateMeteringpointRelationshipResults:
+        """
+        Maps the datasync response to own custom response.
+
+        :param response: requests Http response
+        :type response: Response
+        :return: Returns new function response
+        :rtype: CreateMeteringpointRelationshipResults
+        """
 
         @dataclass
         class CreateMeteringpointRelationshipResult:
