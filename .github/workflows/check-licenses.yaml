@@ -2,11 +2,7 @@ name: Check Licenses - meteringpoints
 on:
   pull_request:
     branches: [ main ]
-    paths:
-      - Pipfile
-      - Pipfile.lock
-      - requirements.txt
-      - requirements_test.txt
+
 jobs:
   check-licenses:
     runs-on: ubuntu-latest
