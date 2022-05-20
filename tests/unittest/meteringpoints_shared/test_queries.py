@@ -1,3 +1,4 @@
+import re
 import pytest
 from typing import List
 from itertools import product
@@ -77,7 +78,7 @@ class TestMeteringPointQuery:
 
         session.commit()
 
-    @pytest.mark.parametrize('gsrn', ('gsrn0', 'gsrn1', 'gsrn2'))
+    @pytest.mark.parametrize('gsrn', ('gsrn0', '979969595297472487', '491667188458077310'))
     def test__has_gsrn__meteringpoint_exists__should_return_correct_meteringpoint(  # noqa: E501
             self,
             session: db.Session,
@@ -119,9 +120,9 @@ class TestMeteringPointQuery:
 
     @pytest.mark.parametrize('gsrn, expected_gsrn_returned', (
         (['gsrn0'], ['gsrn0']),
-        (['gsrn0', 'gsrn1'], ['gsrn0', 'gsrn1']),
+        (['gsrn0', '979969595297472487'], ['gsrn0', '979969595297472487']),
         (['unknown_gsrn_1'], []),
-        (['unknown_gsrn_1', 'gsrn1'], ['gsrn1']),
+        (['unknown_gsrn_1', '979969595297472487'], ['979969595297472487']),
         ([], []),
     ))
     def test__has_any_gsrn__should_return_correct_meteringpoints(
@@ -275,8 +276,8 @@ class TestMeteringPointQuery:
         # -- Arrange ---------------------------------------------------------
 
         session.begin()
-        session.add(DbMeteringPointDelegate(gsrn='gsrn1', subject='subject1'))
-        session.add(DbMeteringPointDelegate(gsrn='gsrn2', subject='subject1'))
+        session.add(DbMeteringPointDelegate(gsrn='979969595297472487', subject='subject1'))
+        session.add(DbMeteringPointDelegate(gsrn='491667188458077310', subject='subject1'))
         session.commit()
 
         # -- Act -------------------------------------------------------------
@@ -288,14 +289,14 @@ class TestMeteringPointQuery:
         # -- Assert ----------------------------------------------------------
 
         assert len(results) == 2
-        assert all(mp.gsrn in ('gsrn1', 'gsrn2') for mp in results)
+        assert all(mp.gsrn in ('979969595297472487', '491667188458077310') for mp in results)
 
     @pytest.mark.parametrize('filters', (
-        MeteringPointFilters(gsrn=['gsrn1', 'gsrn2']),
+        MeteringPointFilters(gsrn=['979969595297472487', '491667188458077310']),
         MeteringPointFilters(sector=['DK1']),
         MeteringPointFilters(type=MeteringPointType.PRODUCTION),
         MeteringPointFilters(
-            gsrn=['gsrn1'],
+            gsrn=['979969595297472487'],
             sector=['DK2'],
             type=MeteringPointType.CONSUMPTION,
         ),
@@ -313,7 +314,6 @@ class TestMeteringPointQuery:
         """
 
         # -- Act -------------------------------------------------------------
-
         results = MeteringPointQuery(session) \
             .apply_filters(filters) \
             .all()
@@ -335,7 +335,7 @@ class TestMeteringPointQuery:
         MeteringPointFilters(gsrn=['foo', 'bar']),
         MeteringPointFilters(sector=['spam']),
         MeteringPointFilters(gsrn=['foobar'], sector=['DK2']),
-        MeteringPointFilters(gsrn=['gsrn1'], sector=['foobar']),
+        MeteringPointFilters(gsrn=['979969595297472487'], sector=['foobar']),
     ))
     def test__query_apply_filters__meteringpoints_does_not_exist__should_return_no_meteringpoints(  # noqa: E501
             self,
@@ -424,19 +424,19 @@ class TestMeteringPointAddressQuery:
         # -- Arrange ---------------------------------------------------------
 
         session.begin()
-        session.add(DbMeteringPointAddress(gsrn='gsrn1'))
-        session.add(DbMeteringPointAddress(gsrn='gsrn2'))
+        session.add(DbMeteringPointAddress(gsrn='979969595297472487'))
+        session.add(DbMeteringPointAddress(gsrn='491667188458077310'))
         session.commit()
 
         # -- Assert ----------------------------------------------------------
 
         address = MeteringPointAddressQuery(session) \
-            .has_gsrn('gsrn1') \
+            .has_gsrn('979969595297472487') \
             .one()
 
         # -- Assert ----------------------------------------------------------
 
-        assert address.gsrn == 'gsrn1'
+        assert address.gsrn == '979969595297472487'
 
     @pytest.mark.parametrize('gsrn', ('', None, 'unknown_gsrn_1'))
     def test__has_gsrn__address_does_not_exists__should_not_return_anything(
@@ -474,13 +474,13 @@ class TestMeteringPointTechnologyQuery:
         session.begin()
 
         session.add(DbMeteringPointTechnology(
-            gsrn='gsrn1',
+            gsrn='979969595297472487',
             tech_code='T010101',
             fuel_code='F01010101',
         ))
 
         session.add(DbMeteringPointTechnology(
-            gsrn='gsrn2',
+            gsrn='491667188458077310',
             tech_code='T020202',
             fuel_code='F02020202',
         ))
@@ -490,12 +490,12 @@ class TestMeteringPointTechnologyQuery:
         # -- Assert ----------------------------------------------------------
 
         technology = MeteringPointTechnologyQuery(session) \
-            .has_gsrn('gsrn1') \
+            .has_gsrn('979969595297472487') \
             .one()
 
         # -- Assert ----------------------------------------------------------
 
-        assert technology.gsrn == 'gsrn1'
+        assert technology.gsrn == '979969595297472487'
 
     @pytest.mark.parametrize('gsrn', ('', None, 'unknown_gsrn_1'))
     def test__has_gsrn__gsrn_does_not_exists__should_not_return_anything(
@@ -533,10 +533,10 @@ class TestDelegateQuery:
         :param session: Database session
         """
         session.begin()
-        session.add(DbMeteringPointDelegate(gsrn='gsrn1', subject='subject1'))
-        session.add(DbMeteringPointDelegate(gsrn='gsrn1', subject='subject2'))
-        session.add(DbMeteringPointDelegate(gsrn='gsrn2', subject='subject1'))
-        session.add(DbMeteringPointDelegate(gsrn='gsrn2', subject='subject2'))
+        session.add(DbMeteringPointDelegate(gsrn='979969595297472487', subject='subject1'))
+        session.add(DbMeteringPointDelegate(gsrn='979969595297472487', subject='subject2'))
+        session.add(DbMeteringPointDelegate(gsrn='491667188458077310', subject='subject1'))
+        session.add(DbMeteringPointDelegate(gsrn='491667188458077310', subject='subject2'))
         session.commit()
 
     def test__has_gsrn__delegates_exists__should_return_correct_delegates(
@@ -552,13 +552,13 @@ class TestDelegateQuery:
         # -- Assert ----------------------------------------------------------
 
         delegates = DelegateQuery(session) \
-            .has_gsrn('gsrn1') \
+            .has_gsrn('979969595297472487') \
             .all()
 
         # -- Assert ----------------------------------------------------------
 
         assert len(delegates) == 2
-        assert all(delegate.gsrn == 'gsrn1' for delegate in delegates)
+        assert all(delegate.gsrn == '979969595297472487' for delegate in delegates)
 
     @pytest.mark.parametrize('gsrn', ('', None, 'unknown_gsrn'))
     def test__has_gsrn__delegate_does_not_exist__should_not_return_anything(

@@ -35,7 +35,7 @@ class TestDatabaseControllerMeteringPoints:
         # -- Arrange ---------------------------------------------------------
 
         session.begin()
-        session.add(DbMeteringPoint(gsrn='gsrn123'))
+        session.add(DbMeteringPoint(gsrn='979969595297472487'))
         session.commit()
 
         # -- Act -------------------------------------------------------------
@@ -44,14 +44,14 @@ class TestDatabaseControllerMeteringPoints:
 
         meteringpoint = controller.get_or_create_meteringpoint(
             session=session,
-            gsrn='gsrn123',
+            gsrn='979969595297472487',
         )
 
         session.commit()
 
         # -- Assert ----------------------------------------------------------
 
-        assert meteringpoint.gsrn == 'gsrn123'
+        assert meteringpoint.gsrn == '979969595297472487'
 
     def test__get_or_create_meteringpoint__meteringpoint_does_not_exists__should_create_and_return_meteringpoint(  # noqa: E501
             self,
@@ -65,7 +65,7 @@ class TestDatabaseControllerMeteringPoints:
 
         meteringpoint = controller.get_or_create_meteringpoint(
             session=session,
-            gsrn='gsrn321',
+            gsrn='979969595297472487',
         )
 
         session.commit()
@@ -74,11 +74,11 @@ class TestDatabaseControllerMeteringPoints:
 
         # Check database for new meteringpoint
         db_meteringpoint = MeteringPointQuery(session) \
-            .has_gsrn('gsrn321') \
+            .has_gsrn('979969595297472487') \
             .one()
 
-        assert meteringpoint.gsrn == 'gsrn321'
-        assert db_meteringpoint.gsrn == 'gsrn321'
+        assert meteringpoint.gsrn == '979969595297472487'
+        assert db_meteringpoint.gsrn == '979969595297472487'
 
     def test__delete_meteringpoint__should_delete_meteringpoint_and_associated_data(  # noqa: E501
             self,
@@ -90,15 +90,15 @@ class TestDatabaseControllerMeteringPoints:
 
         session.begin()
 
-        session.add(DbMeteringPoint(gsrn='gsrn1'))
-        session.add(DbMeteringPointAddress(gsrn='gsrn1'))
-        session.add(DbMeteringPointTechnology(gsrn='gsrn1'))
-        session.add(DbMeteringPointDelegate(gsrn='gsrn1', subject='subject'))
+        session.add(DbMeteringPoint(gsrn='979969595297472487'))
+        session.add(DbMeteringPointAddress(gsrn='979969595297472487'))
+        session.add(DbMeteringPointTechnology(gsrn='979969595297472487'))
+        session.add(DbMeteringPointDelegate(gsrn='979969595297472487', subject='subject'))
 
-        session.add(DbMeteringPoint(gsrn='gsrn2'))
-        session.add(DbMeteringPointAddress(gsrn='gsrn2'))
-        session.add(DbMeteringPointTechnology(gsrn='gsrn2'))
-        session.add(DbMeteringPointDelegate(gsrn='gsrn2', subject='subject'))
+        session.add(DbMeteringPoint(gsrn='491667188458077310'))
+        session.add(DbMeteringPointAddress(gsrn='491667188458077310'))
+        session.add(DbMeteringPointTechnology(gsrn='491667188458077310'))
+        session.add(DbMeteringPointDelegate(gsrn='491667188458077310', subject='subject'))
 
         session.commit()
 
@@ -108,47 +108,47 @@ class TestDatabaseControllerMeteringPoints:
 
         controller.delete_meteringpoint(
             session=session,
-            gsrn='gsrn1',
+            gsrn='979969595297472487',
         )
 
         session.commit()
 
         # -- Assert ----------------------------------------------------------
 
-        # Assert 'gsrn1' and all of its associated data has been deleted
+        # Assert '979969595297472487' and all of its associated data has been deleted
 
         assert not MeteringPointQuery(session) \
-            .has_gsrn('gsrn1') \
+            .has_gsrn('979969595297472487') \
             .exists()
 
         assert not MeteringPointAddressQuery(session) \
-            .has_gsrn('gsrn1') \
+            .has_gsrn('979969595297472487') \
             .exists()
 
         assert not MeteringPointTechnologyQuery(session) \
-            .has_gsrn('gsrn1') \
+            .has_gsrn('979969595297472487') \
             .exists()
 
         assert not DelegateQuery(session) \
-            .has_gsrn('gsrn1') \
+            .has_gsrn('979969595297472487') \
             .exists()
 
-        # Assert 'gsrn2' and all of its associated data still exists
+        # Assert '491667188458077310' and all of its associated data still exists
 
         assert MeteringPointQuery(session) \
-            .has_gsrn('gsrn2') \
+            .has_gsrn('491667188458077310') \
             .exists()
 
         assert MeteringPointAddressQuery(session) \
-            .has_gsrn('gsrn2') \
+            .has_gsrn('491667188458077310') \
             .exists()
 
         assert MeteringPointTechnologyQuery(session) \
-            .has_gsrn('gsrn2') \
+            .has_gsrn('491667188458077310') \
             .exists()
 
         assert DelegateQuery(session) \
-            .has_gsrn('gsrn2') \
+            .has_gsrn('491667188458077310') \
             .exists()
 
 
@@ -191,25 +191,25 @@ class TestDatabaseControllerMeteringPointAddress:
         # -- Arrange ---------------------------------------------------------
 
         session.begin()
-        session.add(DbMeteringPointAddress(gsrn='gsrn1'))
-        session.add(DbMeteringPointAddress(gsrn='gsrn2'))
+        session.add(DbMeteringPointAddress(gsrn='979969595297472487'))
+        session.add(DbMeteringPointAddress(gsrn='491667188458077310'))
         session.commit()
 
         # -- Act -------------------------------------------------------------
 
         controller.set_meteringpoint_address(
             session=session,
-            gsrn='gsrn1',
+            gsrn='979969595297472487',
             address=new_address,
         )
 
         # -- Assert ----------------------------------------------------------
 
         address = MeteringPointAddressQuery(session) \
-            .has_gsrn('gsrn1') \
+            .has_gsrn('979969595297472487') \
             .one()
 
-        assert address.gsrn == 'gsrn1'
+        assert address.gsrn == '979969595297472487'
         assert address.street_code == new_address.street_code
         assert address.street_name == new_address.street_name
         assert address.building_number == new_address.building_number
@@ -227,10 +227,10 @@ class TestDatabaseControllerMeteringPointAddress:
         # Address for gsrn2 should be untouched
 
         gsrn2_address = MeteringPointAddressQuery(session) \
-            .has_gsrn('gsrn2') \
+            .has_gsrn('491667188458077310') \
             .one()
 
-        assert gsrn2_address.gsrn == 'gsrn2'
+        assert gsrn2_address.gsrn == '491667188458077310'
         assert gsrn2_address.street_code is None
         assert gsrn2_address.street_name is None
         assert gsrn2_address.building_number is None
@@ -279,17 +279,17 @@ class TestDatabaseControllerMeteringPointAddress:
 
         controller.set_meteringpoint_address(
             session=session,
-            gsrn='gsrn1',
+            gsrn='979969595297472487',
             address=new_address,
         )
 
         # -- Assert ----------------------------------------------------------
 
         address = MeteringPointAddressQuery(session) \
-            .has_gsrn('gsrn1') \
+            .has_gsrn('979969595297472487') \
             .one()
 
-        assert address.gsrn == 'gsrn1'
+        assert address.gsrn == '979969595297472487'
         assert address.street_code == new_address.street_code
         assert address.street_name == new_address.street_name
         assert address.building_number == new_address.building_number
@@ -313,8 +313,8 @@ class TestDatabaseControllerMeteringPointAddress:
         # -- Arrange ---------------------------------------------------------
 
         session.begin()
-        session.add(DbMeteringPointAddress(gsrn='gsrn1'))
-        session.add(DbMeteringPointAddress(gsrn='gsrn2'))
+        session.add(DbMeteringPointAddress(gsrn='979969595297472487'))
+        session.add(DbMeteringPointAddress(gsrn='491667188458077310'))
         session.commit()
 
         # -- Act -------------------------------------------------------------
@@ -323,7 +323,7 @@ class TestDatabaseControllerMeteringPointAddress:
 
         controller.delete_meteringpoint_address(
             session=session,
-            gsrn='gsrn1',
+            gsrn='979969595297472487',
         )
 
         session.commit()
@@ -331,11 +331,11 @@ class TestDatabaseControllerMeteringPointAddress:
         # -- Assert ----------------------------------------------------------
 
         assert not MeteringPointAddressQuery(session) \
-            .has_gsrn('gsrn1') \
+            .has_gsrn('979969595297472487') \
             .exists()
 
         assert MeteringPointAddressQuery(session) \
-            .has_gsrn('gsrn2') \
+            .has_gsrn('491667188458077310') \
             .exists()
 
 
@@ -351,7 +351,7 @@ class TestDatabaseControllerMeteringPointDelegate:
         # -- Arrange ---------------------------------------------------------
 
         session.begin()
-        session.add(DbMeteringPointDelegate(gsrn='gsrn1', subject='subject1'))
+        session.add(DbMeteringPointDelegate(gsrn='979969595297472487', subject='subject1'))
         session.commit()
 
         # -- Act -------------------------------------------------------------
@@ -360,7 +360,7 @@ class TestDatabaseControllerMeteringPointDelegate:
 
         controller.grant_meteringpoint_delegate(
             session=session,
-            gsrn='gsrn1',
+            gsrn='979969595297472487',
             subject='subject1',
         )
 
@@ -371,7 +371,7 @@ class TestDatabaseControllerMeteringPointDelegate:
         delegate = DelegateQuery(session) \
             .one()
 
-        assert delegate.gsrn == 'gsrn1'
+        assert delegate.gsrn == '979969595297472487'
         assert delegate.subject == 'subject1'
 
     def test__grant_meteringpoint_delegate__delegate_does_not_exists__should_create_delegate(  # noqa: E501
@@ -386,7 +386,7 @@ class TestDatabaseControllerMeteringPointDelegate:
 
         controller.grant_meteringpoint_delegate(
             session=session,
-            gsrn='gsrn1',
+            gsrn='979969595297472487',
             subject='subject1',
         )
 
@@ -397,7 +397,7 @@ class TestDatabaseControllerMeteringPointDelegate:
         delegate = DelegateQuery(session) \
             .one()
 
-        assert delegate.gsrn == 'gsrn1'
+        assert delegate.gsrn == '979969595297472487'
         assert delegate.subject == 'subject1'
 
     # -- revoke_meteringpoint_delegate() -------------------------------------
@@ -411,10 +411,10 @@ class TestDatabaseControllerMeteringPointDelegate:
         # -- Arrange ---------------------------------------------------------
 
         session.begin()
-        session.add(DbMeteringPointDelegate(gsrn='gsrn1', subject='subject1'))
-        session.add(DbMeteringPointDelegate(gsrn='gsrn1', subject='subject2'))
-        session.add(DbMeteringPointDelegate(gsrn='gsrn2', subject='subject1'))
-        session.add(DbMeteringPointDelegate(gsrn='gsrn2', subject='subject2'))
+        session.add(DbMeteringPointDelegate(gsrn='979969595297472487', subject='subject1'))
+        session.add(DbMeteringPointDelegate(gsrn='979969595297472487', subject='subject2'))
+        session.add(DbMeteringPointDelegate(gsrn='491667188458077310', subject='subject1'))
+        session.add(DbMeteringPointDelegate(gsrn='491667188458077310', subject='subject2'))
         session.commit()
 
         # -- Act -------------------------------------------------------------
@@ -423,7 +423,7 @@ class TestDatabaseControllerMeteringPointDelegate:
 
         controller.revoke_meteringpoint_delegate(
             session=session,
-            gsrn='gsrn1',
+            gsrn='979969595297472487',
             subject='subject1',
         )
 
@@ -432,22 +432,22 @@ class TestDatabaseControllerMeteringPointDelegate:
         # -- Assert ----------------------------------------------------------
 
         assert not DelegateQuery(session) \
-            .has_gsrn('gsrn1') \
+            .has_gsrn('979969595297472487') \
             .has_subject('subject1') \
             .exists()
 
         assert DelegateQuery(session) \
-            .has_gsrn('gsrn1') \
+            .has_gsrn('979969595297472487') \
             .has_subject('subject2') \
             .exists()
 
         assert DelegateQuery(session) \
-            .has_gsrn('gsrn2') \
+            .has_gsrn('491667188458077310') \
             .has_subject('subject1') \
             .exists()
 
         assert DelegateQuery(session) \
-            .has_gsrn('gsrn2') \
+            .has_gsrn('491667188458077310') \
             .has_subject('subject2') \
             .exists()
 
@@ -491,8 +491,8 @@ class TestDatabaseControllerMeteringPointTechnology:
         # -- Arrange ---------------------------------------------------------
 
         session.begin()
-        session.add(DbMeteringPointTechnology(gsrn='gsrn1'))
-        session.add(DbMeteringPointTechnology(gsrn='gsrn2'))
+        session.add(DbMeteringPointTechnology(gsrn='979969595297472487'))
+        session.add(DbMeteringPointTechnology(gsrn='491667188458077310'))
         session.commit()
 
         # -- Act -------------------------------------------------------------
@@ -501,7 +501,7 @@ class TestDatabaseControllerMeteringPointTechnology:
 
         controller.set_meteringpoint_technology(
             session=session,
-            gsrn='gsrn1',
+            gsrn='979969595297472487',
             technology=new_technology,
         )
         session.commit()
@@ -509,20 +509,20 @@ class TestDatabaseControllerMeteringPointTechnology:
         # -- Assert ----------------------------------------------------------
 
         technology = MeteringPointTechnologyQuery(session) \
-            .has_gsrn('gsrn1') \
+            .has_gsrn('979969595297472487') \
             .one()
 
-        assert technology.gsrn == 'gsrn1'
+        assert technology.gsrn == '979969595297472487'
         assert technology.tech_code == new_technology.tech_code
         assert technology.fuel_code == new_technology.fuel_code
 
         # Technology for gsrn2 should be untouched
 
         gsrn2_technology = MeteringPointTechnologyQuery(session) \
-            .has_gsrn('gsrn2') \
+            .has_gsrn('491667188458077310') \
             .one()
 
-        assert gsrn2_technology.gsrn == 'gsrn2'
+        assert gsrn2_technology.gsrn == '491667188458077310'
         assert gsrn2_technology.tech_code is None
         assert gsrn2_technology.fuel_code is None
 
@@ -565,7 +565,7 @@ class TestDatabaseControllerMeteringPointTechnology:
 
         controller.set_meteringpoint_technology(
             session=session,
-            gsrn='gsrn1',
+            gsrn='979969595297472487',
             technology=new_technology,
         )
 
@@ -574,10 +574,10 @@ class TestDatabaseControllerMeteringPointTechnology:
         # -- Assert ----------------------------------------------------------
 
         technology = MeteringPointTechnologyQuery(session) \
-            .has_gsrn('gsrn1') \
+            .has_gsrn('979969595297472487') \
             .one()
 
-        assert technology.gsrn == 'gsrn1'
+        assert technology.gsrn == '979969595297472487'
         assert technology.tech_code == new_technology.tech_code
         assert technology.fuel_code == new_technology.fuel_code
 
@@ -590,8 +590,8 @@ class TestDatabaseControllerMeteringPointTechnology:
         # -- Arrange ---------------------------------------------------------
 
         session.begin()
-        session.add(DbMeteringPointTechnology(gsrn='gsrn1'))
-        session.add(DbMeteringPointTechnology(gsrn='gsrn2'))
+        session.add(DbMeteringPointTechnology(gsrn='979969595297472487'))
+        session.add(DbMeteringPointTechnology(gsrn='491667188458077310'))
         session.commit()
 
         # -- Act -------------------------------------------------------------
@@ -600,7 +600,7 @@ class TestDatabaseControllerMeteringPointTechnology:
 
         controller.delete_meteringpoint_technology(
             session=session,
-            gsrn='gsrn1',
+            gsrn='979969595297472487',
         )
 
         session.commit()
@@ -608,11 +608,11 @@ class TestDatabaseControllerMeteringPointTechnology:
         # -- Assert ----------------------------------------------------------
 
         assert not MeteringPointTechnologyQuery(session) \
-            .has_gsrn('gsrn1') \
+            .has_gsrn('979969595297472487') \
             .exists()
 
         assert MeteringPointTechnologyQuery(session) \
-            .has_gsrn('gsrn2') \
+            .has_gsrn('491667188458077310') \
             .exists()
 
 
