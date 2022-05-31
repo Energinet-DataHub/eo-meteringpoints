@@ -35,7 +35,7 @@ class GetMeteringPointList(Endpoint):
 
         user_info = response.json()
 
-        data_sync_url = f'http://eo-data-sync/MeteringPoint/GetByTin/{user_info["tin"]}'  # noqa: E501
+        data_sync_url = f'http://eo-data-sync/MeteringPoints/GetByTin/{user_info["tin"]}'  # noqa: E501
 
         response = requests.get(data_sync_url, headers=token)
 
